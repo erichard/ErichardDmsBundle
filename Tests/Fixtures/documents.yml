@@ -1,0 +1,11 @@
+Erichard\DmsBundle\Entity\DocumentNode:
+    node_video:
+        __construct: ["Video"]
+    node_photo:
+        __construct: ["Photo"]
+    node_public:
+        __construct: ["Public"]
+    node_private:
+        __construct: ["Private"]
+    node{1..999}:
+        __construct: [<sentence(2)>, @node*]

@@ -1,0 +1,22 @@
+Erichard\DmsBundle\Entity\DocumentNode:
+    type: entity
+    repositoryClass: Erichard\DmsBundle\Entity\DocumentNodeRepository
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        name:
+            type: string
+    manyToOne:
+        parent:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            mappedBy: nodes
+    OneToMany:
+        nodes:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            inversedBy: parent
+        documents:
+            targetEntity: Erichard\DmsBundle\Entity\Document
+            inversedBy: parent
+

@@ -1,0 +1,7 @@
+erichard_dms_node_list:
+    pattern:  /{node}
+    defaults: { _controller: ErichardDmsBundle:Node:list }
+
+erichard_dms_node_index:
+    pattern:  /
+    defaults: { _controller: ErichardDmsBundle:Node:index }

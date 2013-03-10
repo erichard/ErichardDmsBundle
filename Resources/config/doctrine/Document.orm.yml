@@ -1,0 +1,14 @@
+Erichard\DmsBundle\Entity\Document:
+    type: entity
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        filename:
+            type: string
+    manyToOne:
+        parent:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            mappedBy: documents
+

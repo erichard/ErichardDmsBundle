@@ -1,0 +1,7 @@
+parameters:
+#    erichard_dms.example.class: Erichard\DmsBundle\Example
+
+services:
+#    erichard_dms.example:
+#        class: %erichard_dms.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
