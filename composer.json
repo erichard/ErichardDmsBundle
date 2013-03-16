@@ -1,0 +1,24 @@
+{
+    "name": "erichard/dms-bundle",
+    "description": "A Document Management System for Symfony 2",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-0": { "Erichard\\DmsBundle": "" }
+    },
+    "require": {
+        "symfony/symfony": ">=2.1,<3.0",
+        "braincrafted/bootstrap-bundle": "dev-master"
+    },
+    "require-dev": {
+        "nelmio/alice": "dev-master",
+        "phpspec/phpspec2": "dev-develop",
+        "phpspec/php-diff": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "dev-master"
+    },
+    "minimum-stability": "alpha",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
