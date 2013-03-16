@@ -11,6 +11,7 @@ class Document implements DocumentInterface
     protected $parent;
     protected $filename;
     protected $mimeType;
+    protected $name;
 
     public function __construct(DocumentNodeInterface $parent, $content)
     {
@@ -65,5 +66,22 @@ class Document implements DocumentInterface
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSize()
+    {
+        return filesize($this->filename);
     }
 }

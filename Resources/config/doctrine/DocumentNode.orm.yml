@@ -8,15 +8,21 @@ Erichard\DmsBundle\Entity\DocumentNode:
     fields:
         name:
             type: string
+        slug:
+          type: string
+          length: 128
+          gedmo:
+            slug:
+              fields: [name]
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
-            mappedBy: nodes
-    OneToMany:
+            inversedBy: nodes
+    oneToMany:
         nodes:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
-            inversedBy: parent
+            mappedBy: parent
         documents:
             targetEntity: Erichard\DmsBundle\Entity\Document
-            inversedBy: parent
+            mappedBy: parent
 

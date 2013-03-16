@@ -8,9 +8,17 @@ class DocumentNodeRepository extends EntityRepository
 {
     public function findBySlugWithChildren($slug)
     {
-        return $this->createQuery(
-            'SELECT n, d, nodes FROM Erichard\DmsBundle\Entity\DocumentNode n LEFT JOIN n.nodes nodes'
-        )->getOneOrNullResult();
+        return $this
+            ->createQueryBuilder('n')
+            ->addSelect('nodes','d', 'p')
+            ->leftJoin('n.nodes', 'nodes', 'nodes.id')
+            ->leftJoin('n.documents', 'd', 'd.id')
+            ->leftJoin('n.parent', 'p', 'd.id')
+            ->where('n.slug = :node')
+            ->setParameter('node', $slug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 }
 

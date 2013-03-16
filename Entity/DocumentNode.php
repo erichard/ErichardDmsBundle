@@ -13,6 +13,7 @@ class DocumentNode implements DocumentNodeInterface
     protected $nodes;
     protected $documents;
     protected $name;
+    protected $slug;
 
     public function __construct($name, DocumentNodeInterface $parent = null)
     {
@@ -104,4 +105,17 @@ class DocumentNode implements DocumentNodeInterface
 
         return $this;
     }
+
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
 }
+

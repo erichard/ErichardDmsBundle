@@ -1,16 +1,9 @@
 {% extends 'ErichardDmsBundle::layout.html.twig' %}
 
-{% block body %}
-<div class="row-fluid">
-    <div class="span3">
-        <ul class="nav nav-pills nav-stacked">
-        {% for node in nodes %}
-            <li><a href="{{ path('erichard_dms_node_list', {'node' : node.name})}}">{{ node.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="span9">
+{% block sidebar %}
+  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : nodes} %}
+{% endblock %}
 
-    </div>
-</div>
+{% block workspace %}
+Here a dashboard
 {% endblock %}

@@ -7,5 +7,11 @@ Erichard\DmsBundle\Entity\DocumentNode:
         __construct: ["Public"]
     node_private:
         __construct: ["Private"]
-    node{1..999}:
+    node{1..1000}:
         __construct: [<sentence(2)>, @node*]
+
+Erichard\DmsBundle\Entity\Document:
+    doc{1..10}:
+        __construct: [@node_photo, <sentence(6)>]
+        name: <sentence(2)>
+        filename: <image("fake", 1024, 768)>

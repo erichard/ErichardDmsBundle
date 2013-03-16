@@ -1,7 +1,16 @@
 parameters:
-#    erichard_dms.example.class: Erichard\DmsBundle\Example
+    dms.gallery.items_per_row: 4
+    dms.gallery.image_size: 260x180
+    dms.content.image_size: 190x80
+    dms.list.image_size: 32x32
+    dms.showcase.image_size: 870x400
+
+    dms.storage.path: %kernel.root_dir%/../web/medias
 
 services:
-#    erichard_dms.example:
-#        class: %erichard_dms.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    erichard.twig.container_extension:
+        class: Erichard\DmsBundle\Twig\ContainerExtension
+        arguments:
+            - @service_container
+        tags:
+            - { name: twig.extension }

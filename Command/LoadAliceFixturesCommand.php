@@ -2,33 +2,40 @@
 
 namespace Erichard\DmsBundle\Command;
 
+use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Finder\Finder;
+use Erichard\DmsBundle\Faker\DmsProvider;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
-class LoadAliceFixturesCommand extends ContainerAwareCommand
+class LoadAliceFixturesCommand extends LoadDataFixturesDoctrineCommand
 {
+
     protected function configure()
     {
-        $this
-            ->setName('alice:fixtures:load')
-            ->setDescription('Load data fixtures to your database.')
-            ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
-            ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
-            ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
-            ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
-            ->addOption('locale', null, InputOption::VALUE_REQUIRED, 'The Faker locale to use.', 'fr_FR');
-        ;
+        parent::configure();
+
+        $this->setName('alice:fixtures:load');
+        $this->addOption('locale', null, InputOption::VALUE_REQUIRED, 'The Faker locale to use.', 'fr_FR');
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
         $doctrine = $this->getContainer()->get('doctrine');
-        $em       = $doctrine->getManager($input->getOption('em'));
-        $files    = $input->getOption('fixtures');
+        $em = $doctrine->getManager($input->getOption('em'));
+
+        if ($input->isInteractive() && !$input->getOption('append')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+                return;
+            }
+        }
+
+        $files = $input->getOption('fixtures');
         $fixtures = array();
 
         if ($files) {
@@ -55,21 +62,22 @@ class LoadAliceFixturesCommand extends ContainerAwareCommand
             );
         }
 
-        if ($input->isInteractive() && !$input->getOption('append')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
-                return;
-            }
-        }
-
         if (!$input->getOption('append')) {
             $purger = new ORMPurger($em);
             $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
             $purger->purge();
         }
 
+        sort($fixtures);
+
         \Nelmio\Alice\Fixtures::load($fixtures, $em, array(
-            'locale' => $input->getOption('locale')
+            'locale' => $input->getOption('locale'),
+            'providers' => array(
+                new DmsProvider($this->getContainer())
+            ),
+            'logger' => function($message) use ($output) {
+                $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
+            }
         ));
     }
 }

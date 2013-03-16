@@ -1,0 +1,19 @@
+
+<ul class="media-list">
+  {% for document in documents %}
+  <li class="media">
+    <a class="pull-left" href="#">
+      {% set image = path(
+        'erichard_dms_media_show', {
+          'dimension' : parameter('dms.content.image_size'),
+          'path' : document.filename
+        })
+      %}
+      <img class="media-object" src="{{ image }}" />
+    </a>
+    <div class="media-body">
+      <h4 class="media-heading">{{ document.name }}</h4>
+    </div>
+  </li>
+  {% endfor %}
+</ul>

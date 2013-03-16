@@ -1,16 +1,58 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bootstrap 101 Template</title>
+    <title>GED</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/ericharddms/libs/FontAwesome/css/font-awesome.min.css') }}">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
   </head>
   <body>
-    <div class="container-fluid">
-      {% block body %}{% endblock %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">GED</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
     </div>
+
+    <div class="container">
+
+      <div class="row-fluid">
+        <div class="span3">
+          {% block sidebar %}{% endblock %}
+        </div>
+
+        <div class="span9">
+          <ul class="breadcrumb">
+            <li><a href="{{ path('erichard_dms_node_home') }}"><i class="icon-home"></i></a> <span class="divider">/</span></li>
+            {% block breacrumb %}{% endblock %}
+          </ul>
+          {% block workspace %}{% endblock %}
+        </div>
+      </div>
+
+    </div>
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ asset('js/jquery.js') }}"><\/script>')</script>
     <script src="{{ asset('js/bootstrap.js') }}"></script>
   </body>
 </html>
+

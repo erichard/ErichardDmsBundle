@@ -1,7 +1,13 @@
 erichard_dms_node_list:
-    pattern:  /{node}
+    pattern:  /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:list }
 
-erichard_dms_node_index:
-    pattern:  /
+erichard_dms_node_home:
+    pattern:  /dms
     defaults: { _controller: ErichardDmsBundle:Node:index }
+
+erichard_dms_media_show:
+    pattern:  /image/{dimension}/{path}
+    defaults: { _controller: ErichardDmsBundle:Media:show }
+    requirements:
+        path: .*

@@ -1,0 +1,19 @@
+<ul class="nav nav-tabs nav-stacked">
+  {% for node in nodes %}
+      <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug})}}"><i class="icon-folder-close-alt"></i>{{ node.name }}</a></li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<ul class="nav nav-list">
+  <li class="nav-header">Actions</li>
+  <li><a href="#"><i class="icon-plus"></i>Add folder</a></li>
+  <li><a href="#"><i class="icon-upload-alt"></i>Upload files</a></li>
+  <li><a href="#"><i class="icon-lock"></i>Manage permission</a></li>
+  <li class="nav-header">Display modes</li>
+  <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'showcase'}) }}"><i class="icon-play-circle"></i>Showcase</a></li>
+  <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'gallery'}) }}"><i class="icon-th-large"></i>Gallery</a></li>
+  <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'content'}) }}"><i class="icon-th-list"></i>Content</a></li>
+  <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'table'}) }}"><i class="icon-table"></i>Table</a></li>
+</ul>
