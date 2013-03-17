@@ -20,8 +20,15 @@
 
   {% if loop.index is divisibleby(parameter('dms.gallery.items_per_row')) %}
     </div>
-    <div class="row-fluid">
+    {% if not loop.last %}<div class="row-fluid">{% endif %}
   {% endif %}
 
+  {% if loop.last %}
+    <div class="span{{ spanValue }}">
+    <a href="" class="thumbnail" title="{{ document.name }}">
+        <img src="http://placehold.it/{{ parameter('dms.gallery.image_size') }}&text=Add files" />
+    </a>
+  </div>
+  {% endif %}
 {% endfor %}
 </div>

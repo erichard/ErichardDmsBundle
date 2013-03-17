@@ -2,21 +2,15 @@
 
 namespace Erichard\DmsBundle\Controller;
 
+use Erichard\DmsBundle\Entity\DocumentNode;
+use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class NodeController extends Controller
 {
     public function listAction($node)
     {
-        $documentNode = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findBySlugWithChildren($node)
-        ;
-
-        if (null == $documentNode) {
-            throw $this->createNotFoundException(sprintf('Document not found : %s', $node));
-        }
+        $documentNode = $this->findNodeOr404($node);
 
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
             'node' => $documentNode,
@@ -37,5 +31,70 @@ class NodeController extends Controller
         ));
 
         return $response;
+    }
+
+    public function addAction($node)
+    {
+        $documentNode = $this->findNodeOr404($node);
+
+        $form = $this->createForm(new NodeType());
+
+        return $this->render('ErichardDmsBundle:Node:add.html.twig', array(
+            'node' => $documentNode,
+            'form' => $form->createView()
+        ));
+    }
+
+    public function editAction($node)
+    {
+        $documentNode = $this->findNodeOr404($node);
+
+        $form = $this->createForm(new NodeType(), $documentNode);
+
+        return $this->render('ErichardDmsBundle:Node:edit.html.twig', array(
+            'node' => $documentNode,
+            'form' => $form->createView()
+        ));
+    }
+
+    public function createAction($node)
+    {
+        $parentNode = $this->findNodeOr404($node);
+        $newNode    = new DocumentNode();
+        $parentNode->addNode($newNode);
+        $form       = $this->createForm(new NodeType(), $newNode);
+
+        $form->bind($this->get('request'));
+
+        if (!$form->isValid()) {
+            return $this->render('ErichardDmsBundle:Node:add.html.twig', array(
+                'node' => $parentNode,
+                'form' => $form->createView()
+            ));
+        } else {
+
+            $em = $this->get('doctrine')->getManager();
+            $em->persist($newNode);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('success', 'New node successfully created !');
+
+            return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
+        }
+    }
+
+    protected function findNodeOr404($slug)
+    {
+        $documentNode = $this
+            ->get('doctrine')
+            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
+            ->findBySlugWithChildren($slug)
+        ;
+
+        if (null == $documentNode) {
+            throw $this->createNotFoundException(sprintf('Document not found : %s', $slug));
+        }
+
+        return $documentNode;
     }
 }

@@ -1,0 +1,35 @@
+{% extends 'ErichardDmsBundle::layout.html.twig' %}
+
+{% block sidebar %}
+  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
+{% endblock %}
+
+{% block breacrumb %}
+    {% for parent in node.path %}
+        {% if loop.last %}
+        <li class="active">
+            {{ parent.name }}
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ path('erichard_dms_node_list', {'node' : parent.slug }) }}">{{ parent.name }}</a><span class="divider">/</span>
+        </li>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block workspace %}
+
+    <h1>Add a new folder</h1>
+
+    <form class="form-horizontal" action="{{ path('erichard_dms_create_node', {'node' : node.slug}) }}" method="POST" novalidate>
+
+        {{ form_widget(form, {'form_type': 'horizontal'}) }}
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn">Cancel</button>
+        </div>
+    </form>
+
+{% endblock %}

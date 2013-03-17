@@ -14,3 +14,10 @@ services:
             - @service_container
         tags:
             - { name: twig.extension }
+
+    erichard.doctrine.document_listener:
+        class: Erichard\DmsBundle\Listener\DocumentListener
+        arguments:
+            - %dms.storage.path%
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }

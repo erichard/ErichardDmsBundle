@@ -1,7 +1,3 @@
-erichard_dms_node_list:
-    pattern:  /dms/{node}
-    defaults: { _controller: ErichardDmsBundle:Node:list }
-
 erichard_dms_node_home:
     pattern:  /dms
     defaults: { _controller: ErichardDmsBundle:Node:index }
@@ -11,3 +7,28 @@ erichard_dms_media_show:
     defaults: { _controller: ErichardDmsBundle:Media:show }
     requirements:
         path: .*
+
+erichard_dms_node_list:
+    pattern:  /dms/{node}
+    defaults: { _controller: ErichardDmsBundle:Node:list }
+    methods: [GET]
+
+erichard_dms_add_node:
+    pattern: /dms/{node}/add-folder
+    defaults: { _controller: ErichardDmsBundle:Node:add }
+    methods: [GET]
+
+erichard_dms_create_node:
+    pattern: /dms/{node}
+    defaults: { _controller: ErichardDmsBundle:Node:create }
+    methods: [POST]
+
+erichard_dms_edit_node:
+    pattern: /dms/{node}/edit
+    defaults: { _controller: ErichardDmsBundle:Node:edit }
+    methods: [GET]
+
+erichard_dms_delete_node:
+    pattern: /dms/{node}
+    defaults: { _controller: ErichardDmsBundle:Node:edit }
+    methods: [DELETE]

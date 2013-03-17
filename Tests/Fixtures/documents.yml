@@ -1,14 +1,15 @@
 Erichard\DmsBundle\Entity\DocumentNode:
     node_video:
-        __construct: ["Video"]
+        name: "Video"
     node_photo:
-        __construct: ["Photo"]
+        name: "Photo"
     node_public:
-        __construct: ["Public"]
+        name: "Public"
     node_private:
-        __construct: ["Private"]
+        name: "Private"
     node{1..1000}:
-        __construct: [<sentence(2)>, @node*]
+        name: <sentence(2)>
+        parent: @node*
 
 Erichard\DmsBundle\Entity\Document:
     doc{1..10}:

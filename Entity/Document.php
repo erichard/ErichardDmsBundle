@@ -13,6 +13,8 @@ class Document implements DocumentInterface
     protected $mimeType;
     protected $name;
 
+    protected $file;
+
     public function __construct(DocumentNodeInterface $parent, $content)
     {
         $this->parent   = $parent;
@@ -82,6 +84,11 @@ class Document implements DocumentInterface
 
     public function getSize()
     {
-        return filesize($this->filename);
+        return $this->file->getSize();
+    }
+
+    public function setFile(\SplFileInfo $file)
+    {
+        $this->file = $file;
     }
 }

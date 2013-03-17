@@ -15,10 +15,8 @@ class DocumentNode implements DocumentNodeInterface
     protected $name;
     protected $slug;
 
-    public function __construct($name, DocumentNodeInterface $parent = null)
+    public function __construct()
     {
-        $this->name      = $name;
-        $this->parent    = $parent;
         $this->documents = new ArrayCollection();
         $this->nodes     = new ArrayCollection();
     }
@@ -48,6 +46,7 @@ class DocumentNode implements DocumentNodeInterface
     public function addDocument(DocumentInterface $document)
     {
         if (!$this->documents->contains($document)) {
+            $document->setParent($this);
             $this->documents->add($document);
         }
 
@@ -71,6 +70,7 @@ class DocumentNode implements DocumentNodeInterface
     public function addNode(DocumentNodeInterface $node)
     {
         if (!$this->nodes->contains($node)) {
+            $node->setParent($this);
             $this->nodes->add($node);
         }
 

@@ -20,10 +20,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">GED</a>
+          <a class="brand" href="{{ path("erichard_dms_node_home") }}">GED</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
+              <li class="active"><a href="{{ path("erichard_dms_node_home") }}">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
@@ -33,6 +33,25 @@
     </div>
 
     <div class="container">
+
+      {% if app.session.flashbag.peekAll|length > 0 %}
+        {% for type, messages in app.session.flashbag.all %}
+            {% for message in messages %}
+              <div class="alert{{ type ? ' alert-'~type : '' }} fade in ">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                {{ message|raw }}
+              </div>
+            {% endfor %}
+        {% endfor %}
+      {% endif %}
+
+      {% for flashMessage in app.session.flashbag.all %}
+        <div class="alert">
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          {{ dump(type) }}
+          <strong>Warning!</strong> {{ flashMessage }}
+        </div>
+      {% endfor %}
 
       <div class="row-fluid">
         <div class="span3">

@@ -6,17 +6,19 @@
 
 <hr>
 
+{% if node is defined %}
 <ul class="nav nav-list">
+
   <li class="nav-header">Actions</li>
-  <li><a href="#"><i class="icon-plus"></i>Add folder</a></li>
-  <li><a href="#"><i class="icon-upload-alt"></i>Upload files</a></li>
+  <li><a href="{{ path('erichard_dms_edit_node', {'node' : node.slug}) }}"><i class="icon-edit"></i>Edit folder</a></li>
+  <li><a href="{{ path('erichard_dms_add_node', {'node' : node.slug}) }}"><i class="icon-plus"></i>Add folder</a></li>
+  <li><a href=""><i class="icon-remove"></i>Remove folder</a></li>
   <li><a href="#"><i class="icon-lock"></i>Manage permission</a></li>
 
-  {% if node is defined %}
   <li class="nav-header">Display modes</li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'showcase'}) }}"><i class="icon-play-circle"></i>Showcase</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'gallery'}) }}"><i class="icon-th-large"></i>Gallery</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'content'}) }}"><i class="icon-th-list"></i>Content</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'table'}) }}"><i class="icon-table"></i>Table</a></li>
-  {% endif %}
 </ul>
+{% endif %}
