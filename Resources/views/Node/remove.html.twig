@@ -1,0 +1,46 @@
+{% extends 'ErichardDmsBundle::layout.html.twig' %}
+
+{% block sidebar %}
+  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
+{% endblock %}
+
+{% block breacrumb %}
+    {% for parent in node.path %}
+        {% if loop.last %}
+        <li class="active">
+            {{ parent.name }}
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ path('erichard_dms_node_list', {'node' : parent.slug }) }}">{{ parent.name }}</a><span class="divider">/</span>
+        </li>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block workspace %}
+
+    <h1>Remove folder</h1>
+
+    <form class="form-horizontal" action="{{ path('erichard_dms_delete_node', {'node' : node.slug}) }}" method="POST" novalidate>
+        <input type="hidden" name="_method" value="DELETE">
+        <div class="alert alert-warning alert-block">
+            <h4>Warning !</h4>
+            <p>
+            You are going to delete the <strong>{{ node.name }}</strong> folder and all its files and subfolders.
+            </p>
+            <p>
+            This operation could not be canceled ! Continue anyway ?
+            </p>
+
+            <div class="pull-right">
+                <a href="{{ path('erichard_dms_node_list', {'node' : node.slug}) }}" class="btn btn-primary">No !</a>
+                <button type="submit" class="btn btn-danger">Yes sir !</button>
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </form>
+
+{% endblock %}

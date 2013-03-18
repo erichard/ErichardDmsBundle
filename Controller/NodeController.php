@@ -83,6 +83,28 @@ class NodeController extends Controller
         }
     }
 
+    public function removeAction($node)
+    {
+        $documentNode = $this->findNodeOr404($node);
+
+        return $this->render('ErichardDmsBundle:Node:remove.html.twig', array(
+            'node' => $documentNode,
+        ));
+    }
+
+    public function deleteAction($node)
+    {
+        $documentNode = $this->findNodeOr404($node);
+
+        $em = $this->get('doctrine')->getManager();
+        $em->remove($documentNode);
+        $em->flush();
+
+        $this->get('session')->getFlashBag()->add('success', 'Node successfully removed !');
+
+        return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getParent()->getSlug())));
+    }
+
     protected function findNodeOr404($slug)
     {
         $documentNode = $this
