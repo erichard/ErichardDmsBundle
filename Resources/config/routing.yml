@@ -40,7 +40,7 @@ erichard_dms_delete_node:
     defaults: { _controller: ErichardDmsBundle:Node:delete }
     methods: [DELETE]
 
-erichard_dms_edit_node:
+erichard_dms_update_node:
     pattern: /dms/{node}
-    defaults: { _controller: ErichardDmsBundle:Node:edit }
+    defaults: { _controller: ErichardDmsBundle:Node:update }
     methods: [POST]

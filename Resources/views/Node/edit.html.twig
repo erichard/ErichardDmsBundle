@@ -22,7 +22,7 @@
 
     <h1>Edit folder</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_create_node', {'node' : node.slug}) }}" method="POST" novalidate>
+    <form class="form-horizontal" action="{{ path('erichard_dms_update_node', {'node' : node.slug}) }}" method="POST" novalidate>
 
         {{ form_widget(form, {'form_type': 'horizontal'}) }}
 

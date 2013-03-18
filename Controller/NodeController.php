@@ -67,7 +67,7 @@ class NodeController extends Controller
         $form->bind($this->get('request'));
 
         if (!$form->isValid()) {
-            return $this->render('ErichardDmsBundle:Node:add.html.twig', array(
+            $response = $this->render('ErichardDmsBundle:Node:add.html.twig', array(
                 'node' => $parentNode,
                 'form' => $form->createView()
             ));
@@ -79,17 +79,36 @@ class NodeController extends Controller
 
             $this->get('session')->getFlashBag()->add('success', 'New node successfully created !');
 
-            return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
+            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
         }
+
+        return $response;
     }
 
-    public function removeAction($node)
+    public function updateAction($node)
     {
         $documentNode = $this->findNodeOr404($node);
 
-        return $this->render('ErichardDmsBundle:Node:remove.html.twig', array(
-            'node' => $documentNode,
-        ));
+        $form = $this->createForm(new NodeType(), $documentNode);
+        $form->bind($this->get('request'));
+
+        if (!$form->isValid()) {
+            $response = $this->render('ErichardDmsBundle:Node:edit.html.twig', array(
+                'node' => $documentNode,
+                'form' => $form->createView()
+            ));
+        } else {
+
+            $em = $this->get('doctrine')->getManager();
+            $em->persist($documentNode);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('success', 'Node successfully updated !');
+
+            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
+        }
+
+        return $response;
     }
 
     public function deleteAction($node)
@@ -103,6 +122,15 @@ class NodeController extends Controller
         $this->get('session')->getFlashBag()->add('success', 'Node successfully removed !');
 
         return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getParent()->getSlug())));
+    }
+
+    public function removeAction($node)
+    {
+        $documentNode = $this->findNodeOr404($node);
+
+        return $this->render('ErichardDmsBundle:Node:remove.html.twig', array(
+            'node' => $documentNode,
+        ));
     }
 
     protected function findNodeOr404($slug)
