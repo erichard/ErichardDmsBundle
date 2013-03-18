@@ -8,7 +8,9 @@ erichard_dms_media_show:
     requirements:
         path: .*
 
-
+##
+# Folder Web actions
+#
 erichard_dms_node_list:
     pattern:  /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:list }
@@ -29,7 +31,9 @@ erichard_dms_remove_node:
     defaults: { _controller: ErichardDmsBundle:Node:remove }
     methods: [GET]
 
-
+##
+# Folder POST actions
+#
 erichard_dms_create_node:
     pattern: /dms/{node}/new
     defaults: { _controller: ErichardDmsBundle:Node:create }
@@ -43,4 +47,17 @@ erichard_dms_delete_node:
 erichard_dms_update_node:
     pattern: /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:update }
+    methods: [POST]
+
+##
+# File Web actions
+#
+erichard_dms_add_document:
+    pattern: /dms/{node}/add-document
+    defaults: { _controller: ErichardDmsBundle:Document:add }
+    methods: [GET]
+
+erichard_dms_create_document:
+    pattern: /dms/{node}/add-document
+    defaults: { _controller: ErichardDmsBundle:Document:create }
     methods: [POST]
