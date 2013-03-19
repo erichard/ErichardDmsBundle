@@ -105,7 +105,7 @@ class NodeController extends Controller
 
             $this->get('session')->getFlashBag()->add('success', 'Node successfully updated !');
 
-            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
+            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getSlug())));
         }
 
         return $response;
