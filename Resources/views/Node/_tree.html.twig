@@ -1,3 +1,8 @@
+{% if node is defined %}
+  <h2><i class="icon-folder-open-alt"></i> {{ node.name }}</h2>
+{% else %}
+  <h2>Home</h2>
+{% endif %}
 <ul class="nav nav-tabs nav-stacked">
   {% for node in nodes %}
       <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug})}}"><i class="icon-folder-close-alt"></i>{{ node.name }}</a></li>
@@ -20,5 +25,10 @@
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'gallery'}) }}"><i class="icon-th-large"></i>Gallery</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'content'}) }}"><i class="icon-th-list"></i>Content</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'table'}) }}"><i class="icon-table"></i>Table</a></li>
+</ul>
+{% else %}
+<ul class="nav nav-list">
+  <li class="nav-header">Actions</li>
+  <li><a href="#"><i class="icon-plus"></i>Add root</a></li>
 </ul>
 {% endif %}
