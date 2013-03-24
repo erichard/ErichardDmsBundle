@@ -3,7 +3,7 @@ erichard_dms_node_home:
     defaults: { _controller: ErichardDmsBundle:Node:index }
 
 erichard_dms_media_show:
-    pattern:  /image/{dimension}/{path}
+    pattern:  /image/{dimension}/{path}.png
     defaults: { _controller: ErichardDmsBundle:Media:show }
     requirements:
         path: .*

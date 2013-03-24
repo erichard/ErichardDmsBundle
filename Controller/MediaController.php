@@ -43,7 +43,12 @@ class MediaController extends Controller
             mkdir(dirname($cacheFile), 0777, true);
         }
 
-        $image = $imagine->open($absPath);
+        try {
+            $image = $imagine->open($absPath);
+        } catch(\InvalidArgumentException $e) {
+            $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
+            $image = $imagine->open($picture);
+        }
 
         $image
             ->thumbnail($size, $mode)
