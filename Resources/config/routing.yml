@@ -9,6 +9,15 @@ erichard_dms_media_show:
         path: .*
 
 ##
+# Document POST actions
+#
+erichard_dms_upload_document:
+    pattern: /dms/upload
+    defaults: { _controller: ErichardDmsBundle:Document:upload }
+    methods: [POST]
+
+
+##
 # Folder Web actions
 #
 erichard_dms_node_list:

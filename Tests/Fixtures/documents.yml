@@ -13,6 +13,6 @@ Erichard\DmsBundle\Entity\DocumentNode:
 
 Erichard\DmsBundle\Entity\Document:
     doc{1..10}:
-        __construct: [@node_photo, <sentence(6)>]
+        __construct: [@node_photo]
         name: <sentence(2)>
         filename: <image("fake", 1024, 768)>

@@ -4,6 +4,7 @@ namespace Erichard\DmsBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints;
 
 class DocumentType extends AbstractType
@@ -17,7 +18,15 @@ class DocumentType extends AbstractType
                     new Constraints\NotBlank()
                 )
             ))
+            ->add('filename', 'hidden')
         ;
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Erichard\DmsBundle\Entity\Document'
+        ));
     }
 
     public function getName()

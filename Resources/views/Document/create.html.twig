@@ -20,35 +20,18 @@
 
 {% block workspace %}
 
-    <h1>Step 1 : Add new document</h1>
+    <h1>Step 2 : Create document</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_add_document', {'node' : node.slug}) }}" method="GET" enctype="multipart/form-data" novalidate>
-        <input id="filename" type="hidden" name="filename" value="">
+    <form class="form-horizontal" action="{{ path('erichard_dms_create_document', {'node' : node.slug}) }}" method="POST" novalidate>
+        {{ form_row(form.filename) }}
+        {{ form_row(form.name, {'form_type': 'horizontal'}) }}
 
-        <div class="upload-form text-center" id="uploader">
-            <p>Please select one file</p>
+        {{ form_rest(form) }}
 
-            <!-- Select & Upload Button -->
-            <div>
-                <button class="btn" id="pickfiles" href="#">Select</button>
-                <button class="btn btn-primary" id="uploadfiles" href="#">Upload</button>
-            </div>
-
-            <div id="filelist" class="cb"></div>
-
-            <div id="progressbar"></div>
-
-            <div id="upload-success" class="hide">
-                <div class="alert alert-success">
-                    <strong>Success!</strong>
-                    The file has been succefully uploaded. You can now proceed to next step.
-                </div>
-
-                <button type="submit" class="btn btn-success">Next</a>
-            </div>
-
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn">Cancel</button>
         </div>
-
     </form>
 
 {% endblock %}
@@ -56,9 +39,9 @@
 
 {% block javascripts %}
     {{ parent() }}
-    {% javascripts output="js/uploader.js" filter="?yui_js"
+    {% javascripts output="js/fine-uploader.js" filter="?yui_js"
         'bundles/ericharddms/libs/plupload/js/plupload.full.js'
-        'bundles/ericharddms/libs/jquery.ui.progressbar/jquery.ui.progressbar.min.js'
+        'bundles/ericharddms/libs/jquery.ui.progressbar.min.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -69,10 +52,8 @@
                 runtimes : 'html5,flash',
                 browse_button : 'pickfiles',
                 multi_selection: false,
-                max_file_size : '1000mb',
-                chunk_size : '5mb',
-                replace : true,
                 container : 'uploader',
+                max_file_size : '1gb',
                 url : '{{ path('erichard_dms_upload_document') }}',
                 flash_swf_url : '{{ asset('bundles/ericharddms/libs/plupload/js/plupload.flash.swf') }}',
             });

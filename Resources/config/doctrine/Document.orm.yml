@@ -9,6 +9,8 @@ Erichard\DmsBundle\Entity\Document:
             type: string
         name:
             type: string
+        checksum:
+            type: string
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

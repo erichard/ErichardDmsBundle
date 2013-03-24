@@ -12,13 +12,13 @@ class Document implements DocumentInterface
     protected $filename;
     protected $mimeType;
     protected $name;
+    protected $checksum;
 
     protected $file;
 
-    public function __construct(DocumentNodeInterface $parent, $content)
+    public function __construct(DocumentNodeInterface $parent)
     {
         $this->parent   = $parent;
-        $this->filename = $content;
     }
 
     public function getId()
@@ -90,5 +90,15 @@ class Document implements DocumentInterface
     public function setFile(\SplFileInfo $file)
     {
         $this->file = $file;
+    }
+
+    public function setChecksum($checksum)
+    {
+        $this->checksum = $checksum;
+    }
+
+    public function getChecksum()
+    {
+        return $this->checksum;
     }
 }
