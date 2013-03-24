@@ -12,7 +12,9 @@ class Document implements DocumentInterface
     protected $filename;
     protected $mimeType;
     protected $name;
+    protected $slug;
     protected $checksum;
+
 
     protected $file;
 
@@ -78,6 +80,18 @@ class Document implements DocumentInterface
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
 
         return $this;
     }

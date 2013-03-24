@@ -9,11 +9,11 @@ Erichard\DmsBundle\Entity\DocumentNode:
         name:
             type: string
         slug:
-          type: string
-          length: 128
-          gedmo:
-            slug:
-              fields: [name]
+            type: string
+            length: 128
+            gedmo:
+                slug:
+                    fields: [name]
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

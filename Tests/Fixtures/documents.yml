@@ -16,3 +16,4 @@ Erichard\DmsBundle\Entity\Document:
         __construct: [@node_photo]
         name: <sentence(2)>
         filename: <image("fake", 1024, 768)>
+        checksum: <md5()>

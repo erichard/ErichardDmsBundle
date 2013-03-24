@@ -5,6 +5,7 @@ namespace Erichard\DmsBundle\Controller;
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Form\DocumentType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -52,7 +53,6 @@ class DocumentController extends Controller
             $storageTmpPath = $this->container->getParameter('dms.storage.tmp_path');
             $storagePath    = $this->container->getParameter('dms.storage.path');
 
-
             // Compute new filename
             $checksumFile = $storageTmpPath. '/checksum.php';
             if (!is_readable($checksumFile)) {
@@ -70,13 +70,20 @@ class DocumentController extends Controller
 
             $filesystem = $this->get('filesystem');
 
+            $absFilename = $storagePath. '/' .$filename;
+
             // move file
-            if (!$filesystem->exists(dirname($storagePath. '/' .$filename))) {
-                $filesystem->mkdir(dirname($storagePath. '/' .$filename));
+            if (!$filesystem->exists(dirname($absFilename))) {
+                $filesystem->mkdir(dirname($absFilename));
             }
 
-            $filesystem->rename($md5sums[$newNode->getFilename()]['file'], $storagePath. '/' .$filename);
+            if ($filesystem->exists($absFilename)) {
+                $filesystem->remove($absFilename);
+            }
 
+            $filesystem->rename($md5sums[$newNode->getFilename()]['file'], $absFilename);
+
+            $newNode->setChecksum($md5);
             $newNode->setFilename($filename);
 
             $em = $this->get('doctrine')->getManager();
