@@ -21,7 +21,7 @@
     "require": {
         "symfony/symfony": ">=2.1,<3.0",
         "braincrafted/bootstrap-bundle": "dev-master",
-        "twitter/bootstrap": "2.3.*",
+        "twitter/bootstrap": ">=2.2,<3.0",
         "jquery/jquery": "1.9.*",
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "*",
