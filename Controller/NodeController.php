@@ -138,7 +138,7 @@ class NodeController extends Controller
         $documentNode = $this
             ->get('doctrine')
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findBySlugWithChildren($slug)
+            ->findOneBySlugWithChildren($slug)
         ;
 
         if (null == $documentNode) {
