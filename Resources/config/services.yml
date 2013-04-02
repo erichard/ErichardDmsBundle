@@ -17,6 +17,13 @@ services:
         tags:
             - { name: twig.extension }
 
+    erichard.twig.dms_extension:
+        class: Erichard\DmsBundle\Twig\DmsExtension
+        arguments:
+            - @doctrine
+        tags:
+            - { name: twig.extension }
+
     erichard.doctrine.document_listener:
         class: Erichard\DmsBundle\Listener\DocumentListener
         arguments:

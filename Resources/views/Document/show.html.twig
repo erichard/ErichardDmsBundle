@@ -1,23 +1,5 @@
 {% extends 'ErichardDmsBundle::layout.html.twig' %}
 
-{% block sidebar %}
-  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
-{% endblock %}
-
-{% block breacrumb %}
-    {% for parent in node.path %}
-        {% if loop.last %}
-        <li class="active">
-            {{ parent.name }}
-        </li>
-        {% else %}
-        <li>
-            <a href="{{ path('erichard_dms_node_list', {'node' : parent.slug }) }}">{{ parent.name }}</a><span class="divider">/</span>
-        </li>
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
 {% block workspace %}
 
     <h1>{{ document.name}}</h1>
