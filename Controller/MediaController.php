@@ -34,7 +34,10 @@ class MediaController extends Controller
         $absPath = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $path;
 
         if (!$absPath = realpath($absPath)) {
-            throw $this->createNotFoundException();
+            $absPath = $this->container->getParameter('dms.storage.tmp_path') . DIRECTORY_SEPARATOR . $path;
+            if (!$absPath = realpath($absPath)) {
+                throw $this->createNotFoundException();
+            }
         }
 
         $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri('SCRIPT_NAME');

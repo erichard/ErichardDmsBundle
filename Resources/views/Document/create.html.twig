@@ -23,11 +23,18 @@
     <h1>Step 2 : Create document</h1>
 
     <form class="form-horizontal" action="{{ path('erichard_dms_create_document', {'node' : node.slug}) }}" method="POST" novalidate>
+
         {{ form_row(form.filename) }}
-        {{ form_row(form.name, {'form_type': 'horizontal'}) }}
 
+        <div class="row-fluid">
+            <div class="span8">
+                <img class="img-polaroid" src="{{ path('erichard_dms_media_show', {'dimension' : parameter('dms.show.image_size'), 'path' : form.filename.vars.data}) }}" alt="">
+            </div>
+            <div class="span4">
+                {{ form_row(form.name, {'form_type': 'horizontal'}) }}
+            </div>
+        </div>
         {{ form_rest(form) }}
-
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save changes</button>
           <button type="button" class="btn">Cancel</button>
