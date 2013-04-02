@@ -47,8 +47,11 @@ class MediaController extends Controller
         }
 
         try {
-            $image = $imagine->open($absPath);
-        } catch(\InvalidArgumentException $e) {
+            $imagick = new \Imagick();
+            $imagick->setResolution(72, 72);
+            $imagick->readImage($absPath);
+            $image = new \Imagine\Imagick\Image($imagick);
+        } catch(\ImagickException $e) {
             $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
             $image = $imagine->open($picture);
         }
