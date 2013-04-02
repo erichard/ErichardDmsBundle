@@ -70,3 +70,8 @@ erichard_dms_create_document:
     pattern: /dms/{node}/add-document
     defaults: { _controller: ErichardDmsBundle:Document:create }
     methods: [POST]
+
+erichard_dms_show_document:
+    pattern: /dms/{node}/{document}
+    defaults: { _controller: ErichardDmsBundle:Document:show }
+    methods: [GET]

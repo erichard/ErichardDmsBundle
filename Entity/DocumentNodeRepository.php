@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 
 class DocumentNodeRepository extends EntityRepository
 {
-    public function findBySlugWithChildren($slug)
+    public function findOneBySlugWithChildren($slug)
     {
         return $this
             ->createQueryBuilder('n')

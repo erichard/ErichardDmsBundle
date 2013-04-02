@@ -303,12 +303,38 @@ class DocumentController extends Controller
         return $response;
     }
 
+    public function showAction($node, $document)
+    {
+        $documentNode = $this->findNodeOr404($node);
+        $document = $this->findDocumentOr404($document);
+
+        return $this->render('ErichardDmsBundle:Document:show.html.twig', array(
+            'node'     => $documentNode,
+            'document' => $document,
+        ));
+    }
+
     protected function findNodeOr404($slug)
     {
         $documentNode = $this
             ->get('doctrine')
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findBySlugWithChildren($slug)
+            ->findOneBySlugWithChildren($slug)
+        ;
+
+        if (null == $documentNode) {
+            throw $this->createNotFoundException(sprintf('Node not found : %s', $slug));
+        }
+
+        return $documentNode;
+    }
+
+    protected function findDocumentOr404($slug)
+    {
+        $documentNode = $this
+            ->get('doctrine')
+            ->getRepository('Erichard\DmsBundle\Entity\Document')
+            ->findOneBySlug($slug)
         ;
 
         if (null == $documentNode) {

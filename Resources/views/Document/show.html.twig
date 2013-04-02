@@ -1,0 +1,58 @@
+{% extends 'ErichardDmsBundle::layout.html.twig' %}
+
+{% block sidebar %}
+  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
+{% endblock %}
+
+{% block breacrumb %}
+    {% for parent in node.path %}
+        {% if loop.last %}
+        <li class="active">
+            {{ parent.name }}
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ path('erichard_dms_node_list', {'node' : parent.slug }) }}">{{ parent.name }}</a><span class="divider">/</span>
+        </li>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block workspace %}
+
+    <h1>{{ document.name}}</h1>
+
+    <div class="row-fluid">
+        <div class="span8">
+            {% set image = path(
+            'erichard_dms_media_show', {
+              'dimension' : parameter('dms.show.image_size'),
+              'path' : document.filename
+            })
+            %}
+            <img class="img-polaroid" src="{{ image }}" alt="{{ document.name }}">
+        </div>
+
+        <div class="span4">
+            <div class="well">
+
+            <ul class="nav nav-list">
+                <li class="nav-header">Actions</li>
+                <li><a href=""><i class="icon-download-alt"></i>Download</a></li>
+                <li><a href=""><i class="icon-edit"></i>Edit</a></li>
+                <li><a href=""><i class="icon-trash"></i>Delete</a></li>
+                <li class="nav-header">Partage</li>
+                <li><a href=""><i class="icon-envelope"></i>Email</a></li>
+                <li><a href=""><i class="icon-external-link"></i>Link</a></li>
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <h3>Description</h3>
+    <div class="well">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus incidunt fugiat provident quidem at vel perferendis exercitationem possimus assumenda saepe. Repellendus odit ea odio explicabo nesciunt perferendis ex alias nisi?
+    </div>
+
+
+{% endblock %}
