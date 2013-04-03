@@ -1,15 +1,11 @@
 Install & Configure
 ===================
 
-Installation
-------------
+## Installation
 
 This is installable via [Composer](https://getcomposer.org/) as [erichard/dms-bundle](https://packagist.org/packages/erichard/dms-bundle).
 
-Configuration
--------------
-
-Add the bundle to your AppKernel class.
+## Add the bundle to your AppKernel class.
 
 ```
 // app/AppKernel.php
@@ -22,3 +18,12 @@ public function registerBundles()
     );
 }
 ```
+
+## Add the routing
+
+```
+# app/config/routing.yml
+erichard_dms:
+    resource: @ErichardDmsBundle/Resources/config/routing.yml
+```
+
