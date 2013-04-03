@@ -8,13 +8,13 @@
         "twitter/bootstrap": ">=2.2,<3.0",
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "*",
-        "stof/doctrine-extensions-bundle": "dev-master"
+        "stof/doctrine-extensions-bundle": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "dev-master"
     },
     "require-dev": {
         "nelmio/alice": "dev-master",
         "phpspec/phpspec2": "dev-develop",
         "phpspec/php-diff": "dev-master",
-        "doctrine/doctrine-fixtures-bundle": "dev-master"
     },
     "autoload": {
         "psr-0": { "Erichard\\DmsBundle": "" }
