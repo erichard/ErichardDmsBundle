@@ -1,16 +1,10 @@
 ErichardDmsBundle
 =================
 
-Installation
-------------
+Installation & Configuration
+----------------------------
 
-This is installable via [Composer](https://getcomposer.org/) as [erichard/dms-bundle](https://packagist.org/packages/erichard/dms-bundle).
-
-Configuration
--------------
-
-Coming soon !
-
+See [INSTALL](INSTALL.md).
 
 Roadmap for 1.0
 ---------------

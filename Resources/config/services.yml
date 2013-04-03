@@ -1,13 +1,6 @@
 parameters:
-    dms.gallery.items_per_row: 4
-    dms.gallery.image_size: 260x180
-    dms.content.image_size: 190x80
-    dms.list.image_size: 32x32
-    dms.showcase.image_size: 870x400
-    dms.show.image_size: 576x400
 
     dms.storage.path: %kernel.root_dir%/../web/medias
-    dms.storage.tmp_path: %kernel.root_dir%/tmp
 
 services:
     erichard.twig.container_extension:

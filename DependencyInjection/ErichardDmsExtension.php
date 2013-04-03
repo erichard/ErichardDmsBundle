@@ -24,5 +24,16 @@ class ErichardDmsExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        foreach ($config as $name => $value) {
+
+            if (is_array($value)) {
+                foreach ($value as $subName => $subValue) {
+                    $container->setParameter('dms.'.$name.'.'.$subName, $subValue);
+                }
+            } else {
+                $container->setParameter('dms.'.$name, $value);
+            }
+        }
     }
 }
