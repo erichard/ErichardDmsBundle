@@ -14,7 +14,7 @@
     "require-dev": {
         "nelmio/alice": "dev-master",
         "phpspec/phpspec2": "dev-develop",
-        "phpspec/php-diff": "dev-master",
+        "phpspec/php-diff": "dev-master"
     },
     "autoload": {
         "psr-0": { "Erichard\\DmsBundle": "" }
