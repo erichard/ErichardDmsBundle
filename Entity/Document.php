@@ -145,7 +145,7 @@ class Document implements DocumentInterface
             throw new \RuntimeException('You must persist the document before calling getComputedFilename().');
         }
 
-        $reverseId = str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $reverseId = str_pad($this->id, 8, '0', STR_PAD_LEFT);
         $path = '';
 
         for ($i = 0; $i < 6; $i+=2 ) {
