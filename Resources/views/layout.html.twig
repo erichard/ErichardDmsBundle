@@ -11,6 +11,33 @@
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+
+      /* Tablet to desktop
+      ------------------------- */
+      @media (min-width: 768px) and (max-width: 979px) {
+        /* Remove any padding from the body */
+        body {
+          padding-top: 0;
+        }
+      }
+
+      /* Tablet
+      ------------------------- */
+      @media (max-width: 767px) {
+        /* Remove any padding from the body */
+        body {
+          padding-top: 0;
+        }
+      }
+
+      /* Landscape phones
+      ------------------------- */
+      @media (max-width: 480px) {
+        /* Remove padding above jumbotron */
+        body {
+          padding-top: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -55,7 +82,7 @@
         </div>
       {% endfor %}
 
-      <div class="row-fluid">
+      <div class="row">
         <div class="span3">
           {% block sidebar %}
             {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
