@@ -19,6 +19,10 @@ class DocumentType extends AbstractType
                 )
             ))
             ->add('filename', 'hidden')
+            ->add('originalName', 'hidden')
+            ->add('token', 'hidden', array(
+                'mapped' => false
+            ))
         ;
     }
 

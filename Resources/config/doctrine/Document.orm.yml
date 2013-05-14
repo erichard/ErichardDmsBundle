@@ -15,10 +15,15 @@ Erichard\DmsBundle\Entity\Document:
             gedmo:
                 slug:
                     fields: [name]
-        checksum:
+        type:
             type: string
+        mimeType:
+            type: string
+            nullable: true
     manyToOne:
-        parent:
+        node:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
             inversedBy: documents
+            joinColumn:
+                onDelete: CASCADE
 

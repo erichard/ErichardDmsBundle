@@ -26,13 +26,13 @@ class DmsProviderTest extends \PHPUnit_Framework_TestCase
     public function testImage()
     {
         $container = m::mock('Symfony\Component\DependencyInjection\Container');
-        $container->shouldReceive('getParameter')->with('media_path')->andReturn('/tmp');
+        $container->shouldReceive('getParameter')->with('dms.storage.path')->andReturn(sys_get_temp_dir().'/');
         $provider  = new DmsProvider($container);
         $imagePath = $provider->image('dummy', 200, 300);
 
-        $this->assertTrue(is_file($imagePath), 'Image not downloaded from provider');
+        $this->assertTrue(is_file(sys_get_temp_dir().'/'.$imagePath), 'Image not downloaded from provider');
         $this->assertRegExp('/200x300/', $imagePath, 'Wrong filename');
 
-        unlink($imagePath);
+        unlink(sys_get_temp_dir().'/'.$imagePath);
     }
 }

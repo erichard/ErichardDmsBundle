@@ -21,12 +21,12 @@ class DocumentController extends Controller
                 'node' => $documentNode
             ));
         } else {
-
             $document = new Document($documentNode);
             $document->setName($this->get('templating.helper.form')->humanize($filename));
-            $document->setFilename($filename);
+            $document->setOriginalName($filename);
+            $document->setFilename($request->query->get('token'));
 
-            $form  = $this->createForm(new DocumentType(), $document);
+            $form = $this->createForm(new DocumentType(), $document);
 
             return $this->render('ErichardDmsBundle:Document:create.html.twig', array(
                 'node' => $documentNode,
@@ -49,45 +49,29 @@ class DocumentController extends Controller
                 'form' => $form->createView()
             ));
         } else {
-            $newNode        = $form->getData();
+            $document = $form->getData();
+
+            $em = $this->get('doctrine')->getManager();
+            $em->persist($document);
+            $em->flush();
+
             $storageTmpPath = $this->container->getParameter('dms.storage.tmp_path');
             $storagePath    = $this->container->getParameter('dms.storage.path');
 
-            // Compute new filename
-            $checksumFile = $storageTmpPath. '/checksum.php';
-            if (!is_readable($checksumFile)) {
-                throw new \RuntimeException('Unable to read the checksum.php file.');
-            }
-
-            $md5sums = require_once $checksumFile;
-            $md5 = $md5sums[$newNode->getFilename()]['checksum'];
-
-            $filename = '';
-            for ($i = 0; $i <= 3; $i++) {
-                $filename .= substr($md5, $i*2, 2).'/';
-            }
-            $filename .= $md5;
-
             $filesystem = $this->get('filesystem');
 
-            $absFilename = $storagePath. '/' .$filename;
+            $absTmpFilename = $storageTmpPath . '/' . $document->getFilename();
+            $absFilename = $storagePath . '/' . $document->getComputedFilename();
 
             // move file
             if (!$filesystem->exists(dirname($absFilename))) {
                 $filesystem->mkdir(dirname($absFilename));
             }
 
-            if ($filesystem->exists($absFilename)) {
-                $filesystem->remove($absFilename);
-            }
+            $filesystem->rename($absTmpFilename, $absFilename);
+            $document->setFilename($document->getComputedFilename());
 
-            $filesystem->rename($md5sums[$newNode->getFilename()]['file'], $absFilename);
-
-            $newNode->setChecksum($md5);
-            $newNode->setFilename($filename);
-
-            $em = $this->get('doctrine')->getManager();
-            $em->persist($newNode);
+            $em->persist($document);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('success', 'New document successfully created !');
@@ -275,21 +259,6 @@ class DocumentController extends Controller
 
         // Check if file has been uploaded
         if (!$chunks || $chunk == $chunks - 1) {
-            $md5 = md5_file("{$filePath}.part");
-
-            if (is_file($targetDir. '/checksum.php')) {
-                $md5sum = require_once $targetDir. '/checksum.php';
-            } else {
-                $md5sum = array();
-            }
-
-            $md5sum[$origFileName] = array(
-                'checksum' => $md5,
-                'file' => $filePath
-            );
-
-            file_put_contents($targetDir. '/checksum.php', "<?php\n\nreturn " . var_export($md5sum, true) . ';');
-
             // Strip the temp .part suffix off
             rename("{$filePath}.part", $filePath);
         }

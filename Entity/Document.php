@@ -8,24 +8,31 @@ use Erichard\DmsBundle\DocumentNodeInterface;
 class Document implements DocumentInterface
 {
     protected $id;
-    protected $parent;
-    protected $filename;
-    protected $mimeType;
+    protected $node;
     protected $name;
+    protected $filename;
+    protected $originalName;
+    protected $mimeType;
+    protected $type;
     protected $slug;
-    protected $checksum;
-
-
     protected $file;
 
-    public function __construct(DocumentNodeInterface $parent)
+    public function __construct(DocumentNodeInterface $node)
     {
-        $this->parent   = $parent;
+        $this->node = $node;
+        $this->type = DocumentInterface::TYPE_FILE;
     }
 
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getContent()
@@ -37,15 +44,15 @@ class Document implements DocumentInterface
         return file_get_contents($this->filename);
     }
 
-    public function getParent()
+    public function getNode()
     {
-        return $this->parent;
+        return $this->node;
     }
 
     public function getPath()
     {
-        $path = $this->parent->getPath();
-        $path->add($this->parent);
+        $path = $this->node->getPath();
+        $path->add($this->node);
 
         return $path;
     }
@@ -104,15 +111,52 @@ class Document implements DocumentInterface
     public function setFile(\SplFileInfo $file)
     {
         $this->file = $file;
+
+        return $this;
     }
 
-    public function setChecksum($checksum)
+    public function setType($type)
     {
-        $this->checksum = $checksum;
+        $this->type = $type;
+
+        return $this;
     }
 
-    public function getChecksum()
+    public function getType()
     {
-        return $this->checksum;
+        return $this->type;
+    }
+
+    public function setOriginalName($originalName)
+    {
+        $this->originalName = $originalName;
+
+        return $this;
+    }
+
+    public function getOriginalName()
+    {
+        return $this->originalName;
+    }
+
+    public function getComputedFilename()
+    {
+        if (null === $this->id) {
+            throw new \RuntimeException('You must persist the document before calling getComputedFilename().');
+        }
+
+        $reverseId = str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $path = '';
+
+        for ($i = 0; $i < 6; $i+=2 ) {
+            $path .= substr($reverseId, $i, 2) . DIRECTORY_SEPARATOR;
+        }
+
+        $extension = pathinfo($this->originalName,PATHINFO_EXTENSION);
+        $extension = empty($extension)? 'noext' : $extension;
+
+        $path .= $reverseId . '.' . $extension;
+
+        return $path;
     }
 }

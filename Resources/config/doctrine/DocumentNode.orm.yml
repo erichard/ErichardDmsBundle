@@ -18,11 +18,13 @@ Erichard\DmsBundle\Entity\DocumentNode:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
             inversedBy: nodes
+            joinColumn:
+                onDelete: CASCADE
     oneToMany:
         nodes:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
             mappedBy: parent
         documents:
             targetEntity: Erichard\DmsBundle\Entity\Document
-            mappedBy: parent
+            mappedBy: node
 
