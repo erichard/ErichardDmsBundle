@@ -7,7 +7,7 @@ Erichard\DmsBundle\Entity\DocumentNode:
         name: "Public"
     node_private:
         name: "Private"
-    node{1..1000}:
+    node{1..100}:
         name: <sentence(2)>
         parent: @node*
 

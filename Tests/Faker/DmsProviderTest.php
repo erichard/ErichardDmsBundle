@@ -18,7 +18,7 @@ class DmsProviderTest extends \PHPUnit_Framework_TestCase
     public function testImageLink()
     {
         $this->assertEquals(
-            'http://placekitten.com/250/350',
+            'http://lorempixel.com/250/350',
             DmsProvider::imageLink(250, 350)
         );
     }

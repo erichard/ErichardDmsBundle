@@ -41,15 +41,15 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         return array(
             array(
                 $document1,
-                '00/00/01/000001.jpg'
+                '00/00/00/00000001.jpg'
             ),
             array(
                 $document2,
-                '00/12/34/001234.doc'
+                '00/00/12/00001234.doc'
             ),
             array(
                 $document3,
-                '12/34/00/123400.noext'
+                '00/12/34/00123400.noext'
             ),
         );
     }
