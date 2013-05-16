@@ -321,6 +321,6 @@ class DocumentController extends Controller
             throw new AccessDeniedHttpException('You are not allowed to view this document.');
         }
 
-        return $documentNode;
+        return $document;
     }
 }
