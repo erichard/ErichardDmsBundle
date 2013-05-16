@@ -8,12 +8,14 @@
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "*",
         "stof/doctrine-extensions-bundle": "dev-master",
-        "doctrine/doctrine-fixtures-bundle": "*"
+        "doctrine/doctrine-fixtures-bundle": "dev-master",
+        "doctrine/data-fixtures": "dev-master"
     },
     "require-dev": {
         "nelmio/alice": "dev-master",
-        "phpspec/phpspec2": "dev-develop",
-        "phpspec/php-diff": "dev-master"
+        "phpunit/phpunit": "3.7.*",
+        "mockery/mockery": "dev-master",
+        "nelmio/alice": "*"
     },
     "autoload": {
         "psr-0": { "Erichard\\DmsBundle": "" }
