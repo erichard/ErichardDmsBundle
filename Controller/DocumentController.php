@@ -5,7 +5,6 @@ namespace Erichard\DmsBundle\Controller;
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Form\DocumentType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -168,7 +167,6 @@ class DocumentController extends Controller
             }
         }
 
-
         // Look for the content type header
         $contentType = $request->headers->get('CONTENT_TYPE', $request->headers->get('HTTP_CONTENT_TYPE'));
 
@@ -193,6 +191,7 @@ class DocumentController extends Controller
                                 'message' => "Failed to open input stream.",
                             )
                         ));
+
                         return $response;
                     }
                     @fclose($in);
@@ -207,6 +206,7 @@ class DocumentController extends Controller
                             'message' => "Failed to open output stream.",
                         )
                     ));
+
                     return $response;
                 }
             } else {
@@ -218,6 +218,7 @@ class DocumentController extends Controller
                         'message' => "Failed to move uploaded file.",
                     )
                 ));
+
                 return $response;
             }
         } else {
@@ -239,6 +240,7 @@ class DocumentController extends Controller
                             'message' => "Failed to open input stream.",
                         )
                     ));
+
                     return $response;
                 }
 
@@ -253,6 +255,7 @@ class DocumentController extends Controller
                         'message' => "Failed to open output stream.",
                     )
                 ));
+
                 return $response;
             }
         }

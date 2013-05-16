@@ -5,6 +5,7 @@
 {% endif %}
 <ul class="nav nav-tabs nav-stacked">
   {% for node in nodes %}
+
       <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug})}}"><i class="icon-folder-close-alt"></i>{{ node.name }}</a></li>
   {% endfor %}
 </ul>
