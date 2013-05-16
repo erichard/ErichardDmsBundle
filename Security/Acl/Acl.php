@@ -15,6 +15,8 @@ class Acl
     private $manager;
     private $options;
 
+    private $localCache = array();
+
     public function __construct(RoleHierarchyInterface $roleHierarchy, ObjectManager $manager, array $options = array())
     {
         $this->roleHierarchy = $roleHierarchy;
@@ -42,28 +44,37 @@ class Acl
 
     protected function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
     {
-        $authorizations = $this
-            ->manager
-            ->getRepository(get_class($node))
-            ->getNodeAuthorizationsByRoles($node->getId(), $roles)
-        ;
+        if (!isset($this->localCache['node'][$node->getId()])) {
 
-        return $this->mergeMask($authorizations);
+            $authorizations = $this
+                ->manager
+                ->getRepository(get_class($node))
+                ->getNodeAuthorizationsByRoles($node->getId(), $roles)
+            ;
+
+            $this->localCache['node'][$node->getId()] = $this->mergeMask($authorizations);
+        }
+
+        return $this->localCache['node'][$node->getId()];
     }
 
     protected function getDocumentAuthorizationMask(DocumentInterface $document, array $roles)
     {
-        $nodeMask = $this
-            ->getDocumentNodeAuthorizationMask($document->getNode(), $roles)
-        ;
+        if (!isset($this->localCache['document'][$document->getId()])) {
+            $nodeMask = $this
+                ->getDocumentNodeAuthorizationMask($document->getNode(), $roles)
+            ;
 
-        $authorizations = $this
-            ->manager
-            ->getRepository(get_class($document))
-            ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
-        ;
+            $authorizations = $this
+                ->manager
+                ->getRepository(get_class($document))
+                ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
+            ;
 
-        return $this->mergeMask($authorizations, $nodeMask);
+            $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
+        }
+
+        return $this->localCache['document'][$document->getId()];
     }
 
     public function mergeMask(array $authorizations, $startingMask = 0)
