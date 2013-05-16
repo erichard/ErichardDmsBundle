@@ -1,6 +1,10 @@
 Erichard\DmsBundle\Entity\DocumentNode:
     type: entity
     repositoryClass: Erichard\DmsBundle\Entity\DocumentNodeRepository
+    gedmo:
+        tree:
+            type: closure
+            closure: Erichard\DmsBundle\Entity\DocumentNodeClosure
     id:
         id:
             type: integer
@@ -14,12 +18,19 @@ Erichard\DmsBundle\Entity\DocumentNode:
             gedmo:
                 slug:
                     fields: [name]
+        depth:
+            type: integer
+            nullable: true
+            gedmo:
+                - treeLevel
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
             inversedBy: nodes
             joinColumn:
                 onDelete: CASCADE
+            gedmo:
+                - treeParent
     oneToMany:
         nodes:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

@@ -1,0 +1,24 @@
+Erichard\DmsBundle\Entity\DocumentAuthorization:
+    type: entity
+    readonly: true
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    uniqueConstraints:
+        document_authorization_idx:
+            columns: [ role, document_id ]
+    fields:
+        role:
+            type: string
+            length: 50
+        allow:
+            type: integer
+        deny:
+            type: integer
+    manyToOne:
+        document:
+            targetEntity: Erichard\DmsBundle\Entity\Document
+            joinColumn:
+                onDelete: CASCADE
+

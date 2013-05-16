@@ -1,5 +1,4 @@
 parameters:
-
     dms.storage.path: %kernel.root_dir%/../web/medias
 
 services:
@@ -16,3 +15,38 @@ services:
             - @doctrine
         tags:
             - { name: twig.extension }
+
+    erichard.security.access.hierarchical_voter:
+        class:      Erichard\DmsBundle\Security\Voter\HierarchicalAclVoter
+        public:     false
+        arguments:
+            - @erichard.security.access.permission_map
+            - @erichard.security.access.control_list
+        tags:
+            - { name: security.voter }
+
+    erichard.security.access.permission_map:
+        class: Erichard\DmsBundle\Security\Acl\Permission\DmsPermissionMap
+
+    erichard.security.access.control_list:
+        class: Erichard\DmsBundle\Security\Acl\Acl
+        arguments:
+            - @security.role_hierarchy
+            - @doctrine.orm.entity_manager
+            - { cache_dir: %kernel.cache_dir% }
+
+
+    erichard.cache.permission_warmer:
+        class: Erichard\DmsBundle\Cache\PermissionWarmer
+        arguments:
+            - @erichard.security.role_provider
+            - @doctrine.orm.entity_manager
+        tags:
+            - { name: kernel.cache_warmer }
+
+    erichard.security.role_provider:
+        class: Erichard\DmsBundle\Security\RoleProvider
+        arguments:
+            - @service_container
+
+

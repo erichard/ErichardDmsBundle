@@ -17,3 +17,26 @@ Erichard\DmsBundle\Entity\Document:
         name: <sentence(2)>
         filename: <image("fake", 1024, 768)>
         type: file
+
+Erichard\DmsBundle\Entity\DocumentNodeAuthorization:
+    authorization_photo:
+        node: @node_photo
+        role: ROLE_DMS
+        allow: 273
+        deny: 0
+    authorization_video:
+        node: @node_video
+        role: ROLE_DMS
+        allow: 273
+        deny: 0
+    authorization_public:
+        node: @node_public
+        role: ROLE_DMS
+        allow: 273
+        deny: 0
+    authorization_private:
+        node: @node_private
+        role: ROLE_DMS
+        allow: 273
+        deny: 0
+

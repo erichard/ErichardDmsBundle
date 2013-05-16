@@ -1,5 +1,6 @@
 Erichard\DmsBundle\Entity\Document:
     type: entity
+    repositoryClass: Erichard\DmsBundle\Entity\DocumentRepository
     id:
         id:
             type: integer

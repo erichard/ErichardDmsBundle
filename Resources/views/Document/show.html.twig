@@ -20,9 +20,15 @@
 
             <ul class="nav nav-list">
                 <li class="nav-header">Actions</li>
+                {% if is_granted('DOCUMENT_DOWNLOAD', document) %}
                 <li><a href=""><i class="icon-download-alt"></i>Download</a></li>
+                {% endif %}
+                {% if is_granted('DOCUMENT_EDIT', document) %}
                 <li><a href=""><i class="icon-edit"></i>Edit</a></li>
+                {% endif %}
+                {% if is_granted('DOCUMENT_DELETE', document) %}
                 <li><a href=""><i class="icon-trash"></i>Delete</a></li>
+                {% endif %}
                 <li class="nav-header">Partage</li>
                 <li><a href=""><i class="icon-envelope"></i>Email</a></li>
                 <li><a href=""><i class="icon-external-link"></i>Link</a></li>

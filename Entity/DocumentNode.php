@@ -14,6 +14,7 @@ class DocumentNode implements DocumentNodeInterface
     protected $documents;
     protected $name;
     protected $slug;
+    protected $depth;
 
     public function __construct()
     {
@@ -21,9 +22,16 @@ class DocumentNode implements DocumentNodeInterface
         $this->nodes     = new ArrayCollection();
     }
 
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getId()
     {
-        return $this->getId();
+        return $this->id;
     }
 
     public function getParent()
@@ -117,5 +125,16 @@ class DocumentNode implements DocumentNodeInterface
 
         return $this;
     }
-}
 
+    public function setDepth($depth)
+    {
+        $this->depth = $depth;
+
+        return $this;
+    }
+
+    public function getDepth()
+    {
+        return $this->depth;
+    }
+}

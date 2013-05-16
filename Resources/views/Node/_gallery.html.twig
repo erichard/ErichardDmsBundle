@@ -25,9 +25,12 @@
 
   {% if loop.last %}
     <div class="span{{ spanValue }}">
+    {% if is_granted('DOCUMENT_ADD', node) %}
     <a href="{{ path('erichard_dms_add_document', { 'node': node.slug }) }}" class="thumbnail" title="{{ document.name }}">
         <img src="http://placehold.it/{{ parameter('dms.gallery.image_size') }}&text=Add documents" />
     </a>
+    {% endif %}
+
   </div>
   {% endif %}
 {% endfor %}

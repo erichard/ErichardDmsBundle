@@ -26,6 +26,12 @@ class NodeController extends Controller
             ->findByParent(null)
         ;
 
+        $securityContext = $this->get('security.context');
+
+        $nodes = array_filter($nodes, function($node) use ($securityContext) {
+            return $securityContext->isGranted('VIEW', $node);
+        });
+
         $response = $this->render('ErichardDmsBundle:Node:index.html.twig', array(
             'nodes' => $nodes
         ));
@@ -143,6 +149,22 @@ class NodeController extends Controller
 
         if (null == $documentNode) {
             throw $this->createNotFoundException(sprintf('Document not found : %s', $slug));
+        }
+
+        if (!$this->get('security.context')->isGranted('VIEW', $documentNode)) {
+            throw new AccessDeniedHttpException('You are not allowed to view this node.');
+        }
+
+        foreach ($documentNode->getNodes() as $node) {
+            if (!$this->get('security.context')->isGranted('VIEW', $node)) {
+                $documentNode->removeNode($node);
+            }
+        }
+
+        foreach ($documentNode->getDocuments() as $document) {
+            if (!$this->get('security.context')->isGranted('VIEW', $document)) {
+                $documentNode->removeDocument($document);
+            }
         }
 
         return $documentNode;

@@ -295,19 +295,27 @@ class DocumentController extends Controller
             throw $this->createNotFoundException(sprintf('Node not found : %s', $slug));
         }
 
+        if (!$this->get('security.context')->isGranted('VIEW', $documentNode)) {
+            throw new AccessDeniedHttpException('You are not allowed to view this node.');
+        }
+
         return $documentNode;
     }
 
     protected function findDocumentOr404($slug)
     {
-        $documentNode = $this
+        $document = $this
             ->get('doctrine')
             ->getRepository('Erichard\DmsBundle\Entity\Document')
             ->findOneBySlug($slug)
         ;
 
-        if (null == $documentNode) {
+        if (null == $document) {
             throw $this->createNotFoundException(sprintf('Document not found : %s', $slug));
+        }
+
+        if (!$this->get('security.context')->isGranted('VIEW', $document)) {
+            throw new AccessDeniedHttpException('You are not allowed to view this document.');
         }
 
         return $documentNode;

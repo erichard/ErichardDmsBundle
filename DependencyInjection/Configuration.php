@@ -120,6 +120,23 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+
+                ->arrayNode('permission')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('role_provider')
+                            ->cannotBeEmpty()
+                            ->validate()
+                                ->ifTrue(function($v) { return !is_subclass_of($v, 'Erichard\DmsBundle\Security\RoleProviderInterface'); })
+                                ->thenInvalid('The given size "%s" is not valid. Please use the {width}x{height} format.')
+                            ->end()
+                        ->end()
+                        ->arrayNode('roles')
+                            ->defaultValue(array())
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
