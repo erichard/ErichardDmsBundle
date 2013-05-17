@@ -10,10 +10,11 @@ class DocumentNodeRepository extends ClosureTreeRepository
     {
         return $this
             ->createQueryBuilder('n')
-            ->addSelect('nodes','d', 'p')
+            ->addSelect('nodes','d', 'p', 'm')
             ->leftJoin('n.nodes', 'nodes', 'nodes.id')
             ->leftJoin('n.documents', 'd', 'd.id')
             ->leftJoin('n.parent', 'p', 'd.id')
+            ->leftJoin('n.metadatas', 'm', 'm.metadata.name')
             ->where('n.slug = :node')
             ->setParameter('node', $slug)
             ->getQuery()

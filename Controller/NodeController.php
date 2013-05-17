@@ -3,6 +3,7 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\DocumentNode;
+use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -79,6 +80,11 @@ class NodeController extends Controller
             ));
         } else {
 
+            $metadatas = $form->get('metadatas')->getData();
+            foreach ($metadatas as $metaName => $metaValue) {
+                $documentNode->getMetadata($metaName)->setValue($metaValue);
+            }
+
             $em = $this->get('doctrine')->getManager();
             $em->persist($newNode);
             $em->flush();
@@ -104,6 +110,10 @@ class NodeController extends Controller
                 'form' => $form->createView()
             ));
         } else {
+            $metadatas = $form->get('metadatas')->getData();
+            foreach ($metadatas as $metaName => $metaValue) {
+                $documentNode->getMetadata($metaName)->setValue($metaValue);
+            }
 
             $em = $this->get('doctrine')->getManager();
             $em->persist($documentNode);
@@ -164,6 +174,19 @@ class NodeController extends Controller
         foreach ($documentNode->getDocuments() as $document) {
             if (!$this->get('security.context')->isGranted('VIEW', $document)) {
                 $documentNode->removeDocument($document);
+            }
+        }
+
+        $metadatas = $this
+            ->get('doctrine')
+            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
+            ->findByScope(array('node', 'both'))
+        ;
+
+        foreach ($metadatas as $m) {
+            if (!$documentNode->hasMetadata($m->getName())) {
+                $metadata = new DocumentNodeMetadata($m);
+                $documentNode->addMetadata($metadata);
             }
         }
 

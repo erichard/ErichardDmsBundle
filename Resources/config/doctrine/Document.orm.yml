@@ -1,6 +1,9 @@
 Erichard\DmsBundle\Entity\Document:
     type: entity
     repositoryClass: Erichard\DmsBundle\Entity\DocumentRepository
+    indexes:
+        document_slug_idx:
+            columns: [ slug ]
     id:
         id:
             type: integer
@@ -21,6 +24,8 @@ Erichard\DmsBundle\Entity\Document:
         mimeType:
             type: string
             nullable: true
+        enabled:
+            type: boolean
     manyToOne:
         node:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

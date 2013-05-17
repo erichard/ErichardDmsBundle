@@ -1,6 +1,9 @@
 Erichard\DmsBundle\Entity\DocumentNode:
     type: entity
     repositoryClass: Erichard\DmsBundle\Entity\DocumentNodeRepository
+    indexes:
+        document_slug_idx:
+            columns: [ slug ]
     gedmo:
         tree:
             type: closure
@@ -23,6 +26,8 @@ Erichard\DmsBundle\Entity\DocumentNode:
             nullable: true
             gedmo:
                 - treeLevel
+        enabled:
+            type: boolean
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
@@ -38,4 +43,8 @@ Erichard\DmsBundle\Entity\DocumentNode:
         documents:
             targetEntity: Erichard\DmsBundle\Entity\Document
             mappedBy: node
+        metadatas:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNodeMetadata
+            mappedBy: node
+            cascade: [ persist ]
 

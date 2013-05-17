@@ -29,6 +29,10 @@ class Acl
         $roles = $this->roleHierarchy->getReachableRoles($token->getRoles());
         $roles = array_map(function($role) { return $role->getRole(); }, $roles);
 
+        if (isset($this->options['super_admin_role']) && in_array($this->options['super_admin_role'], $roles)) {
+            return true;
+        }
+
         if ($object instanceof DocumentNodeInterface) {
             $objectMask = $this->getDocumentNodeAuthorizationMask($object, $roles);
         } elseif ($object instanceof DocumentInterface) {

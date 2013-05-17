@@ -16,11 +16,13 @@ class Document implements DocumentInterface
     protected $type;
     protected $slug;
     protected $file;
+    protected $enabled;
 
     public function __construct(DocumentNodeInterface $node)
     {
         $this->node = $node;
         $this->type = DocumentInterface::TYPE_FILE;
+        $this->enabled = true;
     }
 
     public function getId()
@@ -139,6 +141,18 @@ class Document implements DocumentInterface
         return $this->originalName;
     }
 
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
     public function getComputedFilename()
     {
         if (null === $this->id) {
@@ -148,7 +162,7 @@ class Document implements DocumentInterface
         $reverseId = str_pad($this->id, 8, '0', STR_PAD_LEFT);
         $path = '';
 
-        for ($i = 0; $i < 6; $i+=2 ) {
+        for ($i = 0; $i < 6; $i+=2) {
             $path .= substr($reverseId, $i, 2) . DIRECTORY_SEPARATOR;
         }
 

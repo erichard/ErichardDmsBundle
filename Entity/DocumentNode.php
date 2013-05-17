@@ -15,11 +15,15 @@ class DocumentNode implements DocumentNodeInterface
     protected $name;
     protected $slug;
     protected $depth;
+    protected $enabled;
+    protected $metadatas;
 
     public function __construct()
     {
         $this->documents = new ArrayCollection();
         $this->nodes     = new ArrayCollection();
+        $this->metadatas = new ArrayCollection();
+        $this->enabled   = true;
     }
 
     public function setId($id)
@@ -136,5 +140,63 @@ class DocumentNode implements DocumentNodeInterface
     public function getDepth()
     {
         return $this->depth;
+    }
+
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
+    public function getMetadatas()
+    {
+        return $this->metadatas;
+    }
+
+    public function addMetadata(DocumentNodeMetadata $metadata)
+    {
+        if (!$this->hasMetadata($metadata->getMetadata()->getName())) {
+            $metadata->setNode($this);
+            $this->metadatas->add($metadata);
+        }
+
+        return $this;
+    }
+
+    public function getMetadata($name)
+    {
+        foreach ($this->metadatas as $m) {
+            if ($m->getMetadata()->getName() === $name) {
+                return $m;
+            }
+        }
+
+        return false;
+    }
+
+    public function removeMetadata(DocumentNodeMetadata $metadata)
+    {
+        if ($this->metadatas->contains($metadata)) {
+            $this->metadatas->removeElement($metadata);
+        }
+
+        return $this;
+    }
+
+    public function hasMetadata($name)
+    {
+        foreach ($this->metadatas as $m) {
+            if ($m->getMetadata()->getName() === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -1,0 +1,24 @@
+Erichard\DmsBundle\Entity\DocumentNodeMetadata:
+    type: entity
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    uniqueConstraints:
+        node_metadata_idx:
+            columns: [ node_id, metadata_id ]
+    fields:
+        value:
+            type: text
+    manyToOne:
+        node:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            inversedBy: metadatas
+            joinColumn:
+                onDelete: CASCADE
+        metadata:
+            targetEntity: Erichard\DmsBundle\Entity\Metadata
+            joinColumn:
+                onDelete: CASCADE
+
+

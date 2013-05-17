@@ -1,0 +1,26 @@
+Erichard\DmsBundle\Entity\Metadata:
+    type: entity
+    indexes:
+        metadata_scope_idx:
+            columns: [ scope ]
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        name:
+            type: string
+        label:
+            type: string
+        defaultValue:
+            type: text
+            nullable: true
+        attributes:
+            type: json_array
+            nullable: true
+        type:
+            type: string
+        scope:
+            type: string
+        required:
+            type: boolean
