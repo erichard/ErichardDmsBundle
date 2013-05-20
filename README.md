@@ -18,6 +18,7 @@ The roadmap for 1.0 will require theses features.
   - **✔** Massive upload
   - **✔** Metadata's on documents and folders
   - **✔** Multi-permission system on first depth level
+  - **[WIP]** Alias system to allow document linking
   - Basic Search engine (without pertinency)
   - Preview of video files
   - Events
