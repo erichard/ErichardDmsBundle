@@ -15,9 +15,9 @@ The roadmap for 1.0 will require theses features.
   - **✔** Multiple view modes (Gallery, Table, Showcase, ...)
   - **✔** Simple upload
   - **✔** Preview of image files
-  - **[WIP]** Massive upload
-  - Metadata's on documents and folders
-  - Multi-permission system on first depth level
+  - **✔** Massive upload
+  - **✔** Metadata's on documents and folders
+  - **✔** Multi-permission system on first depth level
   - Basic Search engine (without pertinency)
   - Preview of video files
   - Events
@@ -30,4 +30,4 @@ Next releases will include :
 
   - Support preview of various documents (Word document, Presentation, PDF)
   - Smart search engine (via Solr or other)
-  - Multi-permission system on all levels
+  - **✔** Multi-permission system on all levels
