@@ -11,6 +11,7 @@ Erichard\DmsBundle\Entity\DocumentNode:
         name: <sentence(2)>
         parent: @node*
 
+
 Erichard\DmsBundle\Entity\Document:
     doc{1..10}:
         __construct: [@node_photo]

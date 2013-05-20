@@ -32,4 +32,9 @@ Erichard\DmsBundle\Entity\Document:
             inversedBy: documents
             joinColumn:
                 onDelete: CASCADE
+    oneToMany:
+        metadatas:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentMetadata
+            mappedBy: document
+            cascade: [ persist ]
 

@@ -46,3 +46,10 @@ services:
             - @doctrine.orm.entity_manager
         tags:
             - { name: form.type, alias: node_metadata }
+
+    erichard.form.document_metadata_type:
+        class: Erichard\DmsBundle\Form\DocumentMetadataType
+        arguments:
+            - @doctrine.orm.entity_manager
+        tags:
+            - { name: form.type, alias: document_metadata }

@@ -3,6 +3,7 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
+use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Form\DocumentType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File;
@@ -277,40 +278,67 @@ class DocumentController extends Controller
 
     public function showAction($node, $document)
     {
-        $documentNode = $this->findNodeOr404($node);
-        $document = $this->findDocumentOr404($document);
+        //$documentNode = $this->findNodeOr404($node);
+        $document = $this->findDocumentOr404($document, $node);
 
         return $this->render('ErichardDmsBundle:Document:show.html.twig', array(
-            'node'     => $documentNode,
+            'node'     => $document->getNode(),
             'document' => $document,
         ));
     }
 
-    protected function findNodeOr404($slug)
+    public function editAction($node, $document)
     {
-        $documentNode = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findOneBySlugWithChildren($slug)
-        ;
+        //$documentNode = $this->findNodeOr404($node);
+        $document = $this->findDocumentOr404($document, $node);
 
-        if (null == $documentNode) {
-            throw $this->createNotFoundException(sprintf('Node not found : %s', $slug));
-        }
+        $form = $this->createForm(new DocumentType(), $document);
 
-        if (!$this->get('security.context')->isGranted('VIEW', $documentNode)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this node.');
-        }
-
-        return $documentNode;
+        return $this->render('ErichardDmsBundle:Document:edit.html.twig', array(
+            'node'     => $document->getNode(),
+            'document' => $document,
+            'form'     => $form->createView(),
+        ));
     }
 
-    protected function findDocumentOr404($slug)
+    public function updateAction($node, $document)
+    {
+        //$documentNode = $this->findNodeOr404($node);
+        $document = $this->findDocumentOr404($document, $node);
+
+        $form = $this->createForm(new DocumentType(), $document);
+        $form->bind($this->get('request'));
+
+        if (!$form->isValid()) {
+            $response = $this->render('ErichardDmsBundle:Node:edit.html.twig', array(
+                'node'     => $document->getNode(),
+                'document' => $document,
+                'form'     => $form->createView(),
+            ));
+        } else {
+            $metadatas = $form->get('metadatas')->getData();
+            foreach ($metadatas as $metaName => $metaValue) {
+                $document->getMetadata($metaName)->setValue($metaValue);
+            }
+
+            $em = $this->get('doctrine')->getManager();
+            $em->persist($document);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('success', 'Document successfully updated !');
+
+            $response = $this->redirect($this->generateUrl('erichard_dms_show_document', array('node' => $document->getNode()->getSlug(), 'document' => $document->getSlug())));
+        }
+
+        return $response;
+    }
+
+    protected function findDocumentOr404($document, $node)
     {
         $document = $this
             ->get('doctrine')
             ->getRepository('Erichard\DmsBundle\Entity\Document')
-            ->findOneBySlug($slug)
+            ->findOneBySlugAndNode($document, $node)
         ;
 
         if (null == $document) {
@@ -319,6 +347,19 @@ class DocumentController extends Controller
 
         if (!$this->get('security.context')->isGranted('VIEW', $document)) {
             throw new AccessDeniedHttpException('You are not allowed to view this document.');
+        }
+
+        $metadatas = $this
+            ->get('doctrine')
+            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
+            ->findByScope(array('document', 'both'))
+        ;
+
+        foreach ($metadatas as $m) {
+            if (!$document->hasMetadata($m->getName())) {
+                $metadata = new DocumentMetadata($m);
+                $document->addMetadata($metadata);
+            }
         }
 
         return $document;

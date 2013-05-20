@@ -24,7 +24,7 @@
                 <li><a href=""><i class="icon-download-alt"></i>Download</a></li>
                 {% endif %}
                 {% if is_granted('DOCUMENT_EDIT', document) %}
-                <li><a href=""><i class="icon-edit"></i>Edit</a></li>
+                <li><a href="{{ path('erichard_dms_edit_document', { 'node': node.slug, 'document': document.slug }) }}"><i class="icon-edit"></i>Edit</a></li>
                 {% endif %}
                 {% if is_granted('DOCUMENT_DELETE', document) %}
                 <li><a href=""><i class="icon-trash"></i>Delete</a></li>
@@ -37,10 +37,12 @@
         </div>
     </div>
 
+    {% if document.hasMetadata('description') %}
     <h3>Description</h3>
     <div class="well">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus incidunt fugiat provident quidem at vel perferendis exercitationem possimus assumenda saepe. Repellendus odit ea odio explicabo nesciunt perferendis ex alias nisi?
+        {{ document.hasMetadata('description')|raw }}
     </div>
+    {% endif %}
 
 
 {% endblock %}

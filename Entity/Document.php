@@ -2,8 +2,10 @@
 
 namespace Erichard\DmsBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\DocumentNodeInterface;
+use Erichard\DmsBundle\Entity\DocumentMetadata;
 
 class Document implements DocumentInterface
 {
@@ -17,12 +19,14 @@ class Document implements DocumentInterface
     protected $slug;
     protected $file;
     protected $enabled;
+    protected $metadatas;
 
     public function __construct(DocumentNodeInterface $node)
     {
         $this->node = $node;
         $this->type = DocumentInterface::TYPE_FILE;
         $this->enabled = true;
+        $this->metadatas = new ArrayCollection();
     }
 
     public function getId()
@@ -151,6 +155,52 @@ class Document implements DocumentInterface
     public function isEnabled()
     {
         return $this->enabled;
+    }
+
+    public function getMetadatas()
+    {
+        return $this->metadatas;
+    }
+
+    public function addMetadata(DocumentMetadata $metadata)
+    {
+        if (!$this->hasMetadata($metadata->getMetadata()->getName())) {
+            $metadata->setDocument($this);
+            $this->metadatas->add($metadata);
+        }
+
+        return $this;
+    }
+
+    public function getMetadata($name)
+    {
+        foreach ($this->metadatas as $m) {
+            if ($m->getMetadata()->getName() === $name) {
+                return $m;
+            }
+        }
+
+        return false;
+    }
+
+    public function removeMetadata(DocumentMetadata $metadata)
+    {
+        if ($this->metadatas->contains($metadata)) {
+            $this->metadatas->removeElement($metadata);
+        }
+
+        return $this;
+    }
+
+    public function hasMetadata($name)
+    {
+        foreach ($this->metadatas as $m) {
+            if ($m->getMetadata()->getName() === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getComputedFilename()

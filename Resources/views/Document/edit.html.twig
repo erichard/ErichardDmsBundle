@@ -2,9 +2,9 @@
 
 {% block workspace %}
 
-    <h1>Edit folder</h1>
+    <h1>Edit document</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_update_node', {'node' : node.slug}) }}" method="POST" novalidate>
+    <form class="form-horizontal" action="{{ path('erichard_dms_update_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST" novalidate>
 
         {{ form_widget(form._token) }}
         {{ form_errors(form) }}
@@ -15,7 +15,7 @@
         {% for metadata in form.metadatas %}
             {{ form_row(metadata, {
                 'form_type': 'horizontal',
-                'value' : node.hasMetadata(metadata.vars.name)? node.getMetadata(metadata.vars.name).value : null
+                'value' : document.hasMetadata(metadata.vars.name)? document.getMetadata(metadata.vars.name).value : null
             }) }}
         {% endfor %}
 

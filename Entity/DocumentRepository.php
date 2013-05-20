@@ -6,6 +6,19 @@ use Doctrine\ORM\EntityRepository;
 
 class DocumentRepository extends EntityRepository
 {
+    public function findOneBySlugAndNode($documentSlug, $nodeSlug)
+    {
+        return $this
+            ->createQueryBuilder('d')
+            ->addSelect('d', 'm')
+            ->leftJoin('d.metadatas', 'm')
+            ->where('d.slug = :document')
+            ->setParameter('document', $documentSlug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     public function getDocumentAuthorizationsByRoles($id, array $roles)
     {
         $queryRoles = array_map(function($role) { return "'$role'"; }, $roles);

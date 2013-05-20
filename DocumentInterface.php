@@ -13,5 +13,4 @@ interface DocumentInterface
     public function getType();
     public function getPath();
 
-
 }
