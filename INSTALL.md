@@ -35,3 +35,17 @@ erichard_dms:
 erichard_dms:
     resource: @ErichardDmsBundle/Resources/config/routing.yml
 ```
+
+## Enjoy
+
+Browse to `/dms` to see the basic DMS.
+
+
+## (Optional) Load some fixtures
+
+For testing purpose, I provide some fixtures. Execute the command above to load them.
+
+```
+php app/console alice:fixtures:load --fixtures=vendor/erichard/dms-bundle/Erichard/DmsBundle/Tests/Fixtures/documents.yml
+```
+
