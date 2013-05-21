@@ -9,13 +9,6 @@ services:
         tags:
             - { name: twig.extension }
 
-    erichard.twig.dms_extension:
-        class: Erichard\DmsBundle\Twig\DmsExtension
-        arguments:
-            - @doctrine
-        tags:
-            - { name: twig.extension }
-
     erichard.security.access.hierarchical_voter:
         class:      Erichard\DmsBundle\Security\Voter\HierarchicalAclVoter
         public:     false

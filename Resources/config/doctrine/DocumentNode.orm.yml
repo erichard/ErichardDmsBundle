@@ -2,7 +2,7 @@ Erichard\DmsBundle\Entity\DocumentNode:
     type: entity
     repositoryClass: Erichard\DmsBundle\Entity\DocumentNodeRepository
     indexes:
-        document_slug_idx:
+        node_slug_idx:
             columns: [ slug ]
     gedmo:
         tree:
