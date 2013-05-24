@@ -3,53 +3,35 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
-use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Form\DocumentType;
+use Erichard\DmsBundle\Response\FileResponse;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class DocumentController extends Controller
 {
     public function addAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
         $request      = $this->get('request');
 
-        if (!$filename = $request->query->get('filename')) {
+        if ($request->isMethod('GET')) {
             return $this->render('ErichardDmsBundle:Document:add.html.twig', array(
                 'node' => $documentNode
             ));
         } else {
+            $filename = $request->request->get('filename');
+            $documentNode->removeEmptyMetadatas();
             $document = new Document($documentNode);
-            $document->setName($this->get('templating.helper.form')->humanize($filename));
+            $document->setName($filename);
             $document->setOriginalName($filename);
-            $document->setFilename($request->query->get('token'));
-
-            $form = $this->createForm(new DocumentType(), $document);
-
-            return $this->render('ErichardDmsBundle:Document:create.html.twig', array(
-                'node' => $documentNode,
-                'form' => $form->createView()
-            ));
-        }
-    }
-
-    public function createAction($node)
-    {
-        $parentNode = $this->findNodeOr404($node);
-        $document   = new Document($parentNode);
-        $form       = $this->createForm(new DocumentType(), $document);
-
-        $form->bind($this->get('request'));
-
-        if (!$form->isValid()) {
-            $response = $this->render('ErichardDmsBundle:Document:create.html.twig', array(
-                'node' => $parentNode,
-                'form' => $form->createView()
-            ));
-        } else {
-            $document = $form->getData();
+            $document->setFilename($request->request->get('token'));
 
             $em = $this->get('doctrine')->getManager();
             $em->persist($document);
@@ -74,12 +56,17 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'New document successfully created !');
-
-            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
+            return $this->redirect(
+                $this->get('router')->generate(
+                    'erichard_dms_edit_document',
+                    array(
+                        'document' => $document->getSlug(),
+                        'node' => $documentNode->getSlug(),
+                        'first' => true,
+                    )
+                )
+            );
         }
-
-        return $response;
     }
 
     public function uploadAction()
@@ -278,8 +265,7 @@ class DocumentController extends Controller
 
     public function showAction($node, $document)
     {
-        //$documentNode = $this->findNodeOr404($node);
-        $document = $this->findDocumentOr404($document, $node);
+        $document = $this->findDocumentOrThrowError($document, $node);
 
         return $this->render('ErichardDmsBundle:Document:show.html.twig', array(
             'node'     => $document->getNode(),
@@ -289,8 +275,8 @@ class DocumentController extends Controller
 
     public function editAction($node, $document)
     {
-        //$documentNode = $this->findNodeOr404($node);
-        $document = $this->findDocumentOr404($document, $node);
+        //$documentNode = $this->findNodeOrThrowError($node);
+        $document = $this->findDocumentOrThrowError($document, $node);
 
         $form = $this->createForm(new DocumentType(), $document);
 
@@ -303,8 +289,8 @@ class DocumentController extends Controller
 
     public function updateAction($node, $document)
     {
-        //$documentNode = $this->findNodeOr404($node);
-        $document = $this->findDocumentOr404($document, $node);
+        //$documentNode = $this->findNodeOrThrowError($node);
+        $document = $this->findDocumentOrThrowError($document, $node);
 
         $form = $this->createForm(new DocumentType(), $document);
         $form->bind($this->get('request'));
@@ -321,6 +307,7 @@ class DocumentController extends Controller
                 $document->getMetadata($metaName)->setValue($metaValue);
             }
 
+            $document->removeEmptyMetadatas();
             $em = $this->get('doctrine')->getManager();
             $em->persist($document);
             $em->flush();
@@ -333,35 +320,97 @@ class DocumentController extends Controller
         return $response;
     }
 
-    protected function findDocumentOr404($document, $node)
+
+    public function previewAction($dimension, $document, $node)
     {
-        $document = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\Document')
-            ->findOneBySlugAndNode($document, $node)
+        list($width, $height) = explode('x', $dimension);
+
+        $request = $this->get('request');
+        $imagine = new Imagine();
+        $size    = new Box($width, $height);
+        $mode    = ImageInterface::THUMBNAIL_INSET;
+
+        $document = $this->findDocumentOrThrowError($document, $node);
+
+        $absPath = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
+
+        try {
+            $imagick = new \Imagick();
+            $imagick->setResolution(72, 72);
+            $imagick->readImage($absPath);
+            $image = new \Imagine\Imagick\Image($imagick);
+        } catch (\ImagickException $e) {
+            $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
+            $image = $imagine->open($picture);
+        }
+
+        $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
+
+        if (!is_dir(dirname($cacheFile))) {
+            mkdir(dirname($cacheFile), 0777, true);
+        }
+
+        $image
+            ->thumbnail($size, $mode)
+            ->save($cacheFile, array('quality' => 90))
         ;
 
-        if (null == $document) {
-            throw $this->createNotFoundException(sprintf('Document not found : %s', $slug));
-        }
+        $expireDate = new \DateTime();
+        $expireDate->modify('+10 years');
 
-        if (!$this->get('security.context')->isGranted('VIEW', $document)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this document.');
-        }
+        $response = new Response();
 
-        $metadatas = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
-            ->findByScope(array('document', 'both'))
-        ;
+        $response->setPublic();
+        $response->setExpires($expireDate);
+        $response->setContent(file_get_contents($cacheFile));
 
-        foreach ($metadatas as $m) {
-            if (!$document->hasMetadata($m->getName())) {
-                $metadata = new DocumentMetadata($m);
-                $document->addMetadata($metadata);
-            }
-        }
+        $finfo = new \finfo(FILEINFO_MIME);
 
-        return $document;
+        $response->headers->set('Content-Type', $finfo->file($cacheFile));
+        $response->setPublic();
+        $response->setSharedMaxAge('3600');
+
+        return $response;
     }
+
+    public function downloadAction($document, $node)
+    {
+        $document = $this->findDocumentOrThrowError($document, $node);
+
+        $absPath = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
+
+        $response = new FileResponse();
+        $response->setFilename($absPath);
+
+        $response->headers->set('Cache-Control', 'public');
+        $response->headers->set('Content-Type', $document->getMimeType());
+
+        $userAgent = $this->get('request')->headers->get('User-Agent');
+
+        if (preg_match('#MSIE|Safari|Konqueror#', $userAgent)) {
+            $contentDisposition = "filename=".rawurlencode($document->getSlug().'.'.$document->getExtension());
+        }
+
+        $contentDisposition = "filename*=UTF-8''".rawurlencode($document->getSlug().'.'.$document->getExtension());
+        $response->headers->set('Content-Disposition', 'attachment; '.$contentDisposition);
+
+        return $response;
+    }
+
+    public function findDocumentOrThrowError($document, $node)
+    {
+        return $this
+            ->get('dms.repository.document')
+            ->findDocumentOrThrowError($document, $node)
+        ;
+    }
+
+    public function findNodeOrThrowError($node)
+    {
+        return $this
+            ->get('dms.repository.documentNode')
+            ->findNodeOrThrowError($node)
+        ;
+    }
+
 }

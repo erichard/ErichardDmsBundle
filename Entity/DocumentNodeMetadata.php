@@ -17,6 +17,11 @@ class DocumentNodeMetadata
         $this->metadata = $m;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function setNode(DocumentNodeInterface $node)
     {
         $this->node = $node;

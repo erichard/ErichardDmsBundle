@@ -28,6 +28,16 @@ erichard_dms:
         path:  <path/to/your/files>
 ```
 
+Also the DMS need to be cover by a firewall. Configure our own firewall or add the below configuration to your security.yml file.
+
+```
+security:
+    firewalls:
+        dms:
+            pattern:  ^/dms # Or whatever pattern you use
+            anonymous: ~
+```
+
 ## Add the routing
 
 ```

@@ -4,16 +4,9 @@
 <div class="row-fluid">
 {% for document in documents %}
 
-  {% set image = path(
-    'erichard_dms_media_show', {
-      'dimension' : parameter('dms.gallery.image_size'),
-      'path' : document.filename
-    })
-  %}
-
   <div class="span{{ spanValue }}">
     <a href="{{ path('erichard_dms_show_document', { 'node' : node.slug, 'document' : document.slug }) }}" class="thumbnail" title="{{ document.name }}">
-        <img src="{{ image }}" />
+        <img src="{{ thumbUrl(document, parameter('dms.gallery.image_size')) }}" />
     </a>
     <p>{{ document.name }}</p>
   </div>

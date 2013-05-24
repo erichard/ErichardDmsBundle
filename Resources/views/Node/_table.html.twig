@@ -1,21 +1,13 @@
 <table class="table table-striped table-hover">
 {% for document in documents %}
-
-  {% set image = path(
-    'erichard_dms_media_show', {
-      'dimension' : parameter('dms.table.image_size'),
-      'path' : document.filename
-    })
-  %}
-
   <tr>
     <td >
       <a href="" class="thumbnail" title="{{ document.name }}">
-          <img src="{{ image }}" />
+          <img src="{{ thumbUrl(document, parameter('dms.table.image_size')) }}" />
       </a>
     </td>
     <td>{{ document.name }}</td>
-    <td>{{ document.size|filesize }}</td>
+    <td></td>
     <td>{{ document.mimeType }}</td>
   </tr>
 

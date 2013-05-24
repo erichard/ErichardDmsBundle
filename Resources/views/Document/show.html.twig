@@ -6,13 +6,7 @@
 
     <div class="row-fluid">
         <div class="span8">
-            {% set image = path(
-            'erichard_dms_media_show', {
-              'dimension' : parameter('dms.show.image_size'),
-              'path' : document.filename
-            })
-            %}
-            <img class="img-polaroid" src="{{ image }}" alt="{{ document.name }}">
+            <img class="img-polaroid" src="{{ thumbUrl(document, parameter('dms.show.image_size')) }}" alt="{{ document.name }}">
         </div>
 
         <div class="span4">
@@ -21,7 +15,7 @@
             <ul class="nav nav-list">
                 <li class="nav-header">Actions</li>
                 {% if is_granted('DOCUMENT_DOWNLOAD', document) %}
-                <li><a href=""><i class="icon-download-alt"></i>Download</a></li>
+                <li><a href="{{ path('erichard_dms_download_document', { 'node': node.slug, 'document': document.slug }) }}"><i class="icon-download-alt"></i>Download</a></li>
                 {% endif %}
                 {% if is_granted('DOCUMENT_EDIT', document) %}
                 <li><a href="{{ path('erichard_dms_edit_document', { 'node': node.slug, 'document': document.slug }) }}"><i class="icon-edit"></i>Edit</a></li>

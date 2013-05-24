@@ -3,7 +3,6 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\DocumentNode;
-use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -11,7 +10,7 @@ class NodeController extends Controller
 {
     public function listAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
             'node' => $documentNode,
@@ -42,7 +41,7 @@ class NodeController extends Controller
 
     public function addAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         $form = $this->createForm(new NodeType());
 
@@ -54,7 +53,7 @@ class NodeController extends Controller
 
     public function editAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         $form = $this->createForm(new NodeType(), $documentNode);
 
@@ -66,7 +65,7 @@ class NodeController extends Controller
 
     public function createAction($node)
     {
-        $parentNode = $this->findNodeOr404($node);
+        $parentNode = $this->findNodeOrThrowError($node);
         $newNode    = new DocumentNode();
         $parentNode->addNode($newNode);
         $form       = $this->createForm(new NodeType(), $newNode);
@@ -84,6 +83,7 @@ class NodeController extends Controller
             foreach ($metadatas as $metaName => $metaValue) {
                 $documentNode->getMetadata($metaName)->setValue($metaValue);
             }
+            $documentNode->removeEmptyMetadatas();
 
             $em = $this->get('doctrine')->getManager();
             $em->persist($newNode);
@@ -99,7 +99,7 @@ class NodeController extends Controller
 
     public function updateAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         $form = $this->createForm(new NodeType(), $documentNode);
         $form->bind($this->get('request'));
@@ -115,6 +115,7 @@ class NodeController extends Controller
                 $documentNode->getMetadata($metaName)->setValue($metaValue);
             }
 
+            $documentNode->removeEmptyMetadatas();
             $em = $this->get('doctrine')->getManager();
             $em->persist($documentNode);
             $em->flush();
@@ -129,7 +130,7 @@ class NodeController extends Controller
 
     public function deleteAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         $em = $this->get('doctrine')->getManager();
         $em->remove($documentNode);
@@ -142,54 +143,18 @@ class NodeController extends Controller
 
     public function removeAction($node)
     {
-        $documentNode = $this->findNodeOr404($node);
+        $documentNode = $this->findNodeOrThrowError($node);
 
         return $this->render('ErichardDmsBundle:Node:remove.html.twig', array(
             'node' => $documentNode,
         ));
     }
 
-    protected function findNodeOr404($slug)
+    public function findNodeOrThrowError($node)
     {
-        $documentNode = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findOneBySlugWithChildren($slug)
+        return $this
+            ->get('dms.repository.documentNode')
+            ->findNodeOrThrowError($node)
         ;
-
-        if (null == $documentNode) {
-            throw $this->createNotFoundException(sprintf('Document not found : %s', $slug));
-        }
-
-        if (!$this->get('security.context')->isGranted('VIEW', $documentNode)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this node.');
-        }
-
-        foreach ($documentNode->getNodes() as $node) {
-            if (!$this->get('security.context')->isGranted('VIEW', $node)) {
-                $documentNode->removeNode($node);
-            }
-        }
-
-        foreach ($documentNode->getDocuments() as $document) {
-            if (!$this->get('security.context')->isGranted('VIEW', $document)) {
-                $documentNode->removeDocument($document);
-            }
-        }
-
-        $metadatas = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
-            ->findByScope(array('node', 'both'))
-        ;
-
-        foreach ($metadatas as $m) {
-            if (!$documentNode->hasMetadata($m->getName())) {
-                $metadata = new DocumentNodeMetadata($m);
-                $documentNode->addMetadata($metadata);
-            }
-        }
-
-        return $documentNode;
     }
 }

@@ -12,11 +12,13 @@ class HierarchicalAclVoter implements VoterInterface
 {
     private $permissionMap;
     private $acl;
+    private $options;
 
-    public function __construct(PermissionMapInterface $permissionMap, $acl)
+    public function __construct(PermissionMapInterface $permissionMap, $acl, array $options = array())
     {
         $this->permissionMap = $permissionMap;
         $this->acl = $acl;
+        $this->options = $options;
     }
 
     public function supportsAttribute($attribute)
@@ -29,6 +31,9 @@ class HierarchicalAclVoter implements VoterInterface
         return true;
     }
 
+    /**
+     * Only support DocumentInterface and DocumentNodeInterface
+     */
     public function supportsObject($object)
     {
         return $object instanceof DocumentNodeInterface ||
@@ -36,12 +41,26 @@ class HierarchicalAclVoter implements VoterInterface
         ;
     }
 
+    /**
+     * Vote for the access of the document.
+     */
     public function vote(TokenInterface $token, $object, array $attributes)
     {
+        // Watch the object type
         if (!$this->supportsObject($object)) {
             return VoterInterface::ACCESS_ABSTAIN;
         }
 
+        // Enabling permission management obviously denied access to anonymous users
+        elseif ($token instanceof AnonymousToken && true === $this->options['permission_enabled']) {
+            return VoterInterface::ACCESS_DENIED;
+        }
+        // Disabling permission management will grant access to all users
+        elseif (false === $this->options['permission_enabled']) {
+            return VoterInterface::ACCESS_GRANTED;
+        }
+
+        // Finally use the ACL algorithm to grant access
         foreach ($attributes as $key => $attribute) {
 
             if (!$this->supportsAttribute($attribute)) {

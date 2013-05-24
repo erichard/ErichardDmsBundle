@@ -8,14 +8,8 @@
   <!-- Carousel items -->
   <div class="carousel-inner">
     {% for document in documents %}
-        {% set image = path(
-          'erichard_dms_media_show', {
-            'dimension' : parameter('dms.showcase.image_size'),
-            'path' : document.filename
-          })
-        %}
         <div class="item{% if loop.first %} active{% endif %}">
-          <img src="{{ image }}" />
+          <img src="{{ thumbUrl(document, parameter('dms.showcase.image_size')) }}" />
           <div class="carousel-caption">
               <h4>{{ document.name }}</h4>
           </div>

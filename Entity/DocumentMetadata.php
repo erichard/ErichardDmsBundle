@@ -15,6 +15,12 @@ class DocumentMetadata
     public function __construct(Metadata $m)
     {
         $this->metadata = $m;
+
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function setDocument(DocumentInterface $document)

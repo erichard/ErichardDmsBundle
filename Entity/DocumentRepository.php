@@ -3,9 +3,25 @@
 namespace Erichard\DmsBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Erichard\DmsBundle\Entity\DocumentMetadata;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class DocumentRepository extends EntityRepository
 {
+    protected $securityContext;
+
+    public function setSecurityContext(SecurityContextInterface $securityContext)
+    {
+        $this->securityContext = $securityContext;
+    }
+
+    public function getSecurityContext()
+    {
+        return $this->securityContext;
+    }
+
     public function findOneBySlugAndNode($documentSlug, $nodeSlug)
     {
         return $this
@@ -17,6 +33,34 @@ class DocumentRepository extends EntityRepository
             ->getQuery()
             ->getOneOrNullResult()
         ;
+    }
+
+    public function findDocumentOrThrowError($documentSlug, $nodeSlug)
+    {
+        $document = $this->findOneBySlugAndNode($documentSlug, $nodeSlug);
+
+        if (null == $document) {
+            throw new NotFoundHttpException(sprintf('Document not found : %s', $documentSlug));
+        }
+
+        if (!$this->getSecurityContext()->isGranted('VIEW', $document)) {
+            throw new AccessDeniedHttpException('You are not allowed to view this document.');
+        }
+
+        $metadatas = $this
+            ->getEntityManager()
+            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
+            ->findByScope(array('document', 'both'))
+        ;
+
+        foreach ($metadatas as $m) {
+            if (!$document->hasMetadata($m->getName())) {
+                $metadata = new DocumentMetadata($m);
+                $document->addMetadata($metadata);
+            }
+        }
+
+        return $document;
     }
 
     public function getDocumentAuthorizationsByRoles($id, array $roles)

@@ -11,6 +11,8 @@ Erichard\DmsBundle\Entity\Document:
     fields:
         filename:
             type: string
+        originalName:
+            type: string
         name:
             type: string
         slug:

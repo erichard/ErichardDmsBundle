@@ -69,7 +69,7 @@
                 {% for parent in node.path %}
                     <li class="dropdown">
                         <a class="dropdown-toggle" id="branches" role="button" data-toggle="dropdown" href="#">{{ parent.name }} <b class="caret"></b></a>
-                        {% set siblings = parent.parent is not null ? parent.parent.nodes : roots() %}
+                        {% set siblings = parent.parent is not null ? parent.parent.nodes : [] %}
 
                         <ul class="dropdown-menu">
                             {% for sibling in siblings %}

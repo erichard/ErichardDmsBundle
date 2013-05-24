@@ -17,7 +17,6 @@ class Document implements DocumentInterface
     protected $mimeType;
     protected $type;
     protected $slug;
-    protected $file;
     protected $enabled;
     protected $metadatas;
 
@@ -66,6 +65,9 @@ class Document implements DocumentInterface
     public function setFilename($filename)
     {
         $this->filename = $filename;
+        if (null === $this->originalName) {
+            $this->originalName = basename($filename);
+        }
     }
 
     public function getMimeType()
@@ -105,18 +107,6 @@ class Document implements DocumentInterface
     public function setSlug($slug)
     {
         $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getSize()
-    {
-        return $this->file->getSize();
-    }
-
-    public function setFile(\SplFileInfo $file)
-    {
-        $this->file = $file;
 
         return $this;
     }
@@ -222,5 +212,21 @@ class Document implements DocumentInterface
         $path .= $reverseId . '.' . $extension;
 
         return $path;
+    }
+
+    public function getExtension()
+    {
+        return pathinfo($this->originalName, PATHINFO_EXTENSION);
+    }
+
+    public function removeEmptyMetadatas()
+    {
+        foreach ($this->metadatas as $m) {
+            if (null === $m->getId() || null === $m->getValue()) {
+                $this->metadatas->removeElement($m);
+            }
+        }
+
+        $this->getNode()->removeEmptyMetadatas();
     }
 }

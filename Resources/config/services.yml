@@ -2,47 +2,80 @@ parameters:
     dms.storage.path: %kernel.root_dir%/../web/medias
 
 services:
-    erichard.twig.container_extension:
+    dms.twig.container_extension:
         class: Erichard\DmsBundle\Twig\ContainerExtension
         arguments:
             - @service_container
         tags:
             - { name: twig.extension }
 
-    erichard.security.access.hierarchical_voter:
+    dms.twig.dms_extension:
+        class: Erichard\DmsBundle\Twig\DmsExtension
+        arguments:
+            - @router
+        tags:
+            - { name: twig.extension }
+
+    dms.security.access.hierarchical_voter:
         class:      Erichard\DmsBundle\Security\Voter\HierarchicalAclVoter
         public:     false
         arguments:
-            - @erichard.security.access.permission_map
-            - @erichard.security.access.control_list
+            - @dms.security.access.permission_map
+            - @dms.security.access.control_list
+            - { permission_enabled: %dms.permission.enabled% }
         tags:
             - { name: security.voter }
 
-    erichard.security.access.permission_map:
+    dms.security.access.permission_map:
         class: Erichard\DmsBundle\Security\Acl\Permission\DmsPermissionMap
 
-    erichard.security.access.control_list:
+    dms.security.access.control_list:
         class: Erichard\DmsBundle\Security\Acl\Acl
         arguments:
             - @security.role_hierarchy
             - @doctrine.orm.entity_manager
             - { cache_dir: %kernel.cache_dir%, super_admin_role: %dms.permission.super_admin_role% }
 
-    erichard.security.role_provider:
+    dms.security.role_provider:
         class: Erichard\DmsBundle\Security\RoleProvider
         arguments:
             - @service_container
 
-    erichard.form.node_metadata_type:
+    dms.form.document_type:
+        class: Erichard\DmsBundle\Form\DocumentType
+        arguments:
+            - %dms.storage.tmp_path%
+        tags:
+            - { name: form.type, alias: dms_document }
+
+    dms.form.node_metadata_type:
         class: Erichard\DmsBundle\Form\NodeMetadataType
         arguments:
             - @doctrine.orm.entity_manager
         tags:
             - { name: form.type, alias: node_metadata }
 
-    erichard.form.document_metadata_type:
+    dms.form.document_metadata_type:
         class: Erichard\DmsBundle\Form\DocumentMetadataType
         arguments:
             - @doctrine.orm.entity_manager
         tags:
             - { name: form.type, alias: document_metadata }
+
+    dms.repository.document:
+        class: Erichard\DmsBundle\Entity\DocumentRepository
+        factory_service: doctrine
+        factory_method: getRepository
+        arguments:
+            - Erichard\DmsBundle\Entity\Document
+        calls:
+            - [ setSecurityContext, [ @security.context ]]
+
+    dms.repository.documentNode:
+        class: Erichard\DmsBundle\Entity\DocumentNodeRepository
+        factory_service: doctrine
+        factory_method: getRepository
+        arguments:
+            - Erichard\DmsBundle\Entity\DocumentNode
+        calls:
+            - [ setSecurityContext, [ @security.context ]]

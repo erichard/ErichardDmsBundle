@@ -199,4 +199,13 @@ class DocumentNode implements DocumentNodeInterface
 
         return false;
     }
+
+    public function removeEmptyMetadatas()
+    {
+        foreach ($this->metadatas as $m) {
+            if (null === $m->getId() || null === $m->getValue()) {
+                $this->metadatas->removeElement($m);
+            }
+        }
+    }
 }

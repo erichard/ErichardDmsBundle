@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints;
 
@@ -40,7 +42,7 @@ class DocumentType extends AbstractType
             if (null === $document->getId()) {
                 $form->add($factory->createNamed('filename', 'hidden'));
                 $form->add($factory->createNamed('originalName', 'hidden'));
-                $form->add($factory->createNamed('token', 'hidden', array(
+                $form->add($factory->createNamed('token', 'hidden', null, array(
                     'mapped' => false
                 )));
             }
@@ -56,6 +58,6 @@ class DocumentType extends AbstractType
 
     public function getName()
     {
-        return 'document';
+        return 'dms_document';
     }
 }

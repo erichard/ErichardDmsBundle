@@ -2,11 +2,11 @@ erichard_dms_node_home:
     pattern:  /dms
     defaults: { _controller: ErichardDmsBundle:Node:index }
 
-erichard_dms_media_show:
-    pattern:  /image/{dimension}/{path}.png
-    defaults: { _controller: ErichardDmsBundle:Media:show }
+erichard_dms_document_preview:
+    pattern:  /dms/{dimension}/{node}/{document}.png
+    defaults: { _controller: ErichardDmsBundle:Document:preview }
     requirements:
-        path: .*
+        dimension: \d+x\d+
 
 ##
 # Document POST actions
@@ -64,12 +64,6 @@ erichard_dms_update_node:
 erichard_dms_add_document:
     pattern: /dms/{node}/add-document
     defaults: { _controller: ErichardDmsBundle:Document:add }
-    methods: [GET]
-
-erichard_dms_create_document:
-    pattern: /dms/{node}/add-document
-    defaults: { _controller: ErichardDmsBundle:Document:create }
-    methods: [POST]
 
 erichard_dms_show_document:
     pattern: /dms/{node}/{document}
@@ -86,3 +80,7 @@ erichard_dms_update_document:
     defaults: { _controller: ErichardDmsBundle:Document:update }
     methods: [POST]
 
+erichard_dms_download_document:
+    pattern: /dms/{node}/{document}/download
+    defaults: { _controller: ErichardDmsBundle:Document:download }
+    methods: [GET]

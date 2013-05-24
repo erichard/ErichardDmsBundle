@@ -1,0 +1,9 @@
+{% macro thumbUrl(document, dimension) %}
+    {{ path(
+        'erichard_dms_document_preview', {
+          'dimension' : dimension
+          'document' : document.slug,
+          'path' : document.node.slug
+        })
+    }}
+{% endmacro %}
