@@ -29,9 +29,18 @@ class FilesystemImporter
         $currentNode = array( 0 => $targetNode );
 
         $finder = new Finder();
-        $files = $finder->in($sourceDir)->getIterator();
+        $finder->in($sourceDir);
+
+        $files = $finder->getIterator();
 
         foreach ($files as $file) {
+
+            foreach ($excludes as $exclude) {
+                if (strpos($file->getRelativePathname(), $exclude) !== false) {
+                    continue 2;
+                }
+            }
+
             $depth = $files->getDepth();
             if ($file->isDir()) {
                 $node = new DocumentNode();
