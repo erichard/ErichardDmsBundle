@@ -4,7 +4,6 @@ namespace Erichard\DmsBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -27,15 +26,9 @@ class ErichardDmsExtension extends Extension
         $loader->load('services.yml');
 
         if (count($config['permission']['roles']) === 0
-            && empty($config['permission']['roleProvider'])
+            && empty($config['permission']['role_provider'])
         )  {
-            throw new \RuntimeException("The DMS need to know which roles it can use. Please configure 'erichard_dms.permission.roles' or 'erichard_dms.permission.roleProvider.");
-        }
-
-        if (!empty($config['permission']['roleProvider'])
-            && !$container->hasDefinition($config['permission']['roleProvider'])
-        ) {
-            throw new ServiceNotFoundException($config['permission']['roleProvider']);
+            throw new \RuntimeException("The DMS need to know which roles it can use. Please configure 'erichard_dms.permission.roles' or 'erichard_dms.permission.role_provider.");
         }
 
         foreach ($config as $name => $value) {
