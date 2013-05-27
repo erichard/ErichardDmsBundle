@@ -16,9 +16,9 @@
 <ul class="nav nav-list">
 
   <li class="nav-header">Actions</li>
-  {% if is_granted('NODE_DOWNLOAD', node) %}
-  <li><a href=""><i class="icon-download-alt"></i>Download</a></li>
-  {% endif %}
+  {#% if is_granted('NODE_DOWNLOAD', node) %}
+  <li><a class="disabled" href=""><i class="icon-download-alt"></i>Download</a></li>
+  {% endif %#}
   {% if is_granted('NODE_EDIT', node) %}
   <li><a href="{{ path('erichard_dms_edit_node', {'node' : node.slug}) }}"><i class="icon-edit"></i>Edit folder</a></li>
   {% endif %}
@@ -29,9 +29,9 @@
   <li><a href="{{ path('erichard_dms_remove_node', {'node' : node.slug}) }}"><i class="icon-remove"></i>Remove folder</a></li>
   {% endif %}
 
-  {% if is_granted('MANAGE', node) %}
-  <li><a href="#"><i class="icon-lock"></i>Manage permission</a></li>
-  {% endif %}
+  {#% if is_granted('MANAGE', node) %}
+  <li><a class="disabled" href="#"><i class="icon-lock"></i>Manage permission</a></li>
+  {% endif %#}
 
   <li class="nav-header">Display modes</li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'showcase'}) }}"><i class="icon-play-circle"></i>Showcase</a></li>
