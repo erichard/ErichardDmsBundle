@@ -334,14 +334,23 @@ class DocumentController extends Controller
 
         $absPath = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
 
-        try {
-            $imagick = new \Imagick();
-            $imagick->setResolution(72, 72);
-            $imagick->readImage($absPath);
-            $image = new \Imagine\Imagick\Image($imagick);
-        } catch (\ImagickException $e) {
+        if (filesize($absPath) >= 5000000) {
             $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
             $image = $imagine->open($picture);
+        } else {
+            try {
+                if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
+                    $absPath .= '[0]';
+                }
+                $imagick = new \Imagick($absPath);
+                $imagick->setCompression(\Imagick::COMPRESSION_LZW);
+                $imagick->setResolution(72, 72);
+                $imagick->setCompressionQuality(90);
+                $image = new \Imagine\Imagick\Image($imagick);
+            } catch (\ImagickException $e) {
+                $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
+                $image = $imagine->open($picture);
+            }
         }
 
         $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
