@@ -1,12 +1,13 @@
-{% extends 'ErichardDmsBundle::layout.html.twig' %}
+{% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
 
-{% block sidebar %}
+{% block dms_sidebar %}
   {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : nodes} %}
+
 {% endblock %}
 
-{% block breacrumb %}{% endblock %}
+{% block dms_breacrumb %}{% endblock %}
 
 
-{% block workspace %}
+{% block dms_documents %}
 Here a dashboard
 {% endblock %}

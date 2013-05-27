@@ -57,15 +57,16 @@
 
       <div class="row">
         <div class="span3">
-          {% block sidebar %}
-            {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : node.nodes} %}
+          {% block dms_sidebar %}
+            {% set nodes = node is defined? node.nodes : nodes %}
+            {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : nodes} %}
           {% endblock %}
         </div>
 
         <div class="span9">
           <ul class="breadcrumb">
             <li><a href="{{ path('erichard_dms_node_home') }}"><i class="icon-home"></i></a> <span class="divider">/</span></li>
-            {% block breacrumb %}
+            {% block dms_breacrumb %}
                 {% for parent in node.path %}
                     <li class="dropdown">
                         <a class="dropdown-toggle" id="branches" role="button" data-toggle="dropdown" href="#">{{ parent.name }} <b class="caret"></b></a>
@@ -83,7 +84,7 @@
                 {% endfor %}
             {% endblock %}
           </ul>
-          {% block workspace %}{% endblock %}
+          {% block dms_documents %}{% endblock %}
         </div>
       </div>
 

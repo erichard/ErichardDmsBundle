@@ -1,6 +1,6 @@
-{% extends 'ErichardDmsBundle::layout.html.twig' %}
+{% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
 
-{% block workspace %}
+{% block dms_documents %}
 
     {% include 'ErichardDmsBundle:Node:_%s.html.twig'|format(mode) with {'documents' : node.documents} %}
 
