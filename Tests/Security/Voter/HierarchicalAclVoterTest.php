@@ -102,4 +102,26 @@ class HierarchicalAclVoterTest extends \PHPUnit_Framework_Testcase
 
         $this->assertEquals($this->voter->vote($token, $document, $attributes), VoterInterface::ACCESS_DENIED);
     }
+
+    public function test_anonymous_with_permissions_disabled()
+    {
+        $voter = new HierarchicalAclVoter($this->permissionMap, $this->acl, array( 'permission_enabled' => false ));
+
+        $attributes = array('PERMISSION_SUPPORTED');
+        $token      = m::mock('Symfony\Component\Security\Core\Authentication\Token\AnonymousToken');
+        $document   = m::mock('Erichard\DmsBundle\DocumentInterface');
+
+        $this->assertEquals($voter->vote($token, $document, $attributes), VoterInterface::ACCESS_GRANTED);
+    }
+
+    public function test_anonymous_with_permissions_enabled()
+    {
+        $voter = new HierarchicalAclVoter($this->permissionMap, $this->acl, array( 'permission_enabled' => true ));
+
+        $attributes = array('PERMISSION_SUPPORTED');
+        $token      = m::mock('Symfony\Component\Security\Core\Authentication\Token\AnonymousToken');
+        $document   = m::mock('Erichard\DmsBundle\DocumentInterface');
+
+        $this->assertEquals($voter->vote($token, $document, $attributes), VoterInterface::ACCESS_DENIED);
+    }
 }

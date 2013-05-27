@@ -5,6 +5,7 @@ namespace Erichard\DmsBundle\Security\Voter;
 use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\DocumentNodeInterface;
 use Symfony\Component\Security\Acl\Permission\PermissionMapInterface;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
@@ -18,7 +19,12 @@ class HierarchicalAclVoter implements VoterInterface
     {
         $this->permissionMap = $permissionMap;
         $this->acl = $acl;
-        $this->options = $options;
+
+        $defaultOptions = array(
+            'permission_enabled' => true
+        );
+
+        $this->options = array_merge($defaultOptions, $options);
     }
 
     public function supportsAttribute($attribute)
