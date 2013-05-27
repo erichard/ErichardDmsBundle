@@ -14,7 +14,8 @@ erichard_dms_document_preview:
 erichard_dms_upload_document:
     pattern: /dms/upload
     defaults: { _controller: ErichardDmsBundle:Document:upload }
-    methods: [POST]
+    requirements:
+        _methods: POST
 
 
 ##
@@ -23,22 +24,26 @@ erichard_dms_upload_document:
 erichard_dms_node_list:
     pattern:  /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:list }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 erichard_dms_add_node:
     pattern: /dms/{node}/new
     defaults: { _controller: ErichardDmsBundle:Node:add }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 erichard_dms_edit_node:
     pattern: /dms/{node}/edit
     defaults: { _controller: ErichardDmsBundle:Node:edit }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 erichard_dms_remove_node:
     pattern: /dms/{node}/remove
     defaults: { _controller: ErichardDmsBundle:Node:remove }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 ##
 # Folder POST actions
@@ -46,17 +51,20 @@ erichard_dms_remove_node:
 erichard_dms_create_node:
     pattern: /dms/{node}/new
     defaults: { _controller: ErichardDmsBundle:Node:create }
-    methods: [POST]
+    requirements:
+        _methods: POST
 
 erichard_dms_delete_node:
     pattern: /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:delete }
-    methods: [DELETE]
+    requirements:
+        _methods: DELETE
 
 erichard_dms_update_node:
     pattern: /dms/{node}
     defaults: { _controller: ErichardDmsBundle:Node:update }
-    methods: [POST]
+    requirements:
+        _methods: POST
 
 ##
 # File Web actions
@@ -64,23 +72,35 @@ erichard_dms_update_node:
 erichard_dms_add_document:
     pattern: /dms/{node}/add-document
     defaults: { _controller: ErichardDmsBundle:Document:add }
+    requirements:
+        _methods: GET
+
+erichard_dms_create_document:
+    pattern: /dms/{node}/add-document
+    defaults: { _controller: ErichardDmsBundle:Document:create }
+    requirements:
+        _methods: POST
 
 erichard_dms_show_document:
     pattern: /dms/{node}/{document}
     defaults: { _controller: ErichardDmsBundle:Document:show }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 erichard_dms_edit_document:
     pattern: /dms/{node}/{document}/edit
     defaults: { _controller: ErichardDmsBundle:Document:edit }
-    methods: [GET]
+    requirements:
+        _methods: GET
 
 erichard_dms_update_document:
     pattern: /dms/{node}/{document}
     defaults: { _controller: ErichardDmsBundle:Document:update }
-    methods: [POST]
+    requirements:
+        _methods: POST
 
 erichard_dms_download_document:
     pattern: /dms/{node}/{document}/download
     defaults: { _controller: ErichardDmsBundle:Document:download }
-    methods: [GET]
+    requirements:
+        _methods: GET
