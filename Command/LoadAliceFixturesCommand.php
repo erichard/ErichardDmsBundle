@@ -17,7 +17,7 @@ class LoadAliceFixturesCommand extends LoadDataFixturesDoctrineCommand
     {
         parent::configure();
 
-        $this->setName('alice:fixtures:load');
+        $this->setName('dms:fixtures:load');
         $this->addOption('locale', null, InputOption::VALUE_REQUIRED, 'The Faker locale to use.', 'fr_FR');
 
     }
