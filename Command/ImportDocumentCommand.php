@@ -31,8 +31,6 @@ class ImportDocumentCommand extends ContainerAwareCommand
         // Prepare the destination node
         $dest = new DocumentNode();
         $dest->setName('Imported on '. date('Y-m-d') . ' at '. date('H:i'));
-        $manager->persist($dest);
-        $manager->flush();
 
         // Launch the importer
         $importer = new FilesystemImporter($this->getContainer()->get('doctrine')->getManager(), array(

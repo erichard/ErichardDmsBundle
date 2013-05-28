@@ -24,6 +24,7 @@ class DocumentNode implements DocumentNodeInterface
         $this->nodes     = new ArrayCollection();
         $this->metadatas = new ArrayCollection();
         $this->enabled   = true;
+        $this->depth     = 0;
     }
 
     public function setId($id)

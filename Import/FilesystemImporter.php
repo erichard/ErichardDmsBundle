@@ -26,6 +26,9 @@ class FilesystemImporter
         }
 
         $manager = $this->em;
+
+        $targetNode->setDepth(0);
+        $manager->persist($targetNode);
         $currentNode = array( 0 => $targetNode );
 
         $finder = new Finder();
@@ -47,6 +50,7 @@ class FilesystemImporter
                 $node
                     ->setParent($currentNode[$depth])
                     ->setName($file->getBaseName())
+                    ->setDepth($targetNode->getDepth + $depth + 1)
                 ;
                 $manager->persist($node);
                 $currentNode[$depth+1] = $node;
@@ -70,9 +74,11 @@ class FilesystemImporter
                 copy($file->getRealPath(), $destFile);
 
                 $manager->persist($document);
+                $manager->flush();
+                $manager->detach($document);
             }
-
-            $manager->flush();
         }
+
+        $manager->flush();
     }
 }
