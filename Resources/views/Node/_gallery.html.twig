@@ -2,8 +2,21 @@
 {% set spanValue = (12 / parameter('dms.gallery.items_per_row'))|number_format(0) %}
 
 <div class="row-fluid">
-{% for document in documents %}
+{% for node in nodes %}
+  <div class="span{{ spanValue }}">
+    <a href="{{ path('erichard_dms_node_list', { 'node' : node.slug }) }}" title="{{ node.name }}">
+        <i class="icon-folder-close"></i><br/>
+        {{ node.name }}
+    </a>
+  </div>
 
+  {% if loop.index is divisibleby(parameter('dms.gallery.items_per_row')) %}
+    </div>
+    {% if not loop.last %}<div class="row-fluid">{% endif %}
+  {% endif %}
+{% endfor %}
+
+{% for document in documents %}
   <div class="span{{ spanValue }}">
     <a href="{{ path('erichard_dms_show_document', { 'node' : node.slug, 'document' : document.slug }) }}" class="thumbnail" title="{{ document.name }}">
         <img src="{{ thumbUrl(document, parameter('dms.gallery.image_size')) }}" />
@@ -23,8 +36,7 @@
         <img src="http://placehold.it/{{ parameter('dms.gallery.image_size') }}&text=Add documents" />
     </a>
     {% endif %}
-
-  </div>
+    </div>
   {% endif %}
 {% endfor %}
 </div>

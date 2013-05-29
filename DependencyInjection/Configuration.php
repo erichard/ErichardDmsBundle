@@ -137,6 +137,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+
+                ->arrayNode('workspace')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('show_nodes')->defaultValue(false)->end() ->end()
+                ->end()
             ->end()
         ;
 

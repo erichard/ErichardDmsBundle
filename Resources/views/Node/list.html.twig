@@ -2,6 +2,6 @@
 
 {% block dms_documents %}
 
-    {% include 'ErichardDmsBundle:Node:_%s.html.twig'|format(mode) with {'documents' : node.documents} %}
+    {% include 'ErichardDmsBundle:Node:_%s.html.twig'|format(mode) with {'documents' : node.documents, 'nodes': show_nodes ? node.nodes : []} %}
 
 {% endblock %}

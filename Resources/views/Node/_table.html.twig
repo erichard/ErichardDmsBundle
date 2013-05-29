@@ -1,4 +1,14 @@
 <table class="table table-striped table-hover">
+{% for node in nodes %}
+  <tr>
+    <td>
+      <i class="icon-folder-close"></i>
+    </td>
+    <td><h4 class="media-heading"> <a href="{{ path('erichard_dms_node_list', { 'node' : node.slug }) }}" title="{{ node.name }}">{{ node.name }}</a></td>
+    <td></td>
+  </tr>
+{% endfor %}
+
 {% for document in documents %}
   <tr>
     <td >
@@ -10,6 +20,5 @@
     <td></td>
     <td>{{ document.mimeType }}</td>
   </tr>
-
 {% endfor %}
 </table>
