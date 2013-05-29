@@ -26,8 +26,6 @@ class FilesystemImporter
         }
 
         $manager = $this->em;
-
-        $targetNode->setDepth(0);
         $manager->persist($targetNode);
         $currentNode = array( 0 => $targetNode );
 

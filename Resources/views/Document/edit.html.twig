@@ -1,5 +1,24 @@
 {% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
 
+
+{% form_theme form _self %}
+
+{% block choice_widget_options %}
+{% spaceless %}
+    {% for group_label, choice in options %}
+        {% if choice is iterable %}
+            <optgroup label="{{ group_label|trans({}, translation_domain) }}">
+                {% set options = choice %}
+                {{ block('choice_widget_options') }}
+            </optgroup>
+        {% else %}
+            <option value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}>{{ choice.label|trans({}, translation_domain)|raw }}</option>
+        {% endif %}
+    {% endfor %}
+{% endspaceless %}
+{% endblock choice_widget_options %}
+
+
 {% block dms_documents %}
 
     <h1>Edit document</h1>
@@ -10,6 +29,7 @@
         {{ form_errors(form) }}
 
         {{ form_row(form.name, {'form_type': 'horizontal'}) }}
+        {{ form_row(form.node, {'form_type': 'horizontal'}) }}
         {{ form_row(form.enabled, {'form_type': 'horizontal'}) }}
 
         {% for metadata in form.metadatas %}

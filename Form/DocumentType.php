@@ -22,6 +22,7 @@ class DocumentType extends AbstractType
                     new Constraints\NotBlank()
                 )
             ))
+            ->add('node', 'dms_node_selector')
             ->add('enabled')
             ->add('metadatas', 'document_metadata', array(
                 'label' => false,

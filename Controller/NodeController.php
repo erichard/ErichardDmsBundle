@@ -44,7 +44,7 @@ class NodeController extends Controller
     {
         $documentNode = $this->findNodeOrThrowError($node);
 
-        $form = $this->createForm(new NodeType());
+        $form = $this->createForm('dms_node');
 
         return $this->render('ErichardDmsBundle:Node:add.html.twig', array(
             'node' => $documentNode,
@@ -56,7 +56,7 @@ class NodeController extends Controller
     {
         $documentNode = $this->findNodeOrThrowError($node);
 
-        $form = $this->createForm(new NodeType(), $documentNode);
+        $form = $this->createForm('dms_node', $documentNode);
 
         return $this->render('ErichardDmsBundle:Node:edit.html.twig', array(
             'node' => $documentNode,
@@ -69,7 +69,7 @@ class NodeController extends Controller
         $parentNode = $this->findNodeOrThrowError($node);
         $newNode    = new DocumentNode();
         $parentNode->addNode($newNode);
-        $form       = $this->createForm(new NodeType(), $newNode);
+        $form       = $this->createForm('dms_node', $newNode);
 
         $form->bind($this->get('request'));
 
@@ -102,7 +102,7 @@ class NodeController extends Controller
     {
         $documentNode = $this->findNodeOrThrowError($node);
 
-        $form = $this->createForm(new NodeType(), $documentNode);
+        $form = $this->createForm('dms_node', $documentNode);
         $form->bind($this->get('request'));
 
         if (!$form->isValid()) {

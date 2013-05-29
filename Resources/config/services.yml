@@ -49,6 +49,20 @@ services:
         tags:
             - { name: form.type, alias: dms_document }
 
+    dms.form.document_node_type:
+        class: Erichard\DmsBundle\Form\NodeType
+        arguments:
+            - @doctrine
+        tags:
+            - { name: form.type, alias: dms_node }
+
+    dms.form.node_selector_type:
+        class: Erichard\DmsBundle\Form\NodeSelectorType
+        arguments:
+            - @doctrine
+        tags:
+            - { name: form.type, alias: dms_node_selector }
+
     dms.form.node_metadata_type:
         class: Erichard\DmsBundle\Form\NodeMetadataType
         arguments:
