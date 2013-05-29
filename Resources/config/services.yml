@@ -13,6 +13,7 @@ services:
         class: Erichard\DmsBundle\Twig\DmsExtension
         arguments:
             - @router
+            - @doctrine
         tags:
             - { name: twig.extension }
 

@@ -2,6 +2,7 @@
 
 namespace Erichard\DmsBundle\Twig;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Erichard\DmsBundle\DocumentInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -9,9 +10,10 @@ class DmsExtension extends \Twig_Extension
 {
     protected $router;
 
-    public function __construct(RouterInterface $router)
+    public function __construct(RouterInterface $router, Registry $registry)
     {
         $this->router = $router;
+        $this->registry = $registry;
     }
 
     public function getFilters()
@@ -24,7 +26,8 @@ class DmsExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'thumbUrl' => new \Twig_Function_Method($this, 'getThumbUrl')
+            'thumbUrl' => new \Twig_Function_Method($this, 'getThumbUrl'),
+            'roots'    => new \Twig_Function_Method($this, 'getRoots')
         );
     }
 
@@ -42,6 +45,15 @@ class DmsExtension extends \Twig_Extension
             'node'        => $document->getNode()->getSlug(),
             'dimension'   => $dimension,
         ), $absolute);
+    }
+
+    public function getRoots()
+    {
+        return $this
+            ->registry
+            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
+            ->getRoots()
+        ;
     }
 
     public function getName()

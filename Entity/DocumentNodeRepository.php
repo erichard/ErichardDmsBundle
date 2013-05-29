@@ -36,6 +36,17 @@ class DocumentNodeRepository extends ClosureTreeRepository
         ;
     }
 
+    public function getRoots()
+    {
+        return $this
+            ->createQueryBuilder('n')
+            ->where('n.parent IS NULL')
+            ->orderBy('n.name')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function findNodeOrThrowError($slug)
     {
         $documentNode = $this->findOneBySlugWithChildren($slug);

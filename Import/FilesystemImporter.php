@@ -50,7 +50,7 @@ class FilesystemImporter
                 $node
                     ->setParent($currentNode[$depth])
                     ->setName($file->getBaseName())
-                    ->setDepth($targetNode->getDepth + $depth + 1)
+                    ->setDepth($targetNode->getDepth() + $depth + 1)
                 ;
                 $manager->persist($node);
                 $currentNode[$depth+1] = $node;
