@@ -1,13 +1,12 @@
 {% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
 
-{% block dms_sidebar %}
-  {% include 'ErichardDmsBundle:Node:_tree.html.twig' with {'nodes' : nodes} %}
-
-{% endblock %}
-
 {% block dms_breacrumb %}{% endblock %}
 
+{% block dms_sidebar %}
+    {% include 'ErichardDmsBundle:Node:_actions.html.twig' with {'nodes' : nodes} %}
+{% endblock %}
 
 {% block dms_documents %}
-Here a dashboard
+
+    {% include 'ErichardDmsBundle:Node:_gallery.html.twig' with {'documents' : [], 'nodes': nodes} %}
 {% endblock %}
