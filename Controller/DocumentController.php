@@ -406,6 +406,30 @@ class DocumentController extends Controller
         return $response;
     }
 
+    public function deleteAction($document, $node)
+    {
+        $document = $this->findDocumentOrThrowError($document, $node);
+
+        $em = $this->get('doctrine')->getManager();
+        $em->remove($document);
+        $em->flush();
+
+        $this->get('session')->getFlashBag()->add('success', 'Document successfully removed !');
+
+        return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
+    }
+
+    public function removeAction($document, $node)
+    {
+        $document = $this->findDocumentOrThrowError($document, $node);
+
+        return $this->render('ErichardDmsBundle:Document:remove.html.twig', array(
+            'document' => $document,
+            'node'     => $document->getNode()
+        ));
+    }
+
+
     public function findDocumentOrThrowError($document, $node)
     {
         return $this

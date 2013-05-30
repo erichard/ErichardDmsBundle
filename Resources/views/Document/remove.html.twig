@@ -1,0 +1,28 @@
+{% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
+
+{% block dms_documents %}
+
+    <h1>Remove document</h1>
+
+    <form class="form-horizontal" action="{{ path('erichard_dms_delete_document', {'node' : node.slug, 'document': document.slug }) }}" method="POST" novalidate>
+        <input type="hidden" name="_method" value="DELETE">
+        <div class="alert alert-warning alert-block">
+            <h4>Warning !</h4>
+            <p>
+            You are going to delete the <strong>{{ document.name }}</strong> document.
+            </p>
+            <p>
+            This operation could not be canceled ! Continue anyway ?
+            </p>
+
+            <div class="pull-right">
+                <a href="{{ path('erichard_dms_node_list', {'node' : node.slug}) }}" class="btn btn-primary">No !</a>
+                <button type="submit" class="btn btn-danger">Yes sir !</button>
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </form>
+
+{% endblock %}

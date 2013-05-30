@@ -104,3 +104,16 @@ erichard_dms_download_document:
     defaults: { _controller: ErichardDmsBundle:Document:download }
     requirements:
         _method: GET
+
+
+erichard_dms_remove_document:
+    pattern: /dms/{node}/{document}/remove
+    defaults: { _controller: ErichardDmsBundle:Document:remove }
+    requirements:
+        _method: GET
+
+erichard_dms_delete_document:
+    pattern: /dms/{node}/{document}
+    defaults: { _controller: ErichardDmsBundle:Document:delete }
+    requirements:
+        _method: DELETE

@@ -21,7 +21,7 @@
                 <li><a href="{{ path('erichard_dms_edit_document', { 'node': node.slug, 'document': document.slug }) }}"><i class="icon-edit"></i>Edit</a></li>
                 {% endif %}
                 {% if is_granted('DOCUMENT_DELETE', document) %}
-                <li><a href=""><i class="icon-trash"></i>Delete</a></li>
+                <li><a href="{{ path('erichard_dms_remove_document', { 'node': node.slug, 'document': document.slug }) }}"><i class="icon-trash"></i>Delete</a></li>
                 {% endif %}
                 <li class="nav-header">Partage</li>
                 <li><a href=""><i class="icon-envelope"></i>Email</a></li>
