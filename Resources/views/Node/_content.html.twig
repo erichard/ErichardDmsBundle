@@ -1,24 +1,24 @@
 
 <ul class="media-list">
-{% for node in nodes %}
- <li class="media">
-    <a class="pull-left" href="#">
-       <i class="icon-folder-close"></i>
-    </a>
-    <div class="media-body">
-      <h4 class="media-heading"> <a href="{{ path('erichard_dms_node_list', { 'node' : node.slug }) }}" title="{{ node.name }}">{{ node.name }}</a></h4>
-    </div>
-  </li>
-{% endfor %}
+    {% for node in nodes %}
+     <li class="media">
+        <a class="pull-left" href="#">
+           <i class="icon-folder-close"></i>
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading"> <a href="{{ path('erichard_dms_node_list', { 'node' : node.slug }) }}" title="{{ node.name }}">{{ node.name }}</a></h4>
+        </div>
+      </li>
+    {% endfor %}
 
 
   {% for document in documents %}
   <li class="media">
-    <a class="pull-left" href="#">
+    <a class="pull-left" href="{{ path('erichard_dms_show_document', { 'node' : node.slug, 'document' : document.slug }) }}">
       <img class="media-object" src="{{ thumbUrl(document, parameter('dms.content.image_size')) }}" />
     </a>
     <div class="media-body">
-      <h4 class="media-heading">{{ document.name }}</h4>
+      <h4 class="media-heading"><a href="{{ path('erichard_dms_show_document', { 'node' : node.slug, 'document' : document.slug }) }}">{{ document.name }}</a></h4>
     </div>
   </li>
   {% endfor %}

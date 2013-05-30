@@ -14,7 +14,7 @@ class NodeController extends Controller
 
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
             'node'       => $documentNode,
-            'mode'       => $this->get('request')->query->get('mode', 'gallery'),
+            'mode'       => $this->get('request')->query->get('mode', 'table'),
             'show_nodes' => $this->container->getParameter('dms.workspace.show_nodes')
         ));
     }
