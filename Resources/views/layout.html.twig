@@ -50,7 +50,6 @@
       {% for flashMessage in app.session.flashbag.all %}
         <div class="alert">
           <button type="button" class="close" data-dismiss="alert">×</button>
-          {{ dump(type) }}
           <strong>Warning!</strong> {{ flashMessage }}
         </div>
       {% endfor %}
