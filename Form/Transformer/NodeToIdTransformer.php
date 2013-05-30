@@ -25,6 +25,10 @@ class NodeToIdTransformer implements DataTransformerInterface
 
     public function reverseTransform($id)
     {
+        if (null === $id) {
+            return null;
+        }
+
         return $this
             ->registry
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')

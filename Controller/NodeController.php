@@ -79,12 +79,11 @@ class NodeController extends Controller
                 'form' => $form->createView()
             ));
         } else {
-
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
-                $documentNode->getMetadata($metaName)->setValue($metaValue);
+                $newNode->getMetadata($metaName)->setValue($metaValue);
             }
-            $documentNode->removeEmptyMetadatas();
+            $newNode->removeEmptyMetadatas();
 
             $em = $this->get('doctrine')->getManager();
             $em->persist($newNode);

@@ -44,6 +44,10 @@ class NodeType extends AbstractType
             $data = $event->getData();
             $form = $event->getForm();
 
+            if (null === $data || null === $data->getId() ) {
+                return;
+            }
+
             $repository = $registry
                 ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
             ;
@@ -77,6 +81,7 @@ class NodeType extends AbstractType
                 new GedmoTreeIterator($tree), \RecursiveIteratorIterator::SELF_FIRST
             );
 
+            $choices = array();
             foreach ($iterator as $node) {
                 $depth = $iterator->getDepth();
                 $choices[$node['id']] = str_repeat("&nbsp;&nbsp;&nbsp;", $depth).$node['name'];
