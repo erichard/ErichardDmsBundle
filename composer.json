@@ -9,7 +9,8 @@
         "imagine/imagine": "*",
         "stof/doctrine-extensions-bundle": "dev-master",
         "doctrine/doctrine-fixtures-bundle": "dev-master",
-        "doctrine/data-fixtures": "dev-master"
+        "doctrine/data-fixtures": "dev-master",
+        "phansys/getid3": "2.1.*"
     },
     "require-dev": {
         "nelmio/alice": "dev-master",
