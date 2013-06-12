@@ -28,6 +28,16 @@ Erichard\DmsBundle\Entity\DocumentNode:
                 - treeLevel
         enabled:
             type: boolean
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
     manyToOne:
         parent:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

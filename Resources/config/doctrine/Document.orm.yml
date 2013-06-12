@@ -28,6 +28,16 @@ Erichard\DmsBundle\Entity\Document:
             nullable: true
         enabled:
             type: boolean
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
     manyToOne:
         node:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
