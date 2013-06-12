@@ -94,3 +94,10 @@ services:
             - Erichard\DmsBundle\Entity\DocumentNode
         calls:
             - [ setSecurityContext, [ @security.context ]]
+
+    dms.manager:
+        class:  Erichard\DmsBundle\DmsManager
+        arguments:
+            - @doctrine
+            - @security.context
+            - @router

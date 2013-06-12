@@ -21,20 +21,10 @@ class NodeController extends Controller
 
     public function indexAction()
     {
-        $nodes = $this
-            ->get('doctrine')
-            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findByParent(null)
-        ;
-
-        $securityContext = $this->get('security.context');
-
-        $nodes = array_filter($nodes, function($node) use ($securityContext) {
-            return $securityContext->isGranted('VIEW', $node);
-        });
+        $dmsManager = $this->get('dms.manager');
 
         $response = $this->render('ErichardDmsBundle:Node:index.html.twig', array(
-            'nodes' => $nodes
+            'nodes' => $dmsManager->getRoots()
         ));
 
         return $response;
@@ -153,8 +143,8 @@ class NodeController extends Controller
     public function findNodeOrThrowError($node)
     {
         return $this
-            ->get('dms.repository.documentNode')
-            ->findNodeOrThrowError($node)
+            ->get('dms.manager')
+            ->getNode($node)
         ;
     }
 }

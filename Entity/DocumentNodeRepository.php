@@ -8,18 +8,6 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class DocumentNodeRepository extends ClosureTreeRepository
 {
-    protected $securityContext;
-
-    public function setSecurityContext(SecurityContextInterface $securityContext)
-    {
-        $this->securityContext = $securityContext;
-    }
-
-    public function getSecurityContext()
-    {
-        return $this->securityContext;
-    }
-
     public function findOneBySlugWithChildren($slug)
     {
         return $this
@@ -45,46 +33,6 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->getQuery()
             ->getResult()
         ;
-    }
-
-    public function findNodeOrThrowError($slug)
-    {
-        $documentNode = $this->findOneBySlugWithChildren($slug);
-
-        if (null == $documentNode) {
-            throw new NotFoundHttpException(sprintf('Node not found : %s', $slug));
-        }
-
-        if (!$this->getSecurityContext()->isGranted('VIEW', $documentNode)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this node.');
-        }
-
-        foreach ($documentNode->getNodes() as $node) {
-            if (!$this->getSecurityContext()->isGranted('VIEW', $node)) {
-                $documentNode->removeNode($node);
-            }
-        }
-
-        foreach ($documentNode->getDocuments() as $document) {
-            if (!$this->getSecurityContext()->isGranted('VIEW', $document)) {
-                $documentNode->removeDocument($document);
-            }
-        }
-
-        $metadatas = $this
-            ->getEntityManager()
-            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
-            ->findByScope(array('node', 'both'))
-        ;
-
-        foreach ($metadatas as $m) {
-            if (!$documentNode->hasMetadata($m->getName())) {
-                $metadata = new DocumentNodeMetadata($m);
-                $documentNode->addMetadata($metadata);
-            }
-        }
-
-        return $documentNode;
     }
 
     public function getNodeAuthorizationsByRoles($id, array $roles)
