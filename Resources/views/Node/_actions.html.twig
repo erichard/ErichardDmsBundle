@@ -27,9 +27,4 @@
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'content'}) }}"><i class="icon-th-list"></i>Content</a></li>
   <li><a href="{{ path('erichard_dms_node_list', {'node' : node.slug, 'mode' : 'table'}) }}"><i class="icon-table"></i>Table</a></li>
 </ul>
-{% else %}
-<ul class="nav nav-list">
-  <li class="nav-header">Actions</li>
-  <li><a href="#"><i class="icon-plus"></i>Add root</a></li>
-</ul>
 {% endif %}
