@@ -19,7 +19,10 @@ class DmsExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            'filesize' => new \Twig_Filter_Method($this, 'getFileSize')
+            'filesize' => new \Twig_Filter_Method($this, 'getFileSize'),
+            'shorten'  => new \Twig_Filter_Method($this, 'shorten', array(
+                'is_safe' => array('html')
+            ))
         );
     }
 
@@ -54,6 +57,21 @@ class DmsExtension extends \Twig_Extension
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
             ->getRoots()
         ;
+    }
+
+    /**
+     * Reduce a string by the middle
+     */
+    public function shorten($string, $max = 100, $append = '&hellip;')
+    {
+        if (strlen($string) <= $length){
+            $result = $string;
+        } else {
+            $offset = floor($length / 2) - 1;
+            $result = mb_substr($string, 0, $offset) . $append . mb_substr($string,strlen($string)-$offset);
+        }
+
+        return $result;
     }
 
     public function getName()
