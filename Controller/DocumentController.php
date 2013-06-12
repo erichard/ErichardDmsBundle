@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use \GetId3\GetId3Core as GetId3;
 
 class DocumentController extends Controller
 {
@@ -323,7 +324,7 @@ class DocumentController extends Controller
 
     public function previewAction($dimension, $document, $node)
     {
-        list($width, $height) = explode('x', $dimension);
+        list($width, $height) = array_map('intval', explode('x', $dimension));
 
         $request = $this->get('request');
         $imagine = new Imagine();
@@ -331,13 +332,11 @@ class DocumentController extends Controller
         $mode    = ImageInterface::THUMBNAIL_INSET;
 
         $document = $this->findDocumentOrThrowError($document, $node);
+        $absPath  = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
 
-        $absPath = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
-
-        if (filesize($absPath) >= 5000000) {
-            $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
-            $image = $imagine->open($picture);
-        } else {
+        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100) {
+            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
+        } elseif(strpos('image',$mime) !== false) {
             try {
                 if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
                     $absPath .= '[0]';
@@ -347,22 +346,23 @@ class DocumentController extends Controller
                 $imagick->setResolution(72, 72);
                 $imagick->setCompressionQuality(90);
                 $image = new \Imagine\Imagick\Image($imagick);
+
+                $cacheFile = $kernel->getRootDir() . '/../web' . $request->getRequestUri();
+
+                if (!is_dir(dirname($cacheFile))) {
+                    mkdir(dirname($cacheFile), 0777, true);
+                }
+
+                $image
+                    ->thumbnail($size, $mode)
+                    ->save($cacheFile, array('quality' => 90))
+                ;
             } catch (\ImagickException $e) {
-                $picture = $this->get('kernel')->locateResource('@ErichardDmsBundle/Resources/public/img/picture.png');
-                $image = $imagine->open($picture);
+                $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
             }
+        } else {
+            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
         }
-
-        $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
-
-        if (!is_dir(dirname($cacheFile))) {
-            mkdir(dirname($cacheFile), 0777, true);
-        }
-
-        $image
-            ->thumbnail($size, $mode)
-            ->save($cacheFile, array('quality' => 90))
-        ;
 
         $expireDate = new \DateTime();
         $expireDate->modify('+10 years');
@@ -380,6 +380,47 @@ class DocumentController extends Controller
         $response->setSharedMaxAge('3600');
 
         return $response;
+    }
+
+    public function getMimetypeImage($document, $targetSize)
+    {
+        if (null === $document = $document->getMimeType()) {
+            return null;
+        }
+
+        $sizes = array(16,22,24,32,48,64,96);
+        foreach ($sizes as $size) {
+            if ($targetSize < $size) {
+                break;
+            }
+        }
+
+        $mimetypes = array(
+            str_replace('/', '-', $document),
+            explode('/',$document)[0]
+        );
+
+        $icon = null;
+        foreach ($mimetypes as $mimetype) {
+            try {
+                $icon = $this
+                    ->get('kernel')
+                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$mimetype.'.png')
+                ;
+                break;
+            } catch (\InvalidArgumentException $e) {}
+        }
+
+        if (null === $icon) {
+            try {
+                $icon = $this
+                    ->get('kernel')
+                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/unknown.png')
+                ;
+            } catch (\InvalidArgumentException $e) {}
+        }
+
+        return $icon;
     }
 
     public function downloadAction($document, $node)
@@ -433,16 +474,16 @@ class DocumentController extends Controller
     public function findDocumentOrThrowError($document, $node)
     {
         return $this
-            ->get('dms.repository.document')
-            ->findDocumentOrThrowError($document, $node)
+            ->get('dms.manager')
+            ->getDocument($document, $node)
         ;
     }
 
     public function findNodeOrThrowError($node)
     {
         return $this
-            ->get('dms.repository.documentNode')
-            ->findNodeOrThrowError($node)
+            ->get('dms.manager')
+            ->getNode($node)
         ;
     }
 

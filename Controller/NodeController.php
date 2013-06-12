@@ -6,6 +6,7 @@ use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+
 class NodeController extends Controller
 {
     public function listAction($node)

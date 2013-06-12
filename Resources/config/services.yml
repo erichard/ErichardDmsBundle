@@ -100,4 +100,4 @@ services:
         arguments:
             - @doctrine
             - @security.context
-            - @router
+            - { storage_path: %dms.storage.path% }
