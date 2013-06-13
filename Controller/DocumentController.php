@@ -336,7 +336,7 @@ class DocumentController extends Controller
 
         if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100) {
             $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
-        } elseif(strpos('image',$mime) !== false) {
+        } elseif(strpos('image', $document->getMimetype()) !== false || strpos('pdf', $document->getMimetype()) !== false) {
             try {
                 if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
                     $absPath .= '[0]';
