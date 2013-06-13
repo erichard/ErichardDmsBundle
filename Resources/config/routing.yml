@@ -117,3 +117,10 @@ erichard_dms_delete_document:
     defaults: { _controller: ErichardDmsBundle:Document:delete }
     requirements:
         _method: DELETE
+
+# Link management
+erichard_dms_link_document:
+    pattern: /{node}/{document}/link
+    defaults: { _controller: ErichardDmsBundle:Document:link }
+    requirements:
+        _method: POST|GET

@@ -21,6 +21,8 @@ class Document implements DocumentInterface
     protected $metadatas;
     protected $createdAt;
     protected $updatedAt;
+    protected $parent;
+    protected $aliases;
 
     public function __construct(DocumentNodeInterface $node)
     {
@@ -28,6 +30,15 @@ class Document implements DocumentInterface
         $this->type = DocumentInterface::TYPE_FILE;
         $this->enabled = true;
         $this->metadatas = new ArrayCollection();
+        $this->aliases = new ArrayCollection();
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
+        $this->slug = null;
+        $this->createdAt = null;
+        $this->updatedAt = null;
     }
 
     public function getId()
@@ -54,6 +65,13 @@ class Document implements DocumentInterface
     public function getNode()
     {
         return $this->node;
+    }
+
+    public function setNode(DocumentNodeInterface $node)
+    {
+        $this->node = $node;
+
+        return $this;
     }
 
     public function getPath()
@@ -86,7 +104,7 @@ class Document implements DocumentInterface
 
     public function getFilename()
     {
-        return $this->filename;
+        return $this->isLink()? $this->parent->getFilename() : $this->filename;
     }
 
     public function getName()
@@ -193,6 +211,45 @@ class Document implements DocumentInterface
         }
 
         return false;
+    }
+
+    public function getAliases()
+    {
+        return $this->aliases;
+    }
+
+    public function addAlias(DocumentInterface $document)
+    {
+        if (!$this->aliases->contains($document)) {
+            $document->setParent($this);
+            $this->aliases->add($document);
+        }
+
+        return $this;
+    }
+
+    public function removeAlias(DocumentInterface $document)
+    {
+        if ($this->aliases->contains($document)) {
+            $this->aliases->removeElement($document);
+        }
+
+        return $this;
+    }
+
+    public function setParent(DocumentInterface $document)
+    {
+        $this->parent = $document;
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    public function isLink()
+    {
+        return $this->parent !== null;
     }
 
     public function getComputedFilename()

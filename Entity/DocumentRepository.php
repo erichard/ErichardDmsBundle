@@ -26,10 +26,13 @@ class DocumentRepository extends EntityRepository
     {
         return $this
             ->createQueryBuilder('d')
-            ->addSelect('d', 'm')
+            ->addSelect('d', 'm', 'p')
+            ->innerJoin('d.node', 'n')
+            ->leftJoin('d.parent', 'p')
             ->leftJoin('d.metadatas', 'm')
-            ->where('d.slug = :document')
+            ->where('d.slug = :document AND n.slug = :node')
             ->setParameter('document', $documentSlug)
+            ->setParameter('node', $nodeSlug)
             ->getQuery()
             ->getOneOrNullResult()
         ;

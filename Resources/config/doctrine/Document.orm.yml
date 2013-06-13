@@ -18,9 +18,12 @@ Erichard\DmsBundle\Entity\Document:
         slug:
             type: string
             length: 128
+            unique: true
             gedmo:
                 slug:
                     fields: [name]
+                    unique: true
+                    updatable: true
         type:
             type: string
         mimeType:
@@ -44,9 +47,17 @@ Erichard\DmsBundle\Entity\Document:
             inversedBy: documents
             joinColumn:
                 onDelete: CASCADE
+        parent:
+            targetEntity: Erichard\DmsBundle\Entity\Document
+            inversedBy: aliases
+            joinColumn:
+                onDelete: CASCADE
     oneToMany:
         metadatas:
             targetEntity: Erichard\DmsBundle\Entity\DocumentMetadata
             mappedBy: document
             cascade: [ persist ]
+        aliases:
+            targetEntity: Erichard\DmsBundle\Entity\Document
+            mappedBy: parent
 

@@ -24,6 +24,22 @@ class DocumentNodeRepository extends ClosureTreeRepository
         ;
     }
 
+    public function findOneByIdWithChildren($id)
+    {
+        return $this
+            ->createQueryBuilder('n')
+            ->addSelect('nodes','d', 'p', 'm')
+            ->leftJoin('n.nodes', 'nodes', 'nodes.id')
+            ->leftJoin('n.documents', 'd', 'd.id')
+            ->leftJoin('n.parent', 'p', 'd.id')
+            ->leftJoin('n.metadatas', 'm', 'm.metadata.name')
+            ->where('n.id = :node')
+            ->setParameter('node', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     public function getRoots()
     {
         return $this

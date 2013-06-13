@@ -1,0 +1,61 @@
+{% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
+
+{% block dms_documents %}
+
+    <h1>Link document</h1>
+
+    <div class="box">
+        <div class="box-head">Existing aliases</div>
+        <div class="box-body">
+            <table>
+                {% for alias in document.aliases %}
+                <tr>
+                    <td><a href="{{ path('erichard_dms_show_document', {'node' : alias.node.slug, 'document': alias.slug }) }}">{{ alias.node.name }}</a></td>
+                    <td><a class="btn btn-danger btn-small" href="{{ path('erichard_dms_remove_document', {'node' : alias.node.slug, 'document': alias.slug }) }}"><i class="icon-remove"></i> Remove</a></a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>No aliases</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-head">
+            Add an alias in:
+            {% if target is not null %}
+            {% for parent in target.path %}
+                {{ parent.name}}{% if not loop.last %} > {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="box-body">
+        <form class="form-horizontal" action="{{ path('erichard_dms_link_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST" novalidate>
+            {% set nodes = (target is null)? roots() : target.nodes %}
+
+            {% if nodes|length > 0 %}
+            <ul id="rootList" class="unstyled">
+            {% for node in nodes %}
+                <li id="node_{{ node.id }}"><a href="{{ path('erichard_dms_link_document', {'node' : document.node.slug, 'document': document.slug, 'target': node.slug}) }}">{{ node.name }}</a></li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if target is not null %}
+                <input type="hidden" name="linkTo" value="{{ target.id }}" />
+                <button type="submit" id="linkDocument" class="btn btn-success"><i class="icon-plus"></i> Ajouter</button>
+            {% endif %}
+        </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}

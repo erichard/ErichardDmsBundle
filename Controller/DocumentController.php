@@ -451,13 +451,25 @@ class DocumentController extends Controller
     {
         $document = $this->findDocumentOrThrowError($document, $node);
 
+        if ($document->isLink()) {
+            $redirectionTarget =$this->generateUrl('erichard_dms_link_document', array(
+                'node'      => $document->getParent()->getNode()->getSlug(),
+                'document'  => $document->getParent()->getSlug(),
+            ));
+        } else {
+            $redirectionTarget = $this->generateUrl('erichard_dms_node_list', array(
+                'node' => $document->getNode()->getSlug()
+            ));
+        }
+
         $em = $this->get('doctrine')->getManager();
         $em->remove($document);
         $em->flush();
 
         $this->get('session')->getFlashBag()->add('success', 'Document successfully removed !');
 
-        return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
+
+        return $this->redirect($redirectionTarget);
     }
 
     public function removeAction($document, $node)
@@ -470,6 +482,51 @@ class DocumentController extends Controller
         ));
     }
 
+    public function linkAction($document, $node)
+    {
+        $request    = $this->get('request');
+        $dmsManager = $this->get('dms.manager');
+        $document = $this->findDocumentOrThrowError($document, $node);
+
+        $response = new Response();
+        if ($request->isMethod('POST')) {
+            $nodeId = $request->request->getInt('linkTo');
+            $targetNode = $dmsManager->getNodeById($nodeId);
+            if (!$this->get('security.context')->isGranted('DOCUMENT_ADD', $targetNode)) {
+                throw new AccessDeniedHttpException("You are not allowed to access this document");
+            }
+
+            $link = clone $document;
+            $document->addAlias($link);
+            $link->setNode($targetNode);
+            $link->removeEmptyMetadatas();
+
+            $em = $this->get('doctrine')->getManager();
+            $em->persist($link);
+            $em->flush();
+
+            $response->setStatusCode(201);
+        }
+
+        $targetNodeSlug= $request->query->get('target');
+
+        if (null !== $targetNodeSlug)  {
+            $target = $dmsManager->getNode($targetNodeSlug);
+            foreach ($target->getNodes() as $targetSubNode) {
+                if (!$this->get('security.context')->isGranted('DOCUMENT_ADD', $targetSubNode)) {
+                    $target->removeNode($targetSubNode);
+                }
+            }
+        } else {
+            $target = null;
+        }
+
+        return $this->render('ErichardDmsBundle:Document:link.html.twig', array(
+            'document'      => $document,
+            'node'          => $document->getNode(),
+            'target'        => $target,
+        ), $response);
+    }
 
     public function findDocumentOrThrowError($document, $node)
     {

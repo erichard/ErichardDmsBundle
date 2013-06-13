@@ -36,6 +36,52 @@ class DmsManager
         });
     }
 
+    public function getNodeById($nodeId)
+    {
+        $documentNode = $nodes = $this
+            ->registry
+            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
+            ->findOneByIdWithChildren($nodeId)
+        ;
+
+        if (null == $documentNode) {
+            throw new NotFoundHttpException(sprintf('Node not found : %s', $nodeSlug));
+        }
+
+        if (!$this->securityContext->isGranted('VIEW', $documentNode)) {
+            throw new AccessDeniedHttpException('You are not allowed to view this node.');
+        }
+
+        foreach ($documentNode->getNodes() as $node) {
+            if (!$this->securityContext->isGranted('VIEW', $node)) {
+                $documentNode->removeNode($node);
+            }
+        }
+
+        foreach ($documentNode->getDocuments() as $document) {
+            if (!$this->securityContext->isGranted('VIEW', $document)) {
+                $documentNode->removeDocument($document);
+            }
+
+            $this->prepareDocument($document);
+        }
+
+        $metadatas = $this
+            ->registry
+            ->getRepository('Erichard\DmsBundle\Entity\Metadata')
+            ->findByScope(array('node', 'both'))
+        ;
+
+        foreach ($metadatas as $m) {
+            if (!$documentNode->hasMetadata($m->getName())) {
+                $metadata = new DocumentNodeMetadata($m);
+                $documentNode->addMetadata($metadata);
+            }
+        }
+
+        return $documentNode;
+    }
+
     public function getNode($nodeSlug)
     {
         $documentNode = $nodes = $this
