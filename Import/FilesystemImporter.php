@@ -69,7 +69,12 @@ class FilesystemImporter
                 if (!is_dir(dirname($destFile))) {
                     mkdir(dirname($destFile), 0755, true);
                 }
-                copy($file->getRealPath(), $destFile);
+
+                if ($this->options['copy']) {
+                    copy($file->getRealPath(), $destFile);
+                } else {
+                    rename($file->getRealPath(), $destFile);
+                }
 
                 $manager->persist($document);
                 $manager->flush();

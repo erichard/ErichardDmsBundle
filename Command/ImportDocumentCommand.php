@@ -19,6 +19,8 @@ class ImportDocumentCommand extends ContainerAwareCommand
             ->setName('dms:document:import')
             ->setDescription('Import a document tree into the DMS.')
             ->addArgument('source', InputArgument::REQUIRED, 'From where the document will be imported.')
+            ->addOption('copy', null, InputOption::VALUE_NONE, 'Copy files instead of move.')
+            ->addOption('name', null, InputOption::VALUE_REQUIRED, 'Name of the import directory that will be created.', 'Imported on '. date('Y-m-d') . ' at '. date('H:i'))
             ->addOption('exclude', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Exclude some files or directories.')
         ;
     }
@@ -30,11 +32,12 @@ class ImportDocumentCommand extends ContainerAwareCommand
 
         // Prepare the destination node
         $dest = new DocumentNode();
-        $dest->setName('Imported on '. date('Y-m-d') . ' at '. date('H:i'));
+        $dest->setName($input->getOption('name'));
 
         // Launch the importer
         $importer = new FilesystemImporter($this->getContainer()->get('doctrine')->getManager(), array(
-            'storage_path' => $this->getContainer()->getParameter('dms.storage.path')
+            'storage_path' => $this->getContainer()->getParameter('dms.storage.path'),
+            'copy'         => $input->getOption('copy')
         ));
         $importer->import($sourceDir, $dest, $input->getOption('exclude'));
     }
