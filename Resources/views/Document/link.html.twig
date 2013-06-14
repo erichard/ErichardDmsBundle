@@ -1,5 +1,9 @@
 {% extends dms_layout|default('ErichardDmsBundle::layout.html.twig') %}
 
+{% block breadcrumb_inner %}
+    <li class="current">Link document</li>
+{% endblock %}
+
 {% block dms_documents %}
 
     <h1>Link document</h1>
@@ -11,10 +15,9 @@
             <table cellpadding="0" cellspacing="0" width="100%" class="tDefault">
                 {% for alias in document.aliases %}
                 <tr>
+                    <td>{{ alias.node.name }}</td>
                     <td>
-                        <a href="{{ path('erichard_dms_show_document', {'node' : alias.node.slug, 'document': alias.slug }) }}">{{ alias.node.name }}</a></td>
-                    </td>
-                    <td>
+                        <a class="btn btn-small" href="{{ path('erichard_dms_show_document', {'node' : alias.node.slug, 'document': alias.slug }) }}"><i class="icon-search"></i> See</a>
                         {% set path = path('erichard_dms_remove_document', {
                             'node' : alias.node.slug,
                             'document' : alias.slug,

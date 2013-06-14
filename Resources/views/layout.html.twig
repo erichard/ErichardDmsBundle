@@ -81,6 +81,14 @@
                         {% endif %}
                     </li>
                 {% endfor %}
+
+                {% if document is defined and block('breadcrumb_inner') is empty %}
+                <li class="active">{{ document.name }}</li>
+                {% elseif document is defined %}
+                <li><a href="{{ path('erichard_dms_show_document', { node: document.node.slug, document: document.slug}) }}">{{ document.name }}</a></li>
+                {% endif %}
+
+                {% block breadcrumb_inner %}{% endblock %}
             {% endblock %}
           </ul>
           {% block dms_documents %}{% endblock %}
