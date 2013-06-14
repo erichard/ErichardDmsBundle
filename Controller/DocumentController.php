@@ -451,16 +451,11 @@ class DocumentController extends Controller
     {
         $document = $this->findDocumentOrThrowError($document, $node);
 
-        if ($document->isLink()) {
-            $redirectionTarget =$this->generateUrl('erichard_dms_link_document', array(
-                'node'      => $document->getParent()->getNode()->getSlug(),
-                'document'  => $document->getParent()->getSlug(),
-            ));
-        } else {
-            $redirectionTarget = $this->generateUrl('erichard_dms_node_list', array(
-                'node' => $document->getNode()->getSlug()
-            ));
-        }
+        $parentListUrl = $this->generateUrl('erichard_dms_node_list', array(
+            'node' => $document->getNode()->getSlug()
+        ));
+
+        $backUrl  = $this->get('request')->request->get('back', $parentListUrl);
 
         $em = $this->get('doctrine')->getManager();
         $em->remove($document);
@@ -468,8 +463,7 @@ class DocumentController extends Controller
 
         $this->get('session')->getFlashBag()->add('success', 'Document successfully removed !');
 
-
-        return $this->redirect($redirectionTarget);
+        return $this->redirect($backUrl);
     }
 
     public function removeAction($document, $node)
@@ -478,7 +472,8 @@ class DocumentController extends Controller
 
         return $this->render('ErichardDmsBundle:Document:remove.html.twig', array(
             'document' => $document,
-            'node'     => $document->getNode()
+            'node'     => $document->getNode(),
+            'backUrl'  => $this->get('request')->query->get('back')
         ));
     }
 
@@ -486,9 +481,10 @@ class DocumentController extends Controller
     {
         $request    = $this->get('request');
         $dmsManager = $this->get('dms.manager');
-        $document = $this->findDocumentOrThrowError($document, $node);
+        $documentSlug = $document;
+        $nodeSlug = $node;
+        $document = $this->findDocumentOrThrowError($documentSlug, $nodeSlug);
 
-        $response = new Response();
         if ($request->isMethod('POST')) {
             $nodeId = $request->request->getInt('linkTo');
             $targetNode = $dmsManager->getNodeById($nodeId);
@@ -505,7 +501,10 @@ class DocumentController extends Controller
             $em->persist($link);
             $em->flush();
 
-            $response->setStatusCode(201);
+            return $this->redirect($this->generateUrl('erichard_dms_link_document', array(
+                'node' => $nodeSlug,
+                'document' => $documentSlug
+            )));
         }
 
         $targetNodeSlug= $request->query->get('target');
@@ -525,7 +524,7 @@ class DocumentController extends Controller
             'document'      => $document,
             'node'          => $document->getNode(),
             'target'        => $target,
-        ), $response);
+        ));
     }
 
     public function findDocumentOrThrowError($document, $node)

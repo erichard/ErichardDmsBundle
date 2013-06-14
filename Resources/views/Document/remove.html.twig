@@ -6,6 +6,7 @@
 
     <form class="form-horizontal" action="{{ path('erichard_dms_delete_document', {'node' : node.slug, 'document': document.slug }) }}" method="POST" novalidate>
         <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="back" value="{{ backUrl }}">
         <div class="alert alert-warning alert-block">
             <h4>Warning !</h4>
             <p>
