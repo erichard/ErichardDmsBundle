@@ -17,13 +17,13 @@
                 <tr>
                     <td>{{ alias.node.name }}</td>
                     <td>
-                        <a class="btn btn-small" href="{{ path('erichard_dms_show_document', {'node' : alias.node.slug, 'document': alias.slug }) }}"><i class="icon-search"></i> See</a>
+                        <a class="btn" href="{{ path('erichard_dms_show_document', {'node' : alias.node.slug, 'document': alias.slug }) }}"><i class="icon-search"></i> See</a>
                         {% set path = path('erichard_dms_remove_document', {
                             'node' : alias.node.slug,
                             'document' : alias.slug,
                             'back' : app.request.requestUri
                         }) %}
-                        <a class="btn btn-danger btn-small" href="{{ path }}"><i class="icon-unlink"></i> Remove</a>
+                        <a class="btn btn-danger" href="{{ path }}"><i class="icon-unlink"></i> Remove</a>
                     </td>
                 </tr>
                 {% endfor %}
