@@ -77,7 +77,7 @@ erichard_dms_add_document:
 
 erichard_dms_create_document:
     pattern: /{node}/add-document
-    defaults: { _controller: ErichardDmsBundle:Document:create }
+    defaults: { _controller: ErichardDmsBundle:Document:add }
     requirements:
         _method: POST
 
