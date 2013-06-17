@@ -38,6 +38,34 @@ class DocumentRepository extends EntityRepository
         ;
     }
 
+    public function findByMetadatas(array $metadatas = array(), array $sortBy = array(), $limit = 10)
+    {
+        $qb = $this
+            ->createQueryBuilder('d')
+            ->innerJoin('d.metadatas', 'dm')
+            ->innerJoin('dm.metadata', 'm')
+        ;
+
+        $idx = 0;
+        foreach ($metadatas as $metaName => $metaValue) {
+            $qb
+                ->andWhere("m.name = :meta_$idx AND dm.value = :value_$idx")
+                ->setParameter('meta_'.$idx, $metaName)
+                ->setParameter('value_'.$idx, $metaValue)
+            ;
+            $idx++;
+        }
+
+        foreach ($sortBy as $key => $value) {
+            $qb->addOrderBy($qb->getRootAlias().'.'.$key, $value);
+        }
+
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+
     public function findDocumentOrThrowError($documentSlug, $nodeSlug)
     {
         $document = $this->findOneBySlugAndNode($documentSlug, $nodeSlug);
