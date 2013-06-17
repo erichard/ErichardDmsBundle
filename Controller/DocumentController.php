@@ -336,7 +336,7 @@ class DocumentController extends Controller
 
         if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100) {
             $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
-        } elseif(strpos('image', $document->getMimetype()) !== false || strpos('pdf', $document->getMimetype()) !== false) {
+        } elseif(strpos($document->getMimetype(), 'image') !== false || strpos($document->getMimetype(), 'pdf') !== false) {
             try {
                 if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
                     $absPath .= '[0]';
@@ -347,7 +347,7 @@ class DocumentController extends Controller
                 $imagick->setCompressionQuality(90);
                 $image = new \Imagine\Imagick\Image($imagick);
 
-                $cacheFile = $kernel->getRootDir() . '/../web' . $request->getRequestUri();
+                $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
 
                 if (!is_dir(dirname($cacheFile))) {
                     mkdir(dirname($cacheFile), 0777, true);
