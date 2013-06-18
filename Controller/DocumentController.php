@@ -348,49 +348,47 @@ class DocumentController extends Controller
         $document = $this->findDocumentOrThrowError($document, $node);
         $absPath  = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
 
-        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100) {
-            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
-        } elseif(strpos($document->getMimetype(), 'image') !== false || strpos($document->getMimetype(), 'pdf') !== false) {
-            try {
-                if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
-                    $absPath .= '[0]';
-                }
-                $imagick = new \Imagick($absPath);
-                $imagick->setCompression(\Imagick::COMPRESSION_LZW);
-                $imagick->setResolution(72, 72);
-                $imagick->setCompressionQuality(90);
-                $image = new \Imagine\Imagick\Image($imagick);
+        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100 ||
+            strpos($document->getMimetype(), 'image') === false && strpos($document->getMimetype(), 'pdf') === false) {
+            $absPath = $this->getMimetypeImage($document, max([$width, $height]));
+        }
 
-                $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
+        $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
 
-                if (!is_dir(dirname($cacheFile))) {
-                    mkdir(dirname($cacheFile), 0777, true);
-                }
-
-                $image
-                    ->thumbnail($size, $mode)
-                    ->save($cacheFile, array('quality' => 90))
-                ;
-            } catch (\ImagickException $e) {
-                $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
+        try {
+            if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
+                $absPath .= '[0]';
             }
-        } else {
-            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
+            $imagick = new \Imagick($absPath);
+            $imagick->setCompression(\Imagick::COMPRESSION_LZW);
+            $imagick->setResolution(72, 72);
+            $imagick->setCompressionQuality(90);
+            $image = new \Imagine\Imagick\Image($imagick);
+
+            $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
+
+            if (!is_dir(dirname($cacheFile))) {
+                mkdir(dirname($cacheFile), 0777, true);
+            }
+
+            $image
+                ->thumbnail($size, $mode)
+                ->save($cacheFile, array('quality' => 90))
+            ;
+        } catch (\ImagickException $e) {
+            throw $this->creatNotFoundException('Error with image.');
         }
 
         $expireDate = new \DateTime();
         $expireDate->modify('+10 years');
 
-        $response = new Response();
+        $response = new FileResponse();
+        $response->setFilename($cacheFile);
 
         $response->setPublic();
         $response->setExpires($expireDate);
-        $response->setContent(file_get_contents($cacheFile));
-
-        $finfo = new \finfo(FILEINFO_MIME);
 
         $response->headers->set('Content-Type', $finfo->file($cacheFile));
-        $response->setPublic();
         $response->setSharedMaxAge('3600');
 
         return $response;
