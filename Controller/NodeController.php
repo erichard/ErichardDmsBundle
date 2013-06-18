@@ -3,6 +3,7 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\DocumentNode;
+use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -91,6 +92,8 @@ class NodeController extends Controller
     public function updateAction($node)
     {
         $documentNode = $this->findNodeOrThrowError($node);
+        $em = $this->get('doctrine')->getManager();
+        $em->refresh($documentNode);
 
         $form = $this->createForm('dms_node', $documentNode);
         $form->bind($this->get('request'));
@@ -101,13 +104,21 @@ class NodeController extends Controller
                 'form' => $form->createView()
             ));
         } else {
+
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
+                if (!$documentNode->hasMetadata($metaName)) {
+                    $metadata = new DocumentNodeMetadata($em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName));
+                    $documentNode->addMetadata($metadata);
+                }
                 $documentNode->getMetadata($metaName)->setValue($metaValue);
+                $em->persist($documentNode->getMetadata($metaName));
             }
 
-            $documentNode->removeEmptyMetadatas();
-            $em = $this->get('doctrine')->getManager();
+            foreach ($documentNode->getDocuments() as $document) {
+                $document->removeEmptyMetadatas();
+            }
+
             $em->persist($documentNode);
             $em->flush();
 

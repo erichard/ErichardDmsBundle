@@ -58,5 +58,4 @@ Erichard\DmsBundle\Entity\DocumentNode:
         metadatas:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNodeMetadata
             mappedBy: node
-            cascade: [ persist ]
 

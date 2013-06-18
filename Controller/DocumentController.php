@@ -33,6 +33,10 @@ class DocumentController extends Controller
             $document->setName($filename);
             $document->setOriginalName($filename);
             $document->setFilename($request->request->get('token'));
+            $document->removeEmptyMetadatas();
+            foreach ($document->getNode()->getDocuments() as $sibling) {
+                $sibling->removeEmptyMetadatas();
+            }
 
             $em = $this->get('doctrine')->getManager();
             $em->persist($document);
@@ -276,15 +280,15 @@ class DocumentController extends Controller
 
     public function editAction($node, $document)
     {
-        //$documentNode = $this->findNodeOrThrowError($node);
         $document = $this->findDocumentOrThrowError($document, $node);
 
         $form = $this->createForm(new DocumentType(), $document);
 
         return $this->render('ErichardDmsBundle:Document:edit.html.twig', array(
-            'node'     => $document->getNode(),
-            'document' => $document,
-            'form'     => $form->createView(),
+            'node'         => $document->getNode(),
+            'document'     => $document,
+            'form'         => $form->createView(),
+            'firstEdition' => $this->get('request')->get('first', false)
         ));
     }
 
@@ -303,19 +307,29 @@ class DocumentController extends Controller
                 'form'     => $form->createView(),
             ));
         } else {
+            $em = $this->get('doctrine')->getManager();
+
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
                 $document->getMetadata($metaName)->setValue($metaValue);
+                if ($metaValue === null) {
+                    $document->removeMetadata($document->getMetadata($metaName));
+                } else {
+                    $em->persist($document->getMetadata($metaName));
+                }
+            }
+
+            foreach ($document->getNode()->getDocuments() as $sibling) {
+                $sibling->removeEmptyMetadatas();
             }
 
             $document->removeEmptyMetadatas();
-            $em = $this->get('doctrine')->getManager();
             $em->persist($document);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('success', 'Document successfully updated !');
 
-            $response = $this->redirect($this->generateUrl('erichard_dms_show_document', array('node' => $document->getNode()->getSlug(), 'document' => $document->getSlug())));
+            $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
         }
 
         return $response;
@@ -493,11 +507,17 @@ class DocumentController extends Controller
             }
 
             $link = clone $document;
+
+            $em = $this->get('doctrine')->getManager();
+
             $document->addAlias($link);
             $link->setNode($targetNode);
             $link->removeEmptyMetadatas();
+            $link->getNode()->removeEmptyMetadatas();
+            foreach ($link->getNode()->getDocuments() as $document) {
+                $document->removeEmptyMetadatas();
+            }
 
-            $em = $this->get('doctrine')->getManager();
             $em->persist($link);
             $em->flush();
 

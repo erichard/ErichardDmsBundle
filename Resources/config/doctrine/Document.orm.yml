@@ -56,7 +56,6 @@ Erichard\DmsBundle\Entity\Document:
         metadatas:
             targetEntity: Erichard\DmsBundle\Entity\DocumentMetadata
             mappedBy: document
-            cascade: [ persist ]
         aliases:
             targetEntity: Erichard\DmsBundle\Entity\Document
             mappedBy: parent

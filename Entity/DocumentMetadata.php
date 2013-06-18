@@ -46,4 +46,9 @@ class DocumentMetadata
     {
         return $this->metadata;
     }
+
+    public function __toString()
+    {
+        return $this->document->getName().' - '.$this->metadata->getName();
+    }
 }
