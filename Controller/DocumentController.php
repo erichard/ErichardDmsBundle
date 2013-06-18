@@ -327,7 +327,7 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Document successfully updated !');
+            $this->get('session')->getFlashBag()->add('success', 'document.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
         }
@@ -467,13 +467,13 @@ class DocumentController extends Controller
             'node' => $document->getNode()->getSlug()
         ));
 
-        $backUrl  = $this->get('request')->request->get('back', $parentListUrl);
+        $backUrl = $this->get('request')->request->get('back', $parentListUrl);
 
         $em = $this->get('doctrine')->getManager();
         $em->remove($document);
         $em->flush();
 
-        $this->get('session')->getFlashBag()->add('success', 'Document successfully removed !');
+        $this->get('session')->getFlashBag()->add('success', 'document.remove.successfully_removed');
 
         return $this->redirect($backUrl);
     }

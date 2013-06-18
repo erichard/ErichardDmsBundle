@@ -58,9 +58,11 @@ class NodeController extends Controller
 
     public function createAction($node)
     {
+        $em = $this->get('doctrine')->getManager();
         $parentNode = $this->findNodeOrThrowError($node);
+
         $newNode    = new DocumentNode();
-        $parentNode->addNode($newNode);
+        $newNode->setParent($parentNode);
         $form       = $this->createForm('dms_node', $newNode);
 
         $form->bind($this->get('request'));
@@ -73,15 +75,26 @@ class NodeController extends Controller
         } else {
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
-                $newNode->getMetadata($metaName)->setValue($metaValue);
+                if (null !== $metaValue) {
+                    $metadata = new DocumentNodeMetadata(
+                        $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
+                    );
+                    $newNode->addMetadata($metadata);
+                    $em->persist($metadata);
+                }
             }
+
+            foreach ($parentNode->getDocuments() as $document) {
+                $document->removeEmptyMetadatas();
+            }
+
+            $parentNode->removeEmptyMetadatas();
             $newNode->removeEmptyMetadatas();
 
-            $em = $this->get('doctrine')->getManager();
             $em->persist($newNode);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'New node successfully created !');
+            $this->get('session')->getFlashBag()->add('success', 'documentNode.add.successfully_created');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
         }
@@ -108,7 +121,9 @@ class NodeController extends Controller
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
                 if (!$documentNode->hasMetadata($metaName)) {
-                    $metadata = new DocumentNodeMetadata($em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName));
+                    $metadata = new DocumentNodeMetadata(
+                        $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
+                    );
                     $documentNode->addMetadata($metadata);
                 }
                 $documentNode->getMetadata($metaName)->setValue($metaValue);
@@ -122,7 +137,7 @@ class NodeController extends Controller
             $em->persist($documentNode);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Node successfully updated !');
+            $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getSlug())));
         }
@@ -134,13 +149,15 @@ class NodeController extends Controller
     {
         $documentNode = $this->findNodeOrThrowError($node);
 
+        $redirectUrl = $this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getParent()->getSlug()));
+
         $em = $this->get('doctrine')->getManager();
         $em->remove($documentNode);
         $em->flush();
 
-        $this->get('session')->getFlashBag()->add('success', 'Node successfully removed !');
+        $this->get('session')->getFlashBag()->add('success', 'documentNode.remove.successfully_removed');
 
-        return $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getParent()->getSlug())));
+        return $this->redirect($redirectUrl);
     }
 
     public function removeAction($node)
