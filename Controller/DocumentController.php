@@ -375,8 +375,8 @@ class DocumentController extends Controller
                 ->thumbnail($size, $mode)
                 ->save($cacheFile, array('quality' => 90))
             ;
-        } catch (\ImagickException $e) {
-            throw $this->creatNotFoundException('Error with image.');
+        } catch (\Exception $e) {
+            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
         }
 
         $expireDate = new \DateTime();
@@ -396,10 +396,6 @@ class DocumentController extends Controller
 
     public function getMimetypeImage($document, $targetSize)
     {
-        if (null === $document = $document->getMimeType()) {
-            return null;
-        }
-
         $sizes = array(16,22,24,32,48,64,96);
         foreach ($sizes as $size) {
             if ($targetSize < $size) {
@@ -407,20 +403,40 @@ class DocumentController extends Controller
             }
         }
 
-        $mimetypes = array(
-            str_replace('/', '-', $document),
-            explode('/',$document)[0]
-        );
-
         $icon = null;
-        foreach ($mimetypes as $mimetype) {
-            try {
-                $icon = $this
-                    ->get('kernel')
-                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$mimetype.'.png')
-                ;
-                break;
-            } catch (\InvalidArgumentException $e) {}
+
+        if (null === $mimetype = $document->getMimeType()) {
+            $extension = pathinfo($document->getOriginalName(), PATHINFO_EXTENSION);
+
+            $extensionMap = array(
+                'eps' => 'image-x-eps',
+                'psd' => 'image-x-psd'
+            );
+
+            if (isset($extensionMap[$extension])) {
+                try {
+                    $icon = $this
+                        ->get('kernel')
+                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$extensionMap[$extension].'.png')
+                    ;
+                } catch (\InvalidArgumentException $e) {}
+            }
+
+        } else {
+            $mimetypes = array(
+                str_replace('/', '-', $mimetype),
+                explode('/',$mimetype)[0]
+            );
+
+            foreach ($mimetypes as $mimetype) {
+                try {
+                    $icon = $this
+                        ->get('kernel')
+                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$mimetype.'.png')
+                    ;
+                    break;
+                } catch (\InvalidArgumentException $e) {}
+            }
         }
 
         if (null === $icon) {
