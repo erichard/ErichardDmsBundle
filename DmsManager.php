@@ -115,8 +115,10 @@ class DmsManager
 
     protected function prepareNode(DocumentNodeInterface $documentNode)
     {
-        if (!$this->securityContext->isGranted('VIEW', $documentNode)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this node.');
+        if (!$this->securityContext->isGranted('VIEW', $documentNode) ||
+            (!$this->securityContext->isGranted('NODE_EDIT', $documentNode) && !$documentNode->isEnabled())
+        ) {
+            throw new AccessDeniedHttpException('You are not allowed to view this node : '. $documentNode->getName());
         }
 
         foreach ($documentNode->getNodes() as $node) {
@@ -151,8 +153,10 @@ class DmsManager
 
     protected function prepareDocument(DocumentInterface $document)
     {
-        if (!$this->securityContext->isGranted('VIEW', $document)) {
-            throw new AccessDeniedHttpException('You are not allowed to view this document.');
+        if (!$this->securityContext->isGranted('VIEW', $document) ||
+            (!$this->securityContext->isGranted('DOCUMENT_EDIT', $document) && !$document->isEnabled())
+        ) {
+            throw new AccessDeniedHttpException('You are not allowed to view this document: '. $document->getName());
         }
 
         // Set all metadata on the document
