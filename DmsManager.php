@@ -173,7 +173,9 @@ class DmsManager
         $absPath  = $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename();
         $getID3 = new GetId3;
         $info = $getID3->analyze($absPath);
-        $document->setMimeType($info['mime_type']);
+        if (isset($info['mime_type'])) {
+            $document->setMimeType(isset($info['mime_type'])? $info['mime_type'] : 'unknown');
+        }
 
         return $document;
     }

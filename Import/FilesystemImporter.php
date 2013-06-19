@@ -50,6 +50,11 @@ class FilesystemImporter
                     ->setName($file->getBaseName())
                     ->setDepth($targetNode->getDepth() + $depth + 1)
                 ;
+
+                if (isset($this->options['node_callback']) && is_callable($this->options['node_callback'])) {
+                    call_user_func_array($this->options['node_callback'], array($node));
+                }
+
                 $manager->persist($node);
                 $currentNode[$depth+1] = $node;
             } elseif ($file->isFile()) {
@@ -59,6 +64,11 @@ class FilesystemImporter
                     ->setOriginalName($file->getBaseName())
                     ->setFilename($file->getBaseName())
                 ;
+
+                if (isset($this->options['document_callback']) && is_callable($this->options['document_callback'])) {
+                    call_user_func_array($this->options['document_callback'], array($document));
+                }
+
                 $manager->persist($document);
                 $manager->flush();
 
