@@ -388,7 +388,7 @@ class DocumentController extends Controller
         $response->setPublic();
         $response->setExpires($expireDate);
 
-        $response->headers->set('Content-Type', $finfo->file($cacheFile));
+        $response->headers->set('Content-Type', $document->getMimetype());
         $response->setSharedMaxAge('3600');
 
         return $response;
