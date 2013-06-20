@@ -120,6 +120,10 @@ class NodeController extends Controller
 
             $em->persist($documentNode);
             $em->flush();
+            $em->clear();
+
+            $documentNode = $this->findNodeOrThrowError($node);
+            $em->refresh($documentNode);
 
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
@@ -143,7 +147,6 @@ class NodeController extends Controller
                 $em->persist($documentNode->getMetadata($metaName));
             }
 
-            $em->persist($documentNode);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
