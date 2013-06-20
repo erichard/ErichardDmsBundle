@@ -122,8 +122,11 @@ class NodeController extends Controller
             $em->flush();
             $em->clear();
 
-            $documentNode = $this->findNodeOrThrowError($node);
-            $em->refresh($documentNode);
+            $documentNode = $this
+                ->get('doctrine')
+                ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
+                ->find($documentNode->getId())
+            ;
 
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
@@ -147,6 +150,7 @@ class NodeController extends Controller
                 $em->persist($documentNode->getMetadata($metaName));
             }
 
+            $em->persist($documentNode);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
