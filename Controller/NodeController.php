@@ -118,20 +118,29 @@ class NodeController extends Controller
             ));
         } else {
 
+            $em->persist($documentNode);
+            $em->flush();
+
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
+
+                if (null === $metaValue) {
+                    if ($metadata = $documentNode->getMetadata($metaName)) {
+                        $documentNode->removeMetadataByName($metaName);
+                        $em->remove($metadata);
+                    }
+                    continue;
+                }
+
                 if (!$documentNode->hasMetadata($metaName)) {
                     $metadata = new DocumentNodeMetadata(
                         $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
                     );
                     $documentNode->addMetadata($metadata);
                 }
+
                 $documentNode->getMetadata($metaName)->setValue($metaValue);
                 $em->persist($documentNode->getMetadata($metaName));
-            }
-
-            foreach ($documentNode->getDocuments() as $document) {
-                $document->removeEmptyMetadatas();
             }
 
             $em->persist($documentNode);
