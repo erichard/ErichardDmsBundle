@@ -3,6 +3,7 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
+use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Form\DocumentType;
 use Erichard\DmsBundle\Response\FileResponse;
 use Imagine\Gd\Imagine;
@@ -271,6 +272,7 @@ class DocumentController extends Controller
     public function showAction($node, $document)
     {
         $document = $this->findDocumentOrThrowError($document, $node);
+        $this->get('dms.manager')->getDocumentMetadatas($document);
 
         return $this->render('ErichardDmsBundle:Document:show.html.twig', array(
             'node'     => $document->getNode(),
@@ -281,7 +283,7 @@ class DocumentController extends Controller
     public function editAction($node, $document)
     {
         $document = $this->findDocumentOrThrowError($document, $node);
-
+        $this->get('dms.manager')->getDocumentMetadatas($document);
         $form = $this->createForm(new DocumentType(), $document);
 
         return $this->render('ErichardDmsBundle:Document:edit.html.twig', array(
@@ -294,8 +296,8 @@ class DocumentController extends Controller
 
     public function updateAction($node, $document)
     {
-        //$documentNode = $this->findNodeOrThrowError($node);
         $document = $this->findDocumentOrThrowError($document, $node);
+        $this->get('dms.manager')->getDocumentMetadatas($document);
 
         $form = $this->createForm(new DocumentType(), $document);
         $form->bind($this->get('request'));
@@ -311,19 +313,26 @@ class DocumentController extends Controller
 
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
-                $document->getMetadata($metaName)->setValue($metaValue);
-                if ($metaValue === null) {
-                    $document->removeMetadata($document->getMetadata($metaName));
-                } else {
-                    $em->persist($document->getMetadata($metaName));
+
+                if (null === $metaValue) {
+                    if ($metadata = $document->getMetadata($metaName)) {
+                        $document->removeMetadataByName($metaName);
+                        $em->remove($metadata);
+                    }
+                    continue;
                 }
+
+                if (!$document->hasMetadata($metaName)) {
+                    $metadata = new DocumentMetadata(
+                        $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
+                    );
+                    $document->addMetadata($metadata);
+                }
+
+                $document->getMetadata($metaName)->setValue($metaValue);
+                $em->persist($document->getMetadata($metaName));
             }
 
-            foreach ($document->getNode()->getDocuments() as $sibling) {
-                $sibling->removeEmptyMetadatas();
-            }
-
-            $document->removeEmptyMetadatas();
             $em->persist($document);
             $em->flush();
 
@@ -561,20 +570,40 @@ class DocumentController extends Controller
         ));
     }
 
-    public function findDocumentOrThrowError($document, $node)
+    public function findDocumentOrThrowError($documentSlug, $nodeSlug)
     {
-        return $this
-            ->get('dms.manager')
-            ->getDocument($document, $node)
-        ;
+        try {
+            $document = $this
+                ->get('dms.manager')
+                ->getDocument($documentSlug, $nodeSlug)
+            ;
+        } catch (AccessDeniedException $e) {
+            throw AccessDeniedHttpException($e->getMessage());
+        }
+
+        if (null === $document) {
+            throw NotFoundHttpException(sprintf('The document "%s" was not found', $documentSlug));
+        }
+
+        return $document;
     }
 
-    public function findNodeOrThrowError($node)
+    public function findNodeOrThrowError($nodeSlug)
     {
-        return $this
-            ->get('dms.manager')
-            ->getNode($node)
-        ;
+        try {
+            $node = $this
+                ->get('dms.manager')
+                ->getNode($nodeSlug)
+            ;
+        } catch (AccessDeniedException $e) {
+            throw AccessDeniedHttpException($e->getMessage());
+        }
+
+        if (null === $node) {
+            throw NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
+        }
+
+        return $node;
     }
 
 }

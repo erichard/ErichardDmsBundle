@@ -6,6 +6,7 @@ use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
 class NodeController extends Controller
@@ -13,6 +14,7 @@ class NodeController extends Controller
     public function listAction($node)
     {
         $documentNode = $this->findNodeOrThrowError($node);
+        $this->get('dms.manager')->getNodeMetadatas($documentNode);
 
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
             'node'       => $documentNode,
@@ -47,6 +49,8 @@ class NodeController extends Controller
     public function editAction($node)
     {
         $documentNode = $this->findNodeOrThrowError($node);
+
+        $this->get('dms.manager')->getNodeMetadatas($documentNode);
 
         $form = $this->createForm('dms_node', $documentNode);
 
@@ -105,8 +109,6 @@ class NodeController extends Controller
     public function updateAction($node)
     {
         $documentNode = $this->findNodeOrThrowError($node);
-        $em = $this->get('doctrine')->getManager();
-        $em->refresh($documentNode);
 
         $form = $this->createForm('dms_node', $documentNode);
         $form->bind($this->get('request'));
@@ -118,15 +120,7 @@ class NodeController extends Controller
             ));
         } else {
 
-            $em->persist($documentNode);
-            $em->flush();
-            $em->clear();
-
-            $documentNode = $this
-                ->get('doctrine')
-                ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-                ->find($documentNode->getId())
-            ;
+            $em = $this->get('doctrine')->getManager();
 
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
@@ -186,11 +180,21 @@ class NodeController extends Controller
         ));
     }
 
-    public function findNodeOrThrowError($node)
+    public function findNodeOrThrowError($nodeSlug)
     {
-        return $this
-            ->get('dms.manager')
-            ->getNode($node)
-        ;
+        try {
+            $node = $this
+                ->get('dms.manager')
+                ->getNode($nodeSlug)
+            ;
+        } catch (AccessDeniedException $e) {
+            throw AccessDeniedHttpException($e->getMessage());
+        }
+
+        if (null === $node) {
+            throw NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
+        }
+
+        return $node;
     }
 }

@@ -202,6 +202,15 @@ class Document implements DocumentInterface
         return $this;
     }
 
+    public function removeEmptyMetadatas($strict = false)
+    {
+        foreach ($this->metadatas as $m) {
+            if (($strict && null === $m->getId()) || null === $m->getValue()) {
+                $this->metadatas->removeElement($m);
+            }
+        }
+    }
+
     public function hasMetadata($name)
     {
         foreach ($this->metadatas as $m) {
@@ -276,17 +285,6 @@ class Document implements DocumentInterface
     public function getExtension()
     {
         return pathinfo($this->originalName, PATHINFO_EXTENSION);
-    }
-
-    public function removeEmptyMetadatas($strict = false)
-    {
-        foreach ($this->metadatas as $m) {
-            if (($strict && null === $m->getId()) || null === $m->getValue()) {
-                $this->metadatas->removeElement($m);
-            }
-        }
-
-        $this->getNode()->removeEmptyMetadatas();
     }
 
     /**

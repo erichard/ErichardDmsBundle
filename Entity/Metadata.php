@@ -81,4 +81,9 @@ class Metadata
     {
         return $this->required;
     }
+
+    public function getAttributes()
+    {
+        return (null === $this->attributes)? array() : $this->attributes;
+    }
 }

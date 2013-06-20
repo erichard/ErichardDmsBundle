@@ -19,10 +19,10 @@ class DocumentMetadataType extends AbstractType
         $metadatas = $this->em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findByScope(array('document', 'both'));
 
         foreach ($metadatas as $m) {
-            $builder->add($m->getName(), $m->getType(), array(
+            $builder->add($m->getName(), $m->getType(), array_merge(array(
                 'label' => $m->getLabel(),
                 'required' => $m->isRequired(),
-            ));
+            ), $m->getAttributes()));
         }
     }
 
