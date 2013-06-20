@@ -152,6 +152,7 @@ class NodeController extends Controller
         $redirectUrl = $this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getParent()->getSlug()));
 
         $em = $this->get('doctrine')->getManager();
+        $em->refresh($documentNode);
         $em->remove($documentNode);
         $em->flush();
 
