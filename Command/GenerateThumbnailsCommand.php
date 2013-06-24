@@ -37,7 +37,11 @@ class GenerateThumbnailsCommand extends ContainerAwareCommand
 
             foreach ($sizes as $size) {
                 $thumbnail = $dmsManager->generateThumbnail($document, $size);
-                $output->writeLn('<info> > </info>'.$thumbnail);
+                if (!empty($thumbnail)) {
+                    $output->writeLn('<info> > </info>'.$thumbnail);
+                } else {
+                    $output->writeLn('<comment> > </comment>No thumbnail generated for '.$document->getSlug());
+                }
             }
         }
 

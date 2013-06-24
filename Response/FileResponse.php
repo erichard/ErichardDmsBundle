@@ -15,6 +15,10 @@ class FileResponse extends Response
 
     public function sendContent()
     {
+        if (empty($this->filename)) {
+            return '';
+        }
+
         $file = fopen($this->filename, 'rb');
         $out = fopen('php://output', 'wb');
 
