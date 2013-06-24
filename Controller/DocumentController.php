@@ -364,12 +364,10 @@ class DocumentController extends Controller
 
         $response = new FileResponse();
         $response->setFilename($thumbnailFile);
+        $response->headers->set('Content-Type', 'image/png');
 
         $response->setPublic();
         $response->setExpires($expireDate);
-
-        $response->headers->set('Content-Type', 'image/png');
-        $response->setSharedMaxAge('3600');
 
         return $response;
     }
