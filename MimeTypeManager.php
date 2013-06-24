@@ -39,14 +39,28 @@ class MimeTypeManager
                 break;
             }
         }
-
         if (null === $iconSize) {
             $iconSize = max($sizes);
         }
 
         $icon = null;
 
-        if (null === $mimetype) {
+        if (null !== $mimetype) {
+            $mimetypes = array(
+                str_replace('/', '-', $mimetype),
+                explode('/',$mimetype)[0]
+            );
+
+            foreach ($mimetypes as $mimetype) {
+                try {
+                    $icon = $this
+                        ->kernel
+                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/'.$mimetype.'.png')
+                    ;
+                    break;
+                } catch (\InvalidArgumentException $e) {}
+            }
+        } else {
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
             $extensionMap = array(
@@ -58,24 +72,8 @@ class MimeTypeManager
                 try {
                     $icon = $this
                         ->kernel
-                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$extensionMap[$extension].'.png')
+                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/'.$extensionMap[$extension].'.png')
                     ;
-                } catch (\InvalidArgumentException $e) {}
-            }
-
-        } else {
-            $mimetypes = array(
-                str_replace('/', '-', $mimetype),
-                explode('/',$mimetype)[0]
-            );
-
-            foreach ($mimetypes as $mimetype) {
-                try {
-                    $icon = $this
-                        ->kernel
-                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$mimetype.'.png')
-                    ;
-                    break;
                 } catch (\InvalidArgumentException $e) {}
             }
         }
@@ -84,7 +82,7 @@ class MimeTypeManager
             try {
                 $icon = $this
                     ->kernel
-                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/unknown.png')
+                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/unknown.png')
                 ;
             } catch (\InvalidArgumentException $e) {}
         }
