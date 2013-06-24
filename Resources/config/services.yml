@@ -100,4 +100,11 @@ services:
         arguments:
             - @doctrine
             - @security.context
-            - { storage_path: %dms.storage.path% }
+            - @dms.mime_type_manager
+            - @router
+            - { storage_path: %dms.storage.path%, web_path: %kernel.root_dir%/../web }
+
+    dms.mime_type_manager:
+        class: Erichard\DmsBundle\MimeTypeManager
+        arguments:
+            - @kernel

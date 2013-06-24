@@ -357,42 +357,13 @@ class DocumentController extends Controller
         $document = $this->findDocumentOrThrowError($document, $node);
         $absPath  = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
 
-        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100 ||
-            strpos($document->getMimetype(), 'image') === false && strpos($document->getMimetype(), 'pdf') === false) {
-            $absPath = $this->getMimetypeImage($document, max([$width, $height]));
-        }
-
-        $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
-
-        try {
-            if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
-                $absPath .= '[0]';
-            }
-            $imagick = new \Imagick($absPath);
-            $imagick->setCompression(\Imagick::COMPRESSION_LZW);
-            $imagick->setResolution(72, 72);
-            $imagick->setCompressionQuality(90);
-            $image = new \Imagine\Imagick\Image($imagick);
-
-            $cacheFile = $this->get('kernel')->getRootDir() . '/../web' . $request->getRequestUri();
-
-            if (!is_dir(dirname($cacheFile))) {
-                mkdir(dirname($cacheFile), 0777, true);
-            }
-
-            $image
-                ->thumbnail($size, $mode)
-                ->save($cacheFile, array('quality' => 90))
-            ;
-        } catch (\Exception $e) {
-            $cacheFile = $this->getMimetypeImage($document, max([$width, $height]));
-        }
+        $thumbnailFile = $this->get('dms.manager')->generateThumbnail($absPath, $dimension);
 
         $expireDate = new \DateTime();
         $expireDate->modify('+10 years');
 
         $response = new FileResponse();
-        $response->setFilename($cacheFile);
+        $response->setFilename($thumbnailFile);
 
         $response->setPublic();
         $response->setExpires($expireDate);

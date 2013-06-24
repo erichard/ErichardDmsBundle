@@ -5,21 +5,37 @@ namespace Erichard\DmsBundle;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
+use Erichard\DmsBundle\MimeTypeManager;
 use GetId3\GetId3Core as GetId3;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class DmsManager
 {
     protected $registry;
     protected $securityContext;
+    protected $mimeTypeManager;
+    protected $router;
     protected $options;
 
-    public function __construct(Registry $registry, SecurityContextInterface $securityContext, array $options = array())
+
+    public function __construct(
+        Registry $registry,
+        SecurityContextInterface $securityContext,
+        MimeTypeManager $mimeTypeManager,
+        RouterInterface $router,
+        array $options = array()
+    )
     {
         $this->registry = $registry;
         $this->securityContext = $securityContext;
+        $this->mimeTypeManager = $mimeTypeManager;
+        $this->router = $router;
         $this->options = $options;
     }
 
@@ -140,15 +156,20 @@ class DmsManager
             throw new AccessDeniedException('You are not allowed to view this document: '. $document->getName());
         }
 
-        // Set the mimetype
+        $mimetype = $this->mimeTypeManager->getMimeType($this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename());
+
+        $document->setMimeType($mimetype);
+
+        return $document;
+    }
+
+    public function getDocumentMimetype(DocumentInterface $document)
+    {
         $absPath  = $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename();
         $getID3 = new GetId3;
         $info = $getID3->analyze($absPath);
-        if (isset($info['mime_type'])) {
-            $document->setMimeType(isset($info['mime_type'])? $info['mime_type'] : 'unknown');
-        }
 
-        return $document;
+        return isset($info['mime_type'])? $info['mime_type'] : 'unknown';
     }
 
     public function getNodeMetadatas(DocumentNodeInterface $node)
@@ -182,5 +203,53 @@ class DmsManager
                 $document->addMetadata($metadata);
             }
         }
+    }
+
+    public function generateThumbnail($document, $dimension)
+    {
+        list($width, $height) = array_map('intval', explode('x', $dimension));
+
+        $size = new Box($width, $height);
+        $mode = ImageInterface::THUMBNAIL_INSET;
+        $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename();
+
+        $mimetype = $this->mimeTypeManager->getMimeType($absPath);
+
+        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100 ||
+            strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
+            $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
+        }
+
+        $url = $this->router->generate('erichard_dms_document_preview', array(
+            'dimension' => $dimension,
+            'node'      => $document->getNode()->getSlug(),
+            'document'  => $document->getSlug()
+        ));
+
+        $cacheFile = $this->options['web_path'] . $url;
+
+        try {
+            if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
+                $absPath .= '[0]';
+            }
+            $imagick = new \Imagick($absPath);
+
+            $imagick->setCompression(\Imagick::COMPRESSION_LZW);
+            $imagick->setResolution(72, 72);
+            $imagick->setCompressionQuality(90);
+            $image = new \Imagine\Imagick\Image($imagick);
+
+            if (!is_dir(dirname($cacheFile))) {
+                mkdir(dirname($cacheFile), 0777, true);
+            }
+            $image
+                ->thumbnail($size, $mode)
+                ->save($cacheFile, array('quality' => 90))
+            ;
+        } catch (\Exception $e) {
+            $cacheFile = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
+        }
+
+        return $cacheFile;
     }
 }
