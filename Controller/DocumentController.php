@@ -374,63 +374,6 @@ class DocumentController extends Controller
         return $response;
     }
 
-    public function getMimetypeImage($document, $targetSize)
-    {
-        $sizes = array(16,22,24,32,48,64,96);
-        foreach ($sizes as $size) {
-            if ($targetSize < $size) {
-                break;
-            }
-        }
-
-        $icon = null;
-
-        if (null === $mimetype = $document->getMimeType()) {
-            $extension = pathinfo($document->getOriginalName(), PATHINFO_EXTENSION);
-
-            $extensionMap = array(
-                'eps' => 'image-x-eps',
-                'psd' => 'image-x-psd'
-            );
-
-            if (isset($extensionMap[$extension])) {
-                try {
-                    $icon = $this
-                        ->get('kernel')
-                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$extensionMap[$extension].'.png')
-                    ;
-                } catch (\InvalidArgumentException $e) {}
-            }
-
-        } else {
-            $mimetypes = array(
-                str_replace('/', '-', $mimetype),
-                explode('/',$mimetype)[0]
-            );
-
-            foreach ($mimetypes as $mimetype) {
-                try {
-                    $icon = $this
-                        ->get('kernel')
-                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/'.$mimetype.'.png')
-                    ;
-                    break;
-                } catch (\InvalidArgumentException $e) {}
-            }
-        }
-
-        if (null === $icon) {
-            try {
-                $icon = $this
-                    ->get('kernel')
-                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$size.'/unknown.png')
-                ;
-            } catch (\InvalidArgumentException $e) {}
-        }
-
-        return $icon;
-    }
-
     public function downloadAction($document, $node)
     {
         $document = $this->findDocumentOrThrowError($document, $node);

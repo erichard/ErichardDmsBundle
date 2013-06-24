@@ -44,7 +44,6 @@ class MimeTypeManager
             $iconSize = max($sizes);
         }
 
-        var_dump($iconSize);
         $icon = null;
 
         if (null === $mimetype) {

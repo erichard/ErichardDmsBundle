@@ -247,7 +247,10 @@ class DmsManager
                 ->save($cacheFile, array('quality' => 90))
             ;
         } catch (\Exception $e) {
-            $cacheFile = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
+            $cacheFile = $this->mimeTypeManager->getMimetypeImage(
+                $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename(),
+                max([$width, $height])
+            );
         }
 
         return $cacheFile;
