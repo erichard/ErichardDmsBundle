@@ -357,7 +357,7 @@ class DocumentController extends Controller
         $document = $this->findDocumentOrThrowError($document, $node);
         $absPath  = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $document->getFilename();
 
-        $thumbnailFile = $this->get('dms.manager')->generateThumbnail($absPath, $dimension);
+        $thumbnailFile = $this->get('dms.manager')->generateThumbnail($document, $dimension);
 
         $expireDate = new \DateTime();
         $expireDate->modify('+10 years');

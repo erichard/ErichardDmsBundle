@@ -3,6 +3,7 @@
 namespace Erichard\DmsBundle;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\MimeTypeManager;
@@ -205,7 +206,7 @@ class DmsManager
         }
     }
 
-    public function generateThumbnail($document, $dimension)
+    public function generateThumbnail(DocumentInterface $document, $dimension)
     {
         list($width, $height) = array_map('intval', explode('x', $dimension));
 
