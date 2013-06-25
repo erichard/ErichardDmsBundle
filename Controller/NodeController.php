@@ -6,6 +6,7 @@ use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
@@ -188,7 +189,7 @@ class NodeController extends Controller
                 ->getNode($nodeSlug)
             ;
         } catch (AccessDeniedException $e) {
-            throw AccessDeniedHttpException($e->getMessage());
+            throw new AccessDeniedHttpException($e->getMessage());
         }
 
         if (null === $node) {
