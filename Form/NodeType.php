@@ -29,7 +29,9 @@ class NodeType extends AbstractType
                     new Constraints\NotBlank()
                 )
             ))
-            ->add('enabled', 'checkbox')
+            ->add('enabled', 'checkbox', array(
+                'required' => true
+            ))
             ->add('metadatas', 'node_metadata', array(
                 'label' => false,
                 'mapped' => false
