@@ -7,6 +7,7 @@ use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\Form\NodeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
@@ -193,7 +194,7 @@ class NodeController extends Controller
         }
 
         if (null === $node) {
-            throw NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
+            throw new NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
         }
 
         return $node;
