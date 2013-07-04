@@ -29,7 +29,7 @@
 
     <h1>Edit document</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_update_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST" novalidate>
+    <form class="form-horizontal" action="{{ path('erichard_dms_update_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST">
 
         {{ form_widget(form._token) }}
         {{ form_errors(form) }}

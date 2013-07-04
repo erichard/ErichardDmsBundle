@@ -24,7 +24,7 @@ class DocumentType extends AbstractType
             ))
             ->add('node', 'dms_node_selector')
             ->add('enabled', 'checkbox', array(
-                'required' => true
+                'required' => false
             ))
             ->add('metadatas', 'document_metadata', array(
                 'label' => false,
