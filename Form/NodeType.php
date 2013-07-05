@@ -30,7 +30,7 @@ class NodeType extends AbstractType
                 )
             ))
             ->add('enabled', 'checkbox', array(
-                'required' => true
+                'required' => false
             ))
             ->add('metadatas', 'node_metadata', array(
                 'label' => false,

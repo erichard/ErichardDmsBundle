@@ -4,7 +4,7 @@
 
     <h1>Add a new folder</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_create_node', {'node' : node.slug}) }}" method="POST" novalidate>
+    <form class="form-horizontal" action="{{ path('erichard_dms_create_node', {'node' : node.slug}) }}" method="POST">
 
         {{ form_widget(form._token) }}
         {{ form_errors(form) }}
