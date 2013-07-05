@@ -120,7 +120,7 @@ class NodeController extends Controller
             $metadatas = $form->get('metadatas')->getData();
             foreach ($metadatas as $metaName => $metaValue) {
 
-                if (null === $metaValue) {
+                if (empty($metaValue)) {
                     if ($metadata = $documentNode->getMetadata($metaName)) {
                         $documentNode->removeMetadataByName($metaName);
                         $em->remove($metadata);
