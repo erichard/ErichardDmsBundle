@@ -90,13 +90,6 @@ class NodeController extends Controller
                 }
             }
 
-            foreach ($parentNode->getDocuments() as $document) {
-                $document->removeEmptyMetadatas();
-            }
-
-            $parentNode->removeEmptyMetadatas();
-            $newNode->removeEmptyMetadatas();
-
             $em->persist($newNode);
             $em->flush();
 
