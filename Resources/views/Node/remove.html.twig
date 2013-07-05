@@ -4,7 +4,7 @@
 
     <h1>Remove folder</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_delete_node', {'node' : node.slug}) }}" method="POST" novalidate>
+    <form class="form-horizontal" action="{{ path('erichard_dms_delete_node', {'node' : node.slug}) }}" method="POST">
         <input type="hidden" name="_method" value="DELETE">
         <div class="alert alert-warning alert-block">
             <h4>Warning !</h4>
