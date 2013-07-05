@@ -326,6 +326,7 @@ class DocumentController extends Controller
                     $metadata = new DocumentMetadata(
                         $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
                     );
+                    $metadata->setValue($metaName);
                     $document->addMetadata($metadata);
                 }
 
