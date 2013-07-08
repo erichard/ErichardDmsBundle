@@ -7,7 +7,7 @@
         "braincrafted/bootstrap-bundle": "*",
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "*",
-        "stof/doctrine-extensions-bundle": "dev-master",
+        "gedmo/doctrine-extensions": "2.3.*",
         "doctrine/doctrine-fixtures-bundle": "dev-master",
         "doctrine/data-fixtures": "dev-master",
         "phansys/getid3": "2.1.*@dev"
