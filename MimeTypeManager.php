@@ -17,7 +17,7 @@ class MimeTypeManager
     public function getMimeType($filename)
     {
         if (!is_readable($filename)) {
-            throw new \InvalidArgumentException($filename.' is not readable.');
+            return pathinfo($filename, PATHINFO_EXTENSION);
         }
 
         $getID3 = new GetId3;
