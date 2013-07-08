@@ -4,6 +4,7 @@ namespace Erichard\DmsBundle;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Erichard\DmsBundle\DocumentInterface;
+use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Erichard\DmsBundle\MimeTypeManager;
@@ -48,9 +49,15 @@ class DmsManager
             ->getRoots()
         ;
 
-        return array_filter($nodes, function($node) {
-            return $this->securityContext->isGranted('VIEW', $node);
-        });
+        foreach ($nodes as $idx => $node) {
+            try {
+                $this->prepareNode($node);
+            } catch (AccessDeniedException $e) {
+                unset($nodes[$idx]);
+            }
+        }
+
+        return $nodes;
     }
 
     public function getNodeById($nodeId)
@@ -107,7 +114,7 @@ class DmsManager
         ;
 
         return array_filter($documentNodes, function(DocumentNodeInterface $documentNode) {
-            return $this->securityContext->isGranted('VIEW', $documentNode);
+            return $this->isViewable($documentNode);
         });
     }
 
@@ -120,26 +127,24 @@ class DmsManager
         ;
 
         return array_filter($documents, function(DocumentInterface $document) {
-            return $this->securityContext->isGranted('VIEW', $document);
+            return $this->isViewable($document);
         });
     }
 
     protected function prepareNode(DocumentNodeInterface $documentNode)
     {
-        if (!$this->securityContext->isGranted('VIEW', $documentNode) ||
-            (!$this->securityContext->isGranted('NODE_EDIT', $documentNode) && !$documentNode->isEnabled())
-        ) {
+        if (!$this->isViewable($documentNode)) {
             throw new AccessDeniedException('You are not allowed to view this node : '. $documentNode->getName());
         }
 
         foreach ($documentNode->getNodes() as $node) {
-            if (!$this->securityContext->isGranted('VIEW', $node)) {
+            if (!$this->isViewable($node)) {
                 $documentNode->removeNode($node);
             }
         }
 
         foreach ($documentNode->getDocuments() as $document) {
-            if (!$this->securityContext->isGranted('VIEW', $document)) {
+            if (!$this->isViewable($document)) {
                 $documentNode->removeDocument($document);
             }
 
@@ -151,9 +156,7 @@ class DmsManager
 
     protected function prepareDocument(DocumentInterface $document)
     {
-        if (!$this->securityContext->isGranted('VIEW', $document) ||
-            (!$this->securityContext->isGranted('DOCUMENT_EDIT', $document) && !$document->isEnabled())
-        ) {
+        if (!$this->isViewable($document)) {
             throw new AccessDeniedException('You are not allowed to view this document: '. $document->getName());
         }
 
@@ -255,5 +258,14 @@ class DmsManager
         }
 
         return $cacheFile;
+    }
+
+    public function isViewable($entity)
+    {
+        $editPermission = $entity instanceof Document ? 'DOCUMENT_EDIT' : 'NODE_EDIT';
+
+        return $this->securityContext->isGranted('VIEW', $entity) &&
+            ($this->securityContext->isGranted($editPermission, $entity) || $entity->isEnabled())
+        ;
     }
 }
