@@ -195,7 +195,7 @@ class DocumentNode implements DocumentNodeInterface
     public function removeMetadataByName($metadataName)
     {
         if ($this->hasMetadata($metadataName)) {
-            $this->removeMetadata($this->getMetadata($metadatas));
+            $this->removeMetadata($this->getMetadata($metadataName));
         }
 
         return $this;
