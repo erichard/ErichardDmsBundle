@@ -18,23 +18,36 @@ use \GetId3\GetId3Core as GetId3;
 
 class DocumentController extends Controller
 {
-    public function addAction($node)
+    public function addAction($node, $document = null)
     {
         $documentNode = $this->findNodeOrThrowError($node);
         $request      = $this->get('request');
 
+        if (null !== $document) {
+            $document = $this->findDocumentOrThrowError($document, $node);
+            $firstEdition = false;
+        } else {
+            $document = new Document($documentNode);
+            $firstEdition = true;
+        }
+
         if ($request->isMethod('GET')) {
             return $this->render('ErichardDmsBundle:Document:add.html.twig', array(
-                'node' => $documentNode
+                'node' => $documentNode,
+                'document' => $document
             ));
         } else {
             $filename = $request->request->get('filename');
             $documentNode->removeEmptyMetadatas();
-            $document = new Document($documentNode);
-            $document->setName($filename);
+
+            if (null === $document->getId()) {
+                $document->setName($filename);
+            }
+
             $document->setOriginalName($filename);
             $document->setFilename($request->request->get('token'));
             $document->removeEmptyMetadatas();
+
             foreach ($document->getNode()->getDocuments() as $sibling) {
                 $sibling->removeEmptyMetadatas();
             }
@@ -51,8 +64,10 @@ class DocumentController extends Controller
             $absTmpFilename = $storageTmpPath . '/' . $document->getFilename();
             $absFilename = $storagePath . '/' . $document->getComputedFilename();
 
-            // move file
-            if (!$filesystem->exists(dirname($absFilename))) {
+            // overwrite file
+            if ($filesystem->exists($absFilename)) {
+                $filesystem->remove($absFilename);
+            } elseif (!$filesystem->exists(dirname($absFilename))) {
                 $filesystem->mkdir(dirname($absFilename));
             }
 
@@ -68,7 +83,7 @@ class DocumentController extends Controller
                     array(
                         'document' => $document->getSlug(),
                         'node' => $documentNode->getSlug(),
-                        'first' => true,
+                        'first' => $firstEdition,
                     )
                 )
             );
@@ -204,12 +219,22 @@ class DocumentController extends Controller
                     return $response;
                 }
             } else {
+
+                $messages = array(
+                    UPLOAD_ERR_INI_SIZE  => 'document.upload.error.filesize_bigger_than_allowed',
+                    UPLOAD_ERR_FORM_SIZE => 'document.upload.error.filesize_bigger_than_allowed',
+                    UPLOAD_ERR_PARTIAL => 'document.upload.error.file_partially_uploaded',
+                    UPLOAD_ERR_NO_FILE => 'document.upload.error.no_file_uploaded',
+                    UPLOAD_ERR_NO_TMP_DIR => 'document.upload.error.no_temporary_folder',
+                    UPLOAD_ERR_CANT_WRITE => 'document.upload.error.failed_to_write_to_disk',
+                );
+
                 $response->setData(array(
                     'jsonrpc' => '2.0',
                     'id'      => 'id',
                     'error'   => array(
                         'code'    => 103,
-                        'message' => "Failed to move uploaded file.",
+                        'message' => $this->get('translator')->trans($messages[$_FILES['file']['error']]),
                     )
                 ));
 
@@ -491,11 +516,11 @@ class DocumentController extends Controller
                 ->getDocument($documentSlug, $nodeSlug)
             ;
         } catch (AccessDeniedException $e) {
-            throw AccessDeniedHttpException($e->getMessage());
+            throw new AccessDeniedHttpException($e->getMessage());
         }
 
         if (null === $document) {
-            throw NotFoundHttpException(sprintf('The document "%s" was not found', $documentSlug));
+            throw new NotFoundHttpException(sprintf('The document "%s" was not found', $documentSlug));
         }
 
         return $document;
@@ -509,11 +534,11 @@ class DocumentController extends Controller
                 ->getNode($nodeSlug)
             ;
         } catch (AccessDeniedException $e) {
-            throw AccessDeniedHttpException($e->getMessage());
+            throw new AccessDeniedHttpException($e->getMessage());
         }
 
         if (null === $node) {
-            throw NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
+            throw new NotFoundHttpException(sprintf('The node "%s" was not found', $nodeSlug));
         }
 
         return $node;

@@ -87,6 +87,13 @@ erichard_dms_show_document:
     requirements:
         _method: GET
 
+
+erichard_dms_reupload_document:
+    pattern: /{node}/{document}/reupload
+    defaults: { _controller: ErichardDmsBundle:Document:add }
+    requirements:
+        _method: GET|POST
+
 erichard_dms_edit_document:
     pattern: /{node}/{document}/edit
     defaults: { _controller: ErichardDmsBundle:Document:edit }

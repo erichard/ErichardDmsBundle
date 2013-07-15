@@ -202,6 +202,15 @@ class Document implements DocumentInterface
         return $this;
     }
 
+    public function removeMetadataByName($metadataName)
+    {
+        if ($this->hasMetadata($metadataName)) {
+            $this->removeMetadata($this->getMetadata($metadataName));
+        }
+
+        return $this;
+    }
+
     public function removeEmptyMetadatas($strict = false)
     {
         foreach ($this->metadatas as $m) {

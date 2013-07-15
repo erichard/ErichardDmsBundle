@@ -102,7 +102,7 @@
                 $('#progressbar .ui-progressbar-value').html('<span class="progressTooltip">' + up.total.percent + '%</span>');
             });
 
-            uploader.bind('UploadComplete', function(up, files) {
+            uploader.bind('FileUploaded', function(up, files) {
                 $('#upload-success').show();
                 $('#filename').val(files[0].name);
                 $('#token').val(files[0].target_name);
