@@ -10,11 +10,9 @@ use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use \GetId3\GetId3Core as GetId3;
 
 class DocumentController extends Controller
 {
@@ -32,10 +30,15 @@ class DocumentController extends Controller
         }
 
         if ($request->isMethod('GET')) {
-            return $this->render('ErichardDmsBundle:Document:add.html.twig', array(
+            $params = array(
                 'node' => $documentNode,
-                'document' => $document
-            ));
+            );
+
+            if (null !== $document->getId()) {
+                $params['document'] = $document;
+            }
+
+            return $this->render('ErichardDmsBundle:Document:add.html.twig', $params);
         } else {
             $filename = $request->request->get('filename');
             $documentNode->removeEmptyMetadatas();
@@ -490,7 +493,7 @@ class DocumentController extends Controller
 
         $targetNodeSlug= $request->query->get('target');
 
-        if (null !== $targetNodeSlug)  {
+        if (null !== $targetNodeSlug) {
             $target = $dmsManager->getNode($targetNodeSlug);
             foreach ($target->getNodes() as $targetSubNode) {
                 if (!$this->get('security.context')->isGranted('DOCUMENT_ADD', $targetSubNode)) {
