@@ -96,10 +96,12 @@ class Acl
             $authorizationsByRoles[$a['role']]['deny']->add((int) $a['deny']);
         }
 
+        //var_dump($authorizationsByRoles);
+
         $finalMask = new DmsMaskBuilder($startingMask);
         foreach ($authorizationsByRoles as $authorization) {
-           $finalMask->add($authorization['allow']->get());
-           $finalMask->remove($authorization['deny']->get());
+            $finalMask->add($authorization['allow']->get());
+            $finalMask->remove($authorization['deny']->get());
         }
 
         return $finalMask->get();

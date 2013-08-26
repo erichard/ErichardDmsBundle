@@ -25,7 +25,6 @@ class DmsManager
     protected $router;
     protected $options;
 
-
     public function __construct(
         Registry $registry,
         SecurityContextInterface $securityContext,
