@@ -169,12 +169,40 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     $this->createAuthorization('ROLE_GROUP_TEST', 16, 0),
                     $this->createAuthorization('ROLE_GROUP_TEST2', 0, 1),
                 ], 0,
-                16
+                17
             ),
             array(
                 [
                     $this->createAuthorization('ROLE_GROUP_TEST', 1, 0),
                     $this->createAuthorization('ROLE_GROUP_TEST2', 16, 0),
+                ], 0,
+                17
+            ),
+
+            /**
+             * A same user has two roles that allows the access and one that denies it.
+             *
+             * We are intended to allow access to the resource.
+             */
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 17,  0),
+                    $this->createAuthorization('ROLE_GROUP_TEST2',  0, 17),
+                    $this->createAuthorization('ROLE_GROUP_TEST3', 17,  0),
+                ], 0,
+                17
+            ),
+
+            /**
+             * A same user has two roles that denies the access and one that allows it.
+             *
+             * We are intended to allow access to the resource.
+             */
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 0,  17),
+                    $this->createAuthorization('ROLE_GROUP_TEST2', 17,  0),
+                    $this->createAuthorization('ROLE_GROUP_TEST3',  0, 17),
                 ], 0,
                 17
             ),

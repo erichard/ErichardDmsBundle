@@ -91,17 +91,21 @@ class Acl
                     'deny' => new DmsMaskBuilder(),
                 );
             }
-
-            $authorizationsByRoles[$a['role']]['allow']->add((int) $a['allow']);
-            $authorizationsByRoles[$a['role']]['deny']->add((int) $a['deny']);
         }
 
-        $finalMask = new DmsMaskBuilder($startingMask);
-        foreach ($authorizationsByRoles as $authorization) {
-           $finalMask->add($authorization['allow']->get());
-           $finalMask->remove($authorization['deny']->get());
+        $finalMask = $startingMask;
+        foreach (array_keys($authorizationsByRoles) as $role) {
+            $groupMask = 0;
+            foreach ($authorizations as $auth) {
+                if ($auth['role'] == $role) {
+                    $groupMask |=   (int) $auth['allow'];
+                    $groupMask &= ~ (int) $auth['deny'];
+                }
+            }
+
+            $finalMask |= $groupMask;
         }
 
-        return $finalMask->get();
+        return $finalMask;
     }
 }

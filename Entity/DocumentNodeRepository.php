@@ -97,7 +97,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
         $query = "SELECT a.role, a.allow, a.deny ".
             "FROM $table c INNER JOIN $authorizationTableName a ON (a.node_id = c.ancestor) ".
-            "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY c.depth ASC "
+            "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY c.depth DESC"
         ;
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
