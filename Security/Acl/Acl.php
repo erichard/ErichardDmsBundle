@@ -106,4 +106,21 @@ class Acl
 
         return $finalMask->get();
     }
+
+    public function sortAuthorizations($authorizations)
+    {
+        usort($authorizations, function ($auth1, $auth2) {
+            if ($auth1['depth'] != $auth2['depth']) {
+                return $auth1['depth'] - $auth2['depth'];
+            } elseif ($auth1['deny'] != $auth2['deny']) {
+                return ($auth1['deny'] - $auth2['deny']) * -1;
+            } elseif ($auth1['allow'] != $auth2['allow']) {
+                return ($auth1['allow'] - $auth2['allow']) * -1;
+            } else {
+                return 0;
+            }
+        });
+
+        return $authorizations;
+    }
 }
