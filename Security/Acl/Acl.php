@@ -116,6 +116,8 @@ class Acl
                 return ($auth1['deny'] - $auth2['deny']) * -1;
             } elseif ($auth1['allow'] != $auth2['allow']) {
                 return ($auth1['allow'] - $auth2['allow']) * -1;
+            } elseif ($auth1['role'] != $auth2['role']) {
+                return strcmp($auth1['role'], $auth2['role']);
             } else {
                 return 0;
             }
