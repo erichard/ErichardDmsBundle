@@ -49,7 +49,6 @@ class Acl
     protected function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
     {
         if (!isset($this->localCache['node'][$node->getId()])) {
-
             $authorizations = $this
                 ->manager
                 ->getRepository(get_class($node))
@@ -75,11 +74,7 @@ class Acl
                 ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
             ;
 
-            $start = microtime(true);
-            for ($i=0; $i < 10000; $i++) {
-                $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
-            }
-            echo (microtime(true) - $start) * 1000 . "\n";
+            $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
         }
 
         return $this->localCache['document'][$document->getId()];
