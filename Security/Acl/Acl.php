@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\DocumentNodeInterface;
 use Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 
@@ -14,14 +15,16 @@ class Acl
     private $roleHierarchy;
     private $manager;
     private $options;
+    private $session;
 
     private $localCache = array();
 
-    public function __construct(RoleHierarchyInterface $roleHierarchy, ObjectManager $manager, array $options = array())
+    public function __construct(RoleHierarchyInterface $roleHierarchy, ObjectManager $manager, SessionInterface $session = null , array $options = array())
     {
         $this->roleHierarchy = $roleHierarchy;
         $this->manager = $manager;
         $this->options = $options;
+        $this->session = $session;
     }
 
     public function isGranted(TokenInterface $token, $object, $mask)
@@ -48,22 +51,29 @@ class Acl
 
     protected function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
     {
-        if (!isset($this->localCache['node'][$node->getId()])) {
+        $cacheKey = 'dms.node.mask.' . $node->getId();
+
+        if (!$this->session->has($cacheKey)) {
             $authorizations = $this
                 ->manager
                 ->getRepository(get_class($node))
                 ->getNodeAuthorizationsByRoles($node->getId(), $roles)
             ;
 
-            $this->localCache['node'][$node->getId()] = $this->mergeMask($authorizations);
+            $mask = $this->mergeMask($authorizations);
+            $this->session->set($cacheKey, $mask);
+        } else {
+            $mask = $this->session->get($cacheKey);
         }
 
-        return $this->localCache['node'][$node->getId()];
+        return $mask;
     }
 
     protected function getDocumentAuthorizationMask(DocumentInterface $document, array $roles)
     {
-        if (!isset($this->localCache['document'][$document->getId()])) {
+        $cacheKey = 'dms.document.mask.' . $document->getId();
+
+        if (!$this->session->has($cacheKey)) {
             $nodeMask = $this
                 ->getDocumentNodeAuthorizationMask($document->getNode(), $roles)
             ;
@@ -74,10 +84,13 @@ class Acl
                 ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
             ;
 
-            $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
+            $mask = $this->mergeMask($authorizations, $nodeMask);
+            $this->session->set($cacheKey, $mask);
+        } else {
+            $mask = $this->session->get($cacheKey);
         }
 
-        return $this->localCache['document'][$document->getId()];
+        return $mask;
     }
 
     public function mergeMask(array $authorizations, $startingMask = 0)

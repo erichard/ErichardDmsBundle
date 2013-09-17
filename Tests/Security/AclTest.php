@@ -21,7 +21,11 @@ class AclTest extends \PHPUnit_Framework_Testcase
         $this->documentNodeRepository = m::mock('Doctrine\ORM\EntityRepository');
         $this->em->shouldReceive('getRepository')->with('Erichard\DmsBundle\Entity\DocumentNode')->andReturn($this->documentNodeRepository);
 
-        $this->acl = new Acl($this->roleHierarchy, $this->em, array());
+        $this->session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface');
+        $this->session->shouldReceive('has')->andReturn(false);
+        $this->session->shouldReceive('set')->andReturn(null);
+
+        $this->acl = new Acl($this->roleHierarchy, $this->em, $this->session, array());
 
         $this->token = m::mock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
         $tokenRoles = array(new Role('ROLE_GROUP_TEST'));

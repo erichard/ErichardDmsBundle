@@ -36,6 +36,7 @@ services:
         arguments:
             - @security.role_hierarchy
             - @doctrine.orm.entity_manager
+            - @session=
             - { cache_dir: %kernel.cache_dir%, super_admin_role: %dms.permission.super_admin_role% }
 
     dms.security.role_provider:
