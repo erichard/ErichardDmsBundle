@@ -3,8 +3,6 @@
 namespace Erichard\DmsBundle\Entity;
 
 use Gedmo\Tree\Entity\Repository\ClosureTreeRepository;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 
 class DocumentNodeRepository extends ClosureTreeRepository
 {
@@ -97,7 +95,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
         $query = "SELECT a.role, a.allow, a.deny, c.depth ".
             "FROM $table c INNER JOIN $authorizationTableName a ON (a.node_id = c.ancestor) ".
-            "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY c.depth DESC"
+            "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY depth ASC"
         ;
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
@@ -134,5 +132,4 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
         return $stmt->fetchAll();
     }
-
 }

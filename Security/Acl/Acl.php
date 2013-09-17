@@ -75,7 +75,11 @@ class Acl
                 ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
             ;
 
-            $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
+            $start = microtime(true);
+            for ($i=0; $i < 10000; $i++) {
+                $this->localCache['document'][$document->getId()] = $this->mergeMask($authorizations, $nodeMask);
+            }
+            echo (microtime(true) - $start) * 1000 . "\n";
         }
 
         return $this->localCache['document'][$document->getId()];
@@ -86,43 +90,20 @@ class Acl
         $authorizationsByRoles = array();
         foreach ($authorizations as $a) {
             if (!isset($authorizationsByRoles[$a['role']])) {
-                $authorizationsByRoles[$a['role']] = array(
-                    'allow' => new DmsMaskBuilder(),
-                    'deny' => new DmsMaskBuilder(),
-                );
+                $authorizationsByRoles[$a['role']] = new DmsMaskBuilder(0);
             }
 
-            $authorizationsByRoles[$a['role']]['allow']->add((int) $a['allow']);
-            $authorizationsByRoles[$a['role']]['deny']->add((int) $a['deny']);
+            $authorizationsByRoles[$a['role']]->add((int) $a['allow']);
+            $authorizationsByRoles[$a['role']]->remove((int) $a['deny']);
         }
 
-        //var_dump($authorizationsByRoles);
-
         $finalMask = new DmsMaskBuilder($startingMask);
+
+        // Cumulative permissions
         foreach ($authorizationsByRoles as $authorization) {
-            $finalMask->add($authorization['allow']->get());
-            $finalMask->remove($authorization['deny']->get());
+            $finalMask->add($authorization->get());
         }
 
         return $finalMask->get();
-    }
-
-    public function sortAuthorizations($authorizations)
-    {
-        usort($authorizations, function ($auth1, $auth2) {
-            if ($auth1['depth'] != $auth2['depth']) {
-                return $auth1['depth'] - $auth2['depth'];
-            } elseif ($auth1['deny'] != $auth2['deny']) {
-                return ($auth1['deny'] - $auth2['deny']) * -1;
-            } elseif ($auth1['allow'] != $auth2['allow']) {
-                return ($auth1['allow'] - $auth2['allow']) * -1;
-            } elseif ($auth1['role'] != $auth2['role']) {
-                return strcmp($auth1['role'], $auth2['role']);
-            } else {
-                return 0;
-            }
-        });
-
-        return $authorizations;
     }
 }

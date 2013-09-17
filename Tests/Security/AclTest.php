@@ -159,25 +159,9 @@ class AclTest extends \PHPUnit_Framework_Testcase
                 [
                     $this->createAuthorization('ROLE_GROUP_TEST', 16, 0),
                     $this->createAuthorization('ROLE_GROUP_TEST', 1, 0),
-                    $this->createAuthorization('ROLE_GROUP_TEST', 0, 1),
-                ], 0,
-                16
-            ),
-            array(
-                [
-                    $this->createAuthorization('ROLE_GROUP_TEST', 16, 0),
-                    $this->createAuthorization('ROLE_GROUP_TEST', 1, 0),
                     $this->createAuthorization('ROLE_GROUP_TEST2', 0, 1),
                 ], 0,
-                16
-            ),
-            array(
-                [
-                    $this->createAuthorization('ROLE_GROUP_TEST', 16, 0),
-                    $this->createAuthorization('ROLE_GROUP_TEST', 1, 0),
-                    $this->createAuthorization('ROLE_GROUP_TEST2', 0, 1),
-                ], 0,
-                16
+                17
             ),
             array(
                 [
@@ -212,7 +196,7 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     $this->createAuthorization('ROLE_GROUP_TEST2', 17,  0),
                     $this->createAuthorization('ROLE_GROUP_TEST3',  0, 17),
                 ], 0,
-                0
+                17
             ),
             array(
                 [
@@ -220,7 +204,28 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     $this->createAuthorization('ROLE_GROUP_TEST2', 17,  0),
                     $this->createAuthorization('ROLE_GROUP_TEST2',  0, 17),
                 ], 0,
+                17
+            ),
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST2', 17,  0),
+                    $this->createAuthorization('ROLE_GROUP_TEST2',  0, 17),
+                ], 0,
                 0
+            ),
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 1,  0, 1),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 16,  0, 3),
+                ], 0,
+                17
+            ),
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 17,  0, 1),
+                    $this->createAuthorization('ROLE_GROUP_TEST2', 0,  17, 3),
+                ], 0,
+                17
             ),
         );
     }
@@ -232,70 +237,6 @@ class AclTest extends \PHPUnit_Framework_Testcase
             'allow' => $allow,
             'deny'  => $deny,
             'depth' => $depth,
-        );
-    }
-
-    /**
-     * @dataProvider getAuthorizationsSorting
-     */
-    public function test_authorizations_sorting($authorizations, $sortedAuthorizations)
-    {
-        $this->assertEquals(
-            $this->acl->sortAuthorizations($authorizations), $sortedAuthorizations
-        );
-    }
-
-    public function getAuthorizationsSorting()
-    {
-        return array(
-            array(
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 2),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 3),
-                ],
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 2),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 3),
-                ],
-            ),
-            array(
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 3),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 2),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                ],
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 2),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 3),
-                ],
-            ),
-            array(
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 17, 0, 3),
-                  $this->createAuthorization('ROLE_GROUP_TEST1', 0, 17, 3),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                ],
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST', 0, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST1', 0, 17, 3),
-                  $this->createAuthorization('ROLE_GROUP_TEST', 17, 0, 3),
-                ],
-            ),
-            array(
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST1', 17, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST2', 0, 17, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST3', 17, 0, 1),
-                ],
-                [
-                  $this->createAuthorization('ROLE_GROUP_TEST2', 0, 17, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST1', 17, 0, 1),
-                  $this->createAuthorization('ROLE_GROUP_TEST3', 17, 0, 1),
-                ],
-            ),
         );
     }
 }
