@@ -1,5 +1,6 @@
 parameters:
     dms.storage.path: %kernel.root_dir%/../web/medias
+    dms.storage.web_path: %kernel.root_dir%/../web
 
 services:
     dms.twig.container_extension:
@@ -102,7 +103,7 @@ services:
             - @security.context
             - @dms.mime_type_manager
             - @router
-            - { storage_path: %dms.storage.path%, web_path: %kernel.root_dir%/../web }
+            - { storage_path: %dms.storage.path%, web_path: %dms.storage.web_path }
 
     dms.mime_type_manager:
         class: Erichard\DmsBundle\MimeTypeManager

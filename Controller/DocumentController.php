@@ -67,6 +67,16 @@ class DocumentController extends Controller
             $absTmpFilename = $storageTmpPath . '/' . $document->getFilename();
             $absFilename = $storagePath . '/' . $document->getComputedFilename();
 
+            // Delete existing thumbnails
+            $finder = new Finder();
+            $finder->files()
+                ->in($this->container->getParameter('dms.storage.web_path').'/image')
+                ->name("{$document->getSlug()}.png")
+            ;
+            foreach ($finder as $file) {
+                $filesystem->remove($file);
+            }
+
             // overwrite file
             if ($filesystem->exists($absFilename)) {
                 $filesystem->remove($absFilename);
