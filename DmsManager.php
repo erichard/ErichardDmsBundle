@@ -104,12 +104,12 @@ class DmsManager
         return $document;
     }
 
-    public function findNodesByMetadatas(array $metatadas = array(), array $sortBy = array())
+    public function findNodesByMetadatas($node = null, array $metatadas = array(), array $sortBy = array())
     {
         $documentNodes = $nodes = $this
             ->registry
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findByMetadatas($metatadas, $sortBy)
+            ->findByMetadatas($node, $metatadas, $sortBy)
         ;
 
         return array_filter($documentNodes, function(DocumentNodeInterface $documentNode) {
@@ -117,12 +117,12 @@ class DmsManager
         });
     }
 
-    public function findDocumentsByMetadatas(array $metatadas = array(), array $sortBy = array())
+    public function findDocumentsByMetadatas($node = null, array $metatadas = array(), array $sortBy = array())
     {
         $documents = $nodes = $this
             ->registry
             ->getRepository('Erichard\DmsBundle\Entity\Document')
-            ->findByMetadatas($metatadas, $sortBy)
+            ->findByMetadatas($node, $metatadas, $sortBy)
         ;
 
         return array_filter($documents, function(DocumentInterface $document) {

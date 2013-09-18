@@ -38,13 +38,29 @@ class DocumentRepository extends EntityRepository
         ;
     }
 
-    public function findByMetadatas(array $metadatas = array(), array $sortBy = array(), $limit = 10)
+    public function findByMetadatas($node = null, array $metadatas = array(), array $sortBy = array(), $limit = 10)
     {
         $qb = $this
             ->createQueryBuilder('d')
             ->innerJoin('d.metadatas', 'dm')
             ->innerJoin('dm.metadata', 'm')
         ;
+
+        if (null !== $node) {
+            $descendants = $this
+                ->getEntityManager()
+                ->createQuery("SELECT n.id FROM Erichard\DmsBundle\Entity\DocumentNodeClosure c INNER JOIN c.descendant n WHERE c.ancestor = :ancestor")
+                ->setParameter('ancestor', $node)
+                ->getScalarResult()
+            ;
+
+            $descendants = array_map(function($row) { return $row['id']; }, $descendants);
+
+            $qb
+                ->andWhere('d.node IN (:parents)')
+                ->setParameter('parents', $descendants)
+            ;
+        }
 
         $idx = 0;
         foreach ($metadatas as $metaName => $metaValue) {
