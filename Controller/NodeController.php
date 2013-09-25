@@ -18,6 +18,14 @@ class NodeController extends Controller
         $documentNode = $this->findNodeOrThrowError($node);
         $this->get('dms.manager')->getNodeMetadatas($documentNode);
 
+        foreach ($documentNode->getDocuments() as $document) {
+            $filename = $this->container->getParameter('dms.storage.path').'/'.$document->getFilename();
+
+            if (is_file($filename) && is_readable($filename)) {
+                $document->setFilesize(filesize($filename));
+            }
+        }
+
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
             'node'       => $documentNode,
             'mode'       => $this->get('request')->query->get('mode', 'table'),

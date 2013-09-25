@@ -36,7 +36,11 @@ class DmsExtension extends \Twig_Extension
 
     public function getFileSize($sizeInBytes)
     {
-        $unit=array('b','kb','mb','gb','tb','pb');
+        $unit = array('b','kb','mb','gb','tb','pb');
+
+        if (null === $sizeInBytes) {
+            return '';
+        }
 
         return @round($sizeInBytes/pow(1024,($i=floor(log($sizeInBytes,1024)))),2).' '.$unit[$i];
     }
@@ -64,7 +68,7 @@ class DmsExtension extends \Twig_Extension
      */
     public function shorten($string, $max = 100, $append = '&hellip;')
     {
-        if (strlen($string) <= $length){
+        if (strlen($string) <= $length) {
             $result = $string;
         } else {
             $offset = floor($length / 2) - 1;

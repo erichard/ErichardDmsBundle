@@ -23,6 +23,7 @@ class Document implements DocumentInterface
     protected $updatedAt;
     protected $parent;
     protected $aliases;
+    protected $filesize;
 
     public function __construct(DocumentNodeInterface $node)
     {
@@ -299,7 +300,7 @@ class Document implements DocumentInterface
     /**
      * Sets createdAt.
      *
-     * @param  DateTime $createdAt
+     * @param DateTime $createdAt
      * @return $this
      */
     public function setCreatedAt(\DateTime $createdAt)
@@ -322,7 +323,7 @@ class Document implements DocumentInterface
     /**
      * Sets updatedAt.
      *
-     * @param  DateTime $updatedAt
+     * @param DateTime $updatedAt
      * @return $this
      */
     public function setUpdatedAt(\DateTime $updatedAt)
@@ -340,5 +341,17 @@ class Document implements DocumentInterface
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    public function setFilesize($filesize)
+    {
+        $this->filesize = $filesize;
+
+        return $this;
+    }
+
+    public function getFilesize()
+    {
+        return $this->filesize;
     }
 }
