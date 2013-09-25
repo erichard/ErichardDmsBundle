@@ -45,7 +45,24 @@ class MimeTypeManager
 
         $icon = null;
 
-        if (null !== $mimetype) {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+        $extensionMap = array(
+            'eps'  => 'image-x-eps',
+            'psd'  => 'image-x-psd',
+            'doc'  => 'application-msword',
+            'docx' => 'application-msword',
+        );
+
+        if (isset($extensionMap[$extension])) {
+            try {
+                $icon = $this
+                    ->kernel
+                    ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/'.$extensionMap[$extension].'.png')
+                ;
+            } catch (\InvalidArgumentException $e) {}
+        } elseif (null !== $mimetype) {
+
             $mimetypes = array(
                 str_replace('/', '-', $mimetype),
                 explode('/',$mimetype)[0]
@@ -58,22 +75,6 @@ class MimeTypeManager
                         ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/'.$mimetype.'.png')
                     ;
                     break;
-                } catch (\InvalidArgumentException $e) {}
-            }
-        } else {
-            $extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-            $extensionMap = array(
-                'eps' => 'image-x-eps',
-                'psd' => 'image-x-psd'
-            );
-
-            if (isset($extensionMap[$extension])) {
-                try {
-                    $icon = $this
-                        ->kernel
-                        ->locateResource('@ErichardDmsBundle/Resources/public/img/mimetypes/'.$iconSize.'/'.$extensionMap[$extension].'.png')
-                    ;
                 } catch (\InvalidArgumentException $e) {}
             }
         }
