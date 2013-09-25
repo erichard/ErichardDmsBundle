@@ -49,7 +49,7 @@ class Acl
         return $mask === ($mask & $objectMask);
     }
 
-    protected function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
+    public function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
     {
         $cacheKey = 'dms.node.mask.' . $node->getId();
 
@@ -69,7 +69,7 @@ class Acl
         return $mask;
     }
 
-    protected function getDocumentAuthorizationMask(DocumentInterface $document, array $roles)
+    public function getDocumentAuthorizationMask(DocumentInterface $document, array $roles)
     {
         $cacheKey = 'dms.document.mask.' . $document->getId();
 

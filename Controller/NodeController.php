@@ -3,13 +3,13 @@
 namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\DocumentNode;
+use Erichard\DmsBundle\Entity\DocumentNodeAuthorization;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
-use Erichard\DmsBundle\Form\NodeType;
+use Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-
 
 class NodeController extends Controller
 {
@@ -175,6 +175,125 @@ class NodeController extends Controller
 
         return $this->render('ErichardDmsBundle:Node:remove.html.twig', array(
             'node' => $documentNode,
+        ));
+    }
+
+    public function manageAction($node)
+    {
+        $documentNode = $this->findNodeOrThrowError($node);
+
+        $roles = $this->container->get('dms.security.role_provider')->getRoles();
+
+        return $this->render('ErichardDmsBundle:Node:manage.html.twig', array(
+            'node' => $documentNode,
+            'roles' => $roles
+        ));
+    }
+
+    public function manageRoleAction($node, $role)
+    {
+        $documentNode = $this->findNodeOrThrowError($node);
+
+        $roles = $this->container->get('dms.security.role_provider')->getRoles();
+
+        if (!in_array($role, $roles)) {
+            throw new AccessDeniedException(sprintf("The role %s is not managed by the DMS.", $role));
+        }
+
+        $authorization = $this
+            ->container
+            ->get('doctrine')
+            ->getManager()
+            ->createQuery('SELECT a FROM Erichard\DmsBundle\Entity\DocumentNodeAuthorization a WHERE a.node = :node AND a.role = :role')
+            ->setParameter('node', $documentNode->getId())
+            ->setParameter('role', $role)
+            ->getOneOrNullResult()
+        ;
+
+        $reflClass = new \ReflectionClass('Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder');
+
+        $request = $this->getRequest();
+        if ($request->isMethod('POST')) {
+            $permissions = $request->request->get('permissions');
+
+            $allow = 0;
+            $deny  = 0;
+
+            foreach ($permissions as $permission => $value) {
+                $bitValue = $reflClass->getConstant('MASK_'.$permission);
+
+                if ($value === '1') {
+                    $allow += $bitValue ;
+                } elseif ($value === '-1') {
+                    $deny += $bitValue;
+                }
+            }
+
+            if (null === $authorization) {
+                $authorization = new DocumentNodeAuthorization();
+                $authorization
+                    ->setNode($documentNode)
+                    ->setRole($role)
+                ;
+            }
+            $authorization
+                ->setAllow($allow)
+                ->setDeny($deny)
+            ;
+            $em = $this->container->get('doctrine')->getManager();
+            $em->persist($authorization);
+            $em->flush();
+
+            $session = $this->container->get('session');
+            foreach ($session->all() as $var => $value) {
+                if (strpos($var, 'dms.node.mask') === 0) {
+                    $session->remove($var);
+                }
+            };
+        }
+
+        $basePermissions = array(
+            'VIEW'                 => 0,
+            'DOCUMENT_ADD'         => 0,
+            'DOCUMENT_EDIT'        => 0,
+            'DOCUMENT_DELETE'      => 0,
+            'DOCUMENT_DOWNLOAD'    => 0,
+            'NODE_ADD'             => 0,
+            'NODE_EDIT'            => 0,
+            'NODE_DELETE'          => 0,
+            'NODE_DOWNLOAD'        => 0,
+            'MANAGE'               => 0,
+        );
+
+        $parentAuthorizations = $basePermissions;
+        if (null !== $documentNode->getParent()) {
+            $parentAuthorizationsMask = $this->container->get('dms.security.access.control_list')->getDocumentNodeAuthorizationMask($documentNode->getParent(), array($role));
+
+            foreach ($parentAuthorizations as $permission => $value) {
+                $permissionBit = $reflClass->getConstant('MASK_'.$permission);
+                $parentAuthorizations[$permission] = $permissionBit === ($parentAuthorizationsMask & $permissionBit);
+            }
+        }
+
+        $permissions = $basePermissions;
+        if (null !== $authorization) {
+            $allowMask = $authorization->getAllow();
+            $denyMask = $authorization->getDeny();
+            foreach ($permissions as $permission => $value) {
+                $permissionBit = $reflClass->getConstant('MASK_'.$permission);
+                if ($permissionBit === ($allowMask & $permissionBit )) {
+                    $permissions[$permission] = 1;
+                } elseif ($permissionBit === ($denyMask & $permissionBit )) {
+                    $permissions[$permission] = -1;
+                }
+            }
+        }
+
+        return $this->render('ErichardDmsBundle:Node:manageRole.html.twig', array(
+            'node'                 => $documentNode,
+            'role'                 => $role,
+            'parentAuthorizations' => $parentAuthorizations,
+            'permissions'          => $permissions
         ));
     }
 
