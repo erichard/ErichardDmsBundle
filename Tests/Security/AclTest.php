@@ -231,6 +231,13 @@ class AclTest extends \PHPUnit_Framework_Testcase
                 ], 0,
                 17
             ),
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 273,  0, 1),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 0,  1, 2),
+                ], 0,
+                272
+            ),
         );
     }
 
