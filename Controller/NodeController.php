@@ -297,11 +297,21 @@ class NodeController extends Controller
             }
         }
 
+        $authorizations = $basePermissions;
+
+        $authorizationsMask = $this->container->get('dms.security.access.control_list')->getDocumentNodeAuthorizationMask($documentNode, array($role));
+
+        foreach ($authorizations as $permission => $value) {
+            $permissionBit = $reflClass->getConstant('MASK_'.$permission);
+            $authorizations[$permission] = $permissionBit === ($authorizationsMask & $permissionBit);
+        }
+
         return $this->render('ErichardDmsBundle:Node:manageRole.html.twig', array(
             'node'                 => $documentNode,
             'role'                 => $role,
             'parentAuthorizations' => $parentAuthorizations,
-            'permissions'          => $permissions
+            'permissions'          => $permissions,
+            'finalAuthorizations'  => $authorizations,
         ));
     }
 
