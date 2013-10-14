@@ -252,13 +252,14 @@ class NodeController extends Controller
             $em->persist($authorization);
             $em->flush();
 
-            $session = $this->container->get('session');
-            foreach ($session->all() as $var => $value) {
-                if (strpos($var, 'dms.node.mask') === 0) {
-                    $session->remove($var);
-                }
-            };
         }
+
+        $session = $this->container->get('session');
+        foreach ($session->all() as $var => $value) {
+            if (strpos($var, 'dms.node.mask') === 0) {
+                $session->remove($var);
+            }
+        };
 
         $basePermissions = array(
             'VIEW'                 => 0,
