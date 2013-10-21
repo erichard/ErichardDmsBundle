@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Finder\Finder;
 
 class DocumentController extends Controller
 {
@@ -369,7 +370,17 @@ class DocumentController extends Controller
                 }
 
                 $document->getMetadata($metaName)->setValue($metaValue);
+
                 $em->persist($document->getMetadata($metaName));
+            }
+
+            $uploadedFile = $form->get('thumbnail')->getData();
+            if (null !== $uploadedFile) {
+                $dirname = dirname($document->getFilename());
+                $absDirName = $this->container->getParameter('dms.storage.path') . DIRECTORY_SEPARATOR . $dirname;
+                $filename = 'thumb_'.basename($document->getFilename());
+                $uploadedFile->move($absDirName, $filename);
+                $document->setThumbnail($dirname . DIRECTORY_SEPARATOR . $filename);
             }
 
             $em->persist($document);
@@ -555,6 +566,35 @@ class DocumentController extends Controller
         }
 
         return $node;
+    }
+
+    public function removeThumbnailAction($document, $node)
+    {
+        $em = $this->get('doctrine')->getManager();
+        $documentSlug = $document;
+        $nodeSlug = $node;
+
+        $document = $this->findDocumentOrThrowError($document, $node);
+        $document->setThumbnail(null);
+        $em->persist($document);
+        $em->flush();
+
+        $filesystem = $this->get('filesystem');
+
+        // Supprime les miniatures correspondant au slug du fichier
+        $finder = new Finder();
+        $finder->files()
+            ->in($this->get('request')->server->get('DOCUMENT_ROOT'))
+            ->name("{$document->getSlug()}.png");
+
+        foreach ($finder as $file) {
+            $filesystem->remove($file);
+        }
+
+        return $this->redirect($this->generateUrl('erichard_dms_edit_document', array(
+            'node' => $nodeSlug,
+            'document' => $documentSlug
+        )));
     }
 
 }

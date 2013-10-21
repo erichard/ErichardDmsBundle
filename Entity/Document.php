@@ -13,6 +13,7 @@ class Document implements DocumentInterface
     protected $node;
     protected $name;
     protected $filename;
+    protected $thumbnail;
     protected $originalName;
     protected $mimeType;
     protected $type;
@@ -353,5 +354,17 @@ class Document implements DocumentInterface
     public function getFilesize()
     {
         return $this->filesize;
+    }
+
+    public function getThumbnail()
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+
+        return $this;
     }
 }

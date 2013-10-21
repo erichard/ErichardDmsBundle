@@ -214,7 +214,7 @@ class DmsManager
 
         $size = new Box($width, $height);
         $mode = ImageInterface::THUMBNAIL_INSET;
-        $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename();
+        $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename());
 
         $mimetype = $this->mimeTypeManager->getMimeType($absPath);
 
@@ -251,7 +251,7 @@ class DmsManager
             ;
         } catch (\Exception $e) {
             $cacheFile = $this->mimeTypeManager->getMimetypeImage(
-                $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename(),
+                $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename()),
                 max([$width, $height])
             );
         }

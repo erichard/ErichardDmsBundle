@@ -11,6 +11,9 @@ Erichard\DmsBundle\Entity\Document:
     fields:
         filename:
             type: string
+        thumbnail:
+            type: string
+            nullable: true
         originalName:
             type: string
         name:

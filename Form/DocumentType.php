@@ -22,6 +22,10 @@ class DocumentType extends AbstractType
                     new Constraints\NotBlank()
                 )
             ))
+            ->add('thumbnail', 'file', array(
+                'required' => false,
+                'mapped' => false,
+            ))
             ->add('node', 'dms_node_selector')
             ->add('enabled', 'checkbox', array(
                 'required' => false
