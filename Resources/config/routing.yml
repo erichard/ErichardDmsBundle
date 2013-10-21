@@ -131,6 +131,12 @@ erichard_dms_remove_document:
     requirements:
         _method: GET
 
+erichard_dms_remove_thumbnail:
+    pattern: /{node}/{document}/remove-thumbnail
+    defaults: { _controller: ErichardDmsBundle:Document:removeThumbnail }
+    requirements:
+        _method: GET
+
 erichard_dms_delete_document:
     pattern: /{node}/{document}
     defaults: { _controller: ErichardDmsBundle:Document:delete }

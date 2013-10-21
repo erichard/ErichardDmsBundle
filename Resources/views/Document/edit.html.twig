@@ -29,13 +29,26 @@
 
     <h1>Edit document</h1>
 
-    <form class="form-horizontal" action="{{ path('erichard_dms_update_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST">
+    <form class="form-horizontal" action="{{ path('erichard_dms_update_document', {'node' : node.slug, 'document': document.slug}) }}" method="POST" {{ form_enctype(form) }}>
 
         {{ form_widget(form._token) }}
         {{ form_errors(form) }}
 
         {{ form_row(form.name, {'form_type': 'horizontal'}) }}
         {{ form_row(form.node, {'form_type': 'horizontal'}) }}
+
+        {% if document.thumbnail is not null %}
+        <div class="control-group">
+            <div class="controls">
+                <img class="thumbnail" src="{{ thumbUrl(document, parameter('dms.table.image_size')) }}"/>
+            </div>
+            <div class="controls">
+                <a href="{{ path('erichard_dms_remove_thumbnail', {'document': document.slug, 'node': node.slug }) }}">{{ 'dms.actions.remove_thumbnail'|trans() }}</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {{ form_row(form.thumbnail, {'form_type': 'horizontal', 'label': 'document.form.thumbnail'})}}
         {{ form_row(form.enabled, {'form_type': 'horizontal'}) }}
 
         {% for metadata in form.metadatas %}

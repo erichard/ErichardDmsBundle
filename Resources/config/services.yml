@@ -104,7 +104,7 @@ services:
             - @security.context
             - @dms.mime_type_manager
             - @router
-            - { storage_path: %dms.storage.path%, web_path: %dms.storage.web_path }
+            - { storage_path: %dms.storage.path%, web_path: %dms.storage.web_path% }
 
     dms.mime_type_manager:
         class: Erichard\DmsBundle\MimeTypeManager
