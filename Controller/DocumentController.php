@@ -383,6 +383,18 @@ class DocumentController extends Controller
                 $document->setThumbnail($dirname . DIRECTORY_SEPARATOR . $filename);
             }
 
+            // Supprime les miniatures correspondant au slug du fichier
+            $filesystem = $this->get('filesystem');
+            $finder = new Finder();
+            $finder->files()
+                ->in($this->get('request')->server->get('DOCUMENT_ROOT'))
+                ->name("{$document->getSlug()}.png");
+
+            foreach ($finder as $file) {
+                $filesystem->remove($file);
+            }
+
+
             $em->persist($document);
             $em->flush();
 
