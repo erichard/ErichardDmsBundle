@@ -51,7 +51,7 @@ class DmsExtension extends \Twig_Extension
             'document'    => $document->getSlug(),
             'node'        => $document->getNode()->getSlug(),
             'dimension'   => $dimension,
-        ), $absolute);
+        ), $absolute) . '?' . $document->getUpdatedAt()->getTimestamp();
     }
 
     public function getRoots()
