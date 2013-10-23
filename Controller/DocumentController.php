@@ -381,6 +381,7 @@ class DocumentController extends Controller
                 $filename = 'thumb_'.basename($document->getFilename());
                 $uploadedFile->move($absDirName, $filename);
                 $document->setThumbnail($dirname . DIRECTORY_SEPARATOR . $filename);
+                $document->setUpdatedAt(new \dateTime());
             }
 
             // Remove document's thumbnails
