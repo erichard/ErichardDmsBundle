@@ -11,11 +11,11 @@ use Erichard\DmsBundle\MimeTypeManager;
 use GetId3\GetId3Core as GetId3;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Imagine\Imagick\Image;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Imagick;
 
 class DmsManager
 {
@@ -211,48 +211,48 @@ class DmsManager
     public function generateThumbnail(DocumentInterface $document, $dimension)
     {
         list($width, $height) = array_map('intval', explode('x', $dimension));
+        $cacheFile = sprintf(
+            '%s/%s/%s/%s.png',
+            $this->options['cache_path'],
+            $dimension,
+            $document->getNode()->getSlug(),
+            $document->getSlug()
+        );
 
-        $size = new Box($width, $height);
-        $mode = ImageInterface::THUMBNAIL_INSET;
-        $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename());
+        if (!is_file($cacheFile)) {
+            $size = new Box($width, $height);
+            $mode = ImageInterface::THUMBNAIL_INSET;
+            $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename());
 
-        $mimetype = $this->mimeTypeManager->getMimeType($absPath);
-
-        if ($document->getThumbnail() === null || filesize($absPath) >= 5000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
-            $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
-        }
-
-        $url = $this->router->generate('erichard_dms_document_preview', array(
-            'dimension' => $dimension,
-            'node'      => $document->getNode()->getSlug(),
-            'document'  => $document->getSlug()
-        ));
-
-        $cacheFile = $this->options['web_path'] . $url;
-
-        try {
-            if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
-                $absPath .= '[0]';
+            $mimetype = $this->mimeTypeManager->getMimeType($absPath);
+            if ($document->getThumbnail() === null || filesize($absPath) >= 5000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
+                $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
             }
-            $imagick = new \Imagick($absPath);
 
-            $imagick->setCompression(\Imagick::COMPRESSION_LZW);
-            $imagick->setResolution(72, 72);
-            $imagick->setCompressionQuality(90);
-            $image = new \Imagine\Imagick\Image($imagick);
+            try {
+                if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
+                    $absPath .= '[0]';
+                }
+                $imagick = new Imagick($absPath);
 
-            if (!is_dir(dirname($cacheFile))) {
-                mkdir(dirname($cacheFile), 0777, true);
+                $imagick->setCompression(Imagick::COMPRESSION_LZW);
+                $imagick->setResolution(72, 72);
+                $imagick->setCompressionQuality(90);
+                $image = new Image($imagick);
+
+                if (!is_dir(dirname($cacheFile))) {
+                    mkdir(dirname($cacheFile), 0777, true);
+                }
+                $image
+                    ->thumbnail($size, $mode)
+                    ->save($cacheFile, array('quality' => 90))
+                ;
+            } catch (\Exception $e) {
+                $cacheFile = $this->mimeTypeManager->getMimetypeImage(
+                    $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename(),
+                    max([$width, $height])
+                );
             }
-            $image
-                ->thumbnail($size, $mode)
-                ->save($cacheFile, array('quality' => 90))
-            ;
-        } catch (\Exception $e) {
-            $cacheFile = $this->mimeTypeManager->getMimetypeImage(
-                $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename()),
-                max([$width, $height])
-            );
         }
 
         return $cacheFile;
