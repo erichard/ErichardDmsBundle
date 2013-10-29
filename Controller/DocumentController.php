@@ -73,7 +73,7 @@ class DocumentController extends Controller
             // Delete existing thumbnails
             $finder = new Finder();
             $finder->files()
-                ->in($this->container->getParameter('dms.storage.web_path').'/image')
+                ->in($this->container->getParameter('dms.cache.path'))
                 ->name("{$document->getSlug()}.png")
             ;
             foreach ($finder as $file) {
@@ -397,7 +397,6 @@ class DocumentController extends Controller
                 $filesystem->remove($file);
             }
 
-
             $em->persist($document);
             $em->flush();
 
@@ -408,7 +407,6 @@ class DocumentController extends Controller
 
         return $response;
     }
-
 
     public function previewAction($dimension, $document, $node)
     {
