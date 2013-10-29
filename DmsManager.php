@@ -218,8 +218,7 @@ class DmsManager
 
         $mimetype = $this->mimeTypeManager->getMimeType($absPath);
 
-        if (filesize($absPath) >= 5000000 || max([$width,$height]) < 100 ||
-            strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
+        if ($document->getThumbnail() === null || filesize($absPath) >= 5000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
             $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
         }
 

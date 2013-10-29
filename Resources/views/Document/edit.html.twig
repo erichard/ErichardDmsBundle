@@ -48,7 +48,7 @@
         </div>
         {% endif %}
 
-        {{ form_row(form.thumbnail, {'form_type': 'horizontal', 'label': 'document.form.thumbnail'})}}
+        {{ form_row(form.thumbnail, {'form_type': 'horizontal', 'label': 'document.form.thumbnail', 'help_block': 'document.form.thumbnail_help'})}}
         {{ form_row(form.enabled, {'form_type': 'horizontal'}) }}
 
         {% for metadata in form.metadatas %}
