@@ -50,8 +50,24 @@ class MimeTypeManager
         $extensionMap = array(
             'eps'  => 'image-x-eps',
             'psd'  => 'image-x-psd',
+            'gif'  => 'image-gif',
+            'bmp'  => 'gnome-mime-image-x-portable-bitmap',
             'doc'  => 'application-msword',
             'docx' => 'application-msword',
+            'xls'  => 'spreadsheet',
+            'xlt'  => 'spreadsheet',
+            'xlsx' => 'spreadsheet',
+            'dot'  => 'spreadsheet',
+            'gzip'  => 'gnome-mime-application-x-compressed-tar',
+            'docx' => 'application-msword',
+            'txt'  => 'txt',
+            'avi'  => 'video',
+            'mp4'  => 'video',
+            'mp3'  => 'video',
+            'html' => 'html',
+            'csv'  => 'spreadsheet',
+            'flv'  => 'video',
+            'rar'  => 'gnome-mime-application-x-rar',
         );
 
         if (isset($extensionMap[$extension])) {
