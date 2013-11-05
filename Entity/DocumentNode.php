@@ -5,9 +5,14 @@ namespace Erichard\DmsBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\DocumentNodeInterface;
+use Erichard\DmsBundle\Entity\Behavior\TranslatableEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
 
-class DocumentNode implements DocumentNodeInterface
+class DocumentNode implements DocumentNodeInterface, Translatable
 {
+    use TranslatableEntity;
+
     protected $id;
     protected $parent;
     protected $nodes;
@@ -224,7 +229,7 @@ class DocumentNode implements DocumentNodeInterface
     /**
      * Sets createdAt.
      *
-     * @param  DateTime $createdAt
+     * @param DateTime $createdAt
      * @return $this
      */
     public function setCreatedAt(\DateTime $createdAt)
@@ -247,7 +252,7 @@ class DocumentNode implements DocumentNodeInterface
     /**
      * Sets updatedAt.
      *
-     * @param  DateTime $updatedAt
+     * @param DateTime $updatedAt
      * @return $this
      */
     public function setUpdatedAt(\DateTime $updatedAt)
