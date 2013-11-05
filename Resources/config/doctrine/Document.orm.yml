@@ -1,6 +1,9 @@
 Erichard\DmsBundle\Entity\Document:
     type: entity
     repositoryClass: Erichard\DmsBundle\Entity\DocumentRepository
+    gedmo:
+        translation:
+            locale: locale
     indexes:
         document_slug_idx:
             columns: [ slug ]
@@ -18,6 +21,8 @@ Erichard\DmsBundle\Entity\Document:
             type: string
         name:
             type: string
+            gedmo:
+                - translatable
         slug:
             type: string
             length: 128

@@ -1,5 +1,8 @@
 Erichard\DmsBundle\Entity\DocumentNodeMetadata:
     type: entity
+    gedmo:
+        translation:
+            locale: locale
     id:
         id:
             type: integer
@@ -10,6 +13,8 @@ Erichard\DmsBundle\Entity\DocumentNodeMetadata:
     fields:
         value:
             type: text
+            gedmo:
+                - translatable
     manyToOne:
         node:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode

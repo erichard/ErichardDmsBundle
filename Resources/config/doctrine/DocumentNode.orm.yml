@@ -5,6 +5,8 @@ Erichard\DmsBundle\Entity\DocumentNode:
         node_slug_idx:
             columns: [ slug ]
     gedmo:
+        translation:
+            locale: locale
         tree:
             type: closure
             closure: Erichard\DmsBundle\Entity\DocumentNodeClosure
@@ -15,6 +17,8 @@ Erichard\DmsBundle\Entity\DocumentNode:
     fields:
         name:
             type: string
+            gedmo:
+                - translatable
         slug:
             type: string
             length: 128
