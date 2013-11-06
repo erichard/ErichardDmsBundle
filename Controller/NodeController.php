@@ -15,6 +15,9 @@ class NodeController extends Controller
 {
     public function listAction($node)
     {
+        $translatableListener     = $this->get('gedmo.listener.translatable');
+        $translatableListener->setTranslationFallback(true);
+
         $documentNode = $this->findNodeOrThrowError($node);
         $this->get('dms.manager')->getNodeMetadatas($documentNode);
 
