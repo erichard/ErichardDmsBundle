@@ -5,10 +5,15 @@ namespace Erichard\DmsBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\DocumentNodeInterface;
+use Erichard\DmsBundle\Entity\Behavior\TranslatableEntity;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
 
-class Document implements DocumentInterface
+class Document implements DocumentInterface, Translatable
 {
+    use TranslatableEntity;
+
     protected $id;
     protected $node;
     protected $name;

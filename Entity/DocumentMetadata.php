@@ -3,10 +3,15 @@
 namespace Erichard\DmsBundle\Entity;
 
 use Erichard\DmsBundle\DocumentInterface;
+use Erichard\DmsBundle\Entity\Behavior\TranslatableEntity;
 use Erichard\DmsBundle\Entity\Metadata;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
 
-class DocumentMetadata
+class DocumentMetadata implements Translatable
 {
+    use TranslatableEntity;
+
     protected $id;
     protected $metadata;
     protected $document;
