@@ -58,6 +58,9 @@ class NodeController extends Controller
 
     public function editAction($node)
     {
+        $request = $this->get('request');
+        $this->setCurrentTranslation($request->get('_translation', \Locale::getDefault()));
+
         $documentNode = $this->findNodeOrThrowError($node);
 
         $this->get('dms.manager')->getNodeMetadatas($documentNode);
@@ -113,6 +116,9 @@ class NodeController extends Controller
 
     public function updateAction($node)
     {
+        $request = $this->get('request');
+        $this->setCurrentTranslation($request->get('_translation', \Locale::getDefault()));
+
         $documentNode = $this->findNodeOrThrowError($node);
 
         $form = $this->createForm('dms_node', $documentNode);
@@ -146,7 +152,12 @@ class NodeController extends Controller
                     $documentNode->addMetadata($metadata);
                 }
 
-                $documentNode->getMetadata($metaName)->setValue($metaValue);
+                $metadata = $documentNode->getMetadata($metaName);
+                $metadata
+                    ->setLocale($documentNode->getLocale())
+                    ->setValue($metaValue)
+                ;
+
                 $em->persist($documentNode->getMetadata($metaName));
             }
 
@@ -332,5 +343,15 @@ class NodeController extends Controller
         }
 
         return $node;
+    }
+
+    /**************************************************************************
+     * I18n support
+     **************************************************************************/
+    protected function setCurrentTranslation($translation)
+    {
+        $this->get('dms.manager')->setLocale($translation);
+
+        return $this;
     }
 }

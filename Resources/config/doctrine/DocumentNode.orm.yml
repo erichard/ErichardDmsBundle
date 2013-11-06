@@ -25,6 +25,7 @@ Erichard\DmsBundle\Entity\DocumentNode:
             gedmo:
                 slug:
                     fields: [name]
+                    updatable: false
         depth:
             type: integer
             nullable: true

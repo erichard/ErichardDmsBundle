@@ -24,6 +24,7 @@ class DmsManager
     protected $mimeTypeManager;
     protected $router;
     protected $options;
+    protected $locale;
 
     public function __construct(
         Registry $registry,
@@ -38,6 +39,7 @@ class DmsManager
         $this->mimeTypeManager = $mimeTypeManager;
         $this->router = $router;
         $this->options = $options;
+        $this->locale  = \Locale::getDefault();
     }
 
     public function getRoots()
@@ -130,13 +132,21 @@ class DmsManager
         });
     }
 
-    protected function prepareNode(DocumentNodeInterface $documentNode)
+    public function prepareNode(DocumentNodeInterface $documentNode)
     {
         if (!$this->isViewable($documentNode)) {
             throw new AccessDeniedException('You are not allowed to view this node : '. $documentNode->getName());
         }
 
         foreach ($documentNode->getNodes() as $node) {
+            $node->setLocale($this->getLocale());
+            $this->registry->getEntityManager()->refresh($node);
+
+            foreach ($node->getMetadatas() as $metadata) {
+                $metadata->setLocale($this->getLocale());
+                $this->registry->getEntityManager()->refresh($metadata);
+            }
+
             if (!$this->isViewable($node)) {
                 $documentNode->removeNode($node);
             }
@@ -150,10 +160,17 @@ class DmsManager
             $this->prepareDocument($document);
         }
 
+        $documentNode->setLocale($this->getLocale());
+        $this->registry->getEntityManager()->refresh($documentNode);
+        foreach ($documentNode->getMetadatas() as $metadata) {
+            $metadata->setLocale($this->getLocale());
+            $this->registry->getEntityManager()->refresh($metadata);
+        }
+
         return $documentNode;
     }
 
-    protected function prepareDocument(DocumentInterface $document)
+    public function prepareDocument(DocumentInterface $document)
     {
         if (!$this->isViewable($document)) {
             throw new AccessDeniedException('You are not allowed to view this document: '. $document->getName());
@@ -162,6 +179,13 @@ class DmsManager
         $mimetype = $this->mimeTypeManager->getMimeType($this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename());
 
         $document->setMimeType($mimetype);
+        $document->setLocale($this->getLocale());
+        $this->registry->getEntityManager()->refresh($document);
+
+        foreach ($document->getMetadatas() as $metadata) {
+            $metadata->setLocale($this->getLocale());
+            $this->registry->getEntityManager()->refresh($metadata);
+        }
 
         return $document;
     }
@@ -187,6 +211,10 @@ class DmsManager
             if (!$node->hasMetadata($m->getName())) {
                 $metadata = new DocumentNodeMetadata($m);
                 $node->addMetadata($metadata);
+            } else {
+                $metadata = $node->getMetadata($m->getName());
+                $metadata->setLocale($this->getLocale());
+                $this->registry->getEntityManager()->refresh($metadata);
             }
         }
     }
@@ -204,6 +232,10 @@ class DmsManager
             if (!$document->hasMetadata($m->getName())) {
                 $metadata = new DocumentMetadata($m);
                 $document->addMetadata($metadata);
+            } else {
+                $metadata = $document->getMetadata($m->getName());
+                $metadata->setLocale($this->getLocale());
+                $this->registry->getEntityManager()->refresh($metadata);
             }
         }
     }
@@ -266,4 +298,17 @@ class DmsManager
             ($this->securityContext->isGranted($editPermission, $entity) || $entity->isEnabled())
         ;
     }
+
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
 }

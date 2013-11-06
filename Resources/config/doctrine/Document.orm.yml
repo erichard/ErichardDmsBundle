@@ -31,7 +31,7 @@ Erichard\DmsBundle\Entity\Document:
                 slug:
                     fields: [name]
                     unique: true
-                    updatable: true
+                    updatable: false
         type:
             type: string
         mimeType:

@@ -323,7 +323,11 @@ class DocumentController extends Controller
 
     public function editAction($node, $document)
     {
+        $request = $this->get('request');
+        $this->setCurrentTranslation($request->get('_translation', \Locale::getDefault()));
+
         $document = $this->findDocumentOrThrowError($document, $node);
+
         $this->get('dms.manager')->getDocumentMetadatas($document);
         $form = $this->createForm(new DocumentType(), $document);
 
@@ -337,6 +341,9 @@ class DocumentController extends Controller
 
     public function updateAction($node, $document)
     {
+        $request = $this->get('request');
+        $this->setCurrentTranslation($request->get('_translation', \Locale::getDefault()));
+
         $document = $this->findDocumentOrThrowError($document, $node);
         $this->get('dms.manager')->getDocumentMetadatas($document);
 
@@ -371,7 +378,11 @@ class DocumentController extends Controller
                     $document->addMetadata($metadata);
                 }
 
-                $document->getMetadata($metaName)->setValue($metaValue);
+                $metadata = $document->getMetadata($metaName);
+                $metadata
+                    ->setLocale($document->getLocale())
+                    ->setValue($metaValue)
+                ;
 
                 $em->persist($document->getMetadata($metaName));
             }
@@ -383,7 +394,7 @@ class DocumentController extends Controller
                 $filename = 'thumb_'.basename($document->getFilename());
                 $uploadedFile->move($absDirName, $filename);
                 $document->setThumbnail($dirname . DIRECTORY_SEPARATOR . $filename);
-                $document->setUpdatedAt(new \dateTime());
+                $document->setUpdatedAt(new \DateTime());
             }
 
             // Remove document's thumbnails
@@ -608,6 +619,16 @@ class DocumentController extends Controller
             'node' => $nodeSlug,
             'document' => $documentSlug
         )));
+    }
+
+    /**************************************************************************
+     * I18n support
+     **************************************************************************/
+    protected function setCurrentTranslation($translation)
+    {
+        $this->get('dms.manager')->setLocale($translation);
+
+        return $this;
     }
 
 }
