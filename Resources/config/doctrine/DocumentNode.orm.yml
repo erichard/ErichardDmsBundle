@@ -33,6 +33,8 @@ Erichard\DmsBundle\Entity\DocumentNode:
                 - treeLevel
         enabled:
             type: boolean
+        resetPermission:
+            type: boolean
         createdAt:
             type: datetime
             gedmo:

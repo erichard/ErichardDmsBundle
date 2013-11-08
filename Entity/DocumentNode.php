@@ -22,6 +22,7 @@ class DocumentNode implements DocumentNodeInterface, Translatable
     protected $depth;
     protected $enabled;
     protected $metadatas;
+    protected $resetPermission;
     protected $createdAt;
     protected $updatedAt;
 
@@ -30,6 +31,7 @@ class DocumentNode implements DocumentNodeInterface, Translatable
         $this->documents = new ArrayCollection();
         $this->nodes     = new ArrayCollection();
         $this->metadatas = new ArrayCollection();
+        $this->resetPermission = false;
         $this->enabled   = true;
         $this->depth     = 1;
     }
@@ -160,6 +162,18 @@ class DocumentNode implements DocumentNodeInterface, Translatable
     public function isEnabled()
     {
         return $this->enabled;
+    }
+
+    public function getResetPermission()
+    {
+        return $this->resetPermission;
+    }
+
+    public function setResetPermission($resetPermission)
+    {
+        $this->resetPermission = $resetPermission;
+
+        return $this;
     }
 
     public function getMetadatas()

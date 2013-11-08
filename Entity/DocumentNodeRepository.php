@@ -65,7 +65,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
                 ->getScalarResult()
             ;
 
-            $descendants = array_map(function($row) { return $row['id']; }, $descendants);
+            $descendants = array_map(function ($row) { return $row['id']; }, $descendants);
 
             $qb
                 ->andWhere('n.parent IN (:parents)')
@@ -94,7 +94,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
     public function getNodeAuthorizationsByRoles($id, array $roles)
     {
-        $queryRoles = array_map(function($role) { return "'$role'"; }, $roles);
+        $queryRoles = array_map(function ($role) { return "'$role'"; }, $roles);
         $queryRoles = implode(',', $queryRoles);
 
         $table = $this
@@ -109,8 +109,14 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->getTableName()
         ;
 
-        $query = "SELECT a.role, a.allow, a.deny, c.depth ".
-            "FROM $table c INNER JOIN $authorizationTableName a ON (a.node_id = c.ancestor)".
+        $nodeTable = $this
+            ->getEntityManager()
+            ->getClassMetadata('Erichard\DmsBundle\Entity\DocumentNode')
+            ->getTableName()
+        ;
+
+        $query = "SELECT a.role, a.allow, a.deny, c.depth, n.reset_permission ".
+            "FROM $table c INNER JOIN $nodeTable n ON (c.ancestor = n.id) LEFT JOIN $authorizationTableName a ON (a.node_id = c.ancestor)".
             "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY depth DESC"
         ;
 
@@ -123,7 +129,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
     public function getAuthorizationsByRoles(array $roles)
     {
-        $queryRoles = array_map(function($role) { return "'$role'"; }, $roles);
+        $queryRoles = array_map(function ($role) { return "'$role'"; }, $roles);
         $queryRoles = implode(',', $queryRoles);
 
         $table = $this
@@ -138,8 +144,14 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->getTableName()
         ;
 
-        $query = "SELECT a.role, a.allow, a.deny, c.depth ".
-            "FROM $table c INNER JOIN $authorizationTableName a ON (a.node_id = c.ancestor)".
+        $nodeTable = $this
+            ->getEntityManager()
+            ->getClassMetadata('Erichard\DmsBundle\Entity\DocumentNode')
+            ->getTableName()
+        ;
+
+        $query = "SELECT a.role, a.allow, a.deny, c.depth, n.reset_permission ".
+            "FROM $table c INNER JOIN $nodeTable n ON (c.ancestor = n.id) INNER JOIN $authorizationTableName a ON (a.node_id = c.ancestor)".
             "WHERE c.descendant = :node AND a.role IN ($queryRoles) ORDER BY depth DESC"
         ;
 

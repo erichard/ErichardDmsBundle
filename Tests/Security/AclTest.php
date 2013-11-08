@@ -55,6 +55,7 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     'role' => 'ROLE_GROUP_TEST',
                     'allow' => 1,
                     'deny' => 0,
+                    'reset_permission' => false
                 )
             ))
         ;
@@ -80,6 +81,7 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     'role' => 'ROLE_GROUP_TEST',
                     'allow' => 0,
                     'deny' => 1,
+                    'reset_permission' => false
                 )
             ))
         ;
@@ -99,6 +101,7 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     'role' => 'ROLE_GROUP_TEST',
                     'allow' => 1,
                     'deny' => 0,
+                    'reset_permission' => false
                 )
             ))
         ;
@@ -118,6 +121,7 @@ class AclTest extends \PHPUnit_Framework_Testcase
                     'role' => 'ROLE_GROUP_TEST',
                     'allow' => 0,
                     'deny' => 1,
+                    'reset_permission' => false
                 )
             ))
         ;
@@ -238,16 +242,35 @@ class AclTest extends \PHPUnit_Framework_Testcase
                 ], 0,
                 272
             ),
+
+            // test reset function
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 273,  0, 1),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 0,  0, 2, true),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 17,  0, 3),
+                ], 0,
+                17
+            ),
+            array(
+                [
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 273,  0, 1),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 0,  0, 2),
+                    $this->createAuthorization('ROLE_GROUP_TEST1', 17,  0, 3),
+                ], 0,
+                273
+            ),
         );
     }
 
-    public function createAuthorization($role, $allow, $deny, $depth = 0)
+    public function createAuthorization($role, $allow, $deny, $depth = 0, $resetPermission = false)
     {
         return array(
             'role'  => $role,
             'allow' => $allow,
             'deny'  => $deny,
             'depth' => $depth,
+            'reset_permission' => $resetPermission
         );
     }
 }

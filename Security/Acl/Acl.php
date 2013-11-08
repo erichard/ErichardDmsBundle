@@ -30,7 +30,7 @@ class Acl
     public function isGranted(TokenInterface $token, $object, $mask)
     {
         $roles = $this->roleHierarchy->getReachableRoles($token->getRoles());
-        $roles = array_map(function($role) { return $role->getRole(); }, $roles);
+        $roles = array_map(function ($role) { return $role->getRole(); }, $roles);
 
         if (isset($this->options['super_admin_role']) && in_array($this->options['super_admin_role'], $roles)) {
             return true;
@@ -96,7 +96,12 @@ class Acl
     public function mergeMask(array $authorizations, $startingMask = 0)
     {
         $authorizationsByRoles = array();
+
         foreach ($authorizations as $a) {
+            if ($a['reset_permission'] == 1) {
+                $authorizationsByRoles = array();
+            }
+
             if (!isset($authorizationsByRoles[$a['role']])) {
                 $authorizationsByRoles[$a['role']] = new DmsMaskBuilder(0);
             }

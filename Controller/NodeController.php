@@ -212,6 +212,25 @@ class NodeController extends Controller
         ));
     }
 
+    public function resetAction($node)
+    {
+        $documentNode = $this->findNodeOrThrowError($node);
+
+        if (!$this->container->get('security.context')->isGranted('MANAGE', $documentNode)) {
+            throw AccessDeniedHttpException();
+        }
+
+        $reset = $this->container->get('request')->query->get('reset');
+
+        $documentNode->setResetPermission($reset);
+
+        $em = $this->container->get('doctrine')->getManager();
+        $em->persist($documentNode);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('erichard_dms_manage_node', array('node' => $node)));
+    }
+
     public function manageRoleAction($node, $role)
     {
         $documentNode = $this->findNodeOrThrowError($node);

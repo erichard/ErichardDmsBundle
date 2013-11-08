@@ -57,6 +57,12 @@ erichard_dms_manage_role_node:
     requirements:
         _method: GET|POST
 
+erichard_dms_reset_node:
+    pattern: /{node}/reset
+    defaults: { _controller: ErichardDmsBundle:Node:reset }
+    requirements:
+        _method: GET
+
 ##
 # Folder POST actions
 #
