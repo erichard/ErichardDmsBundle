@@ -71,13 +71,16 @@ class NodeType extends AbstractType
                 $tree = $repository
                     ->getNodesHierarchyQueryBuilder(null, false, array(
                         'childSort' => array('field' => 'name', 'dir' => 'asc')), true)
-                    ->andWhere('node.id NOT IN (:node_id)')
-                    ->setParameter('node_id', $descendants)
-                    ->getQuery()
-                    ->getArrayResult()
                 ;
 
-                $tree = $repository->buildTree($tree);
+                if (count($descendants) > 0) {
+                    $tree
+                        ->andWhere('node.id NOT IN (:node_id)')
+                        ->setParameter('node_id', $descendants)
+                     ;
+                }
+
+                $tree = $repository->buildTree($tree->getQuery()->getArrayResult());
 
                 // On met en place notre itérator en vue de retirer la profondeur de nos éléments
                 $iterator = new \RecursiveIteratorIterator(
