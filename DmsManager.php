@@ -257,7 +257,7 @@ class DmsManager
             $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename());
 
             $mimetype = $this->mimeTypeManager->getMimeType($absPath);
-            if ($document->getThumbnail() === null || filesize($absPath) >= 100000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false) {
+            if ($document->getThumbnail() === null && (filesize($absPath) >= 100000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false)) {
                 $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
             }
 
