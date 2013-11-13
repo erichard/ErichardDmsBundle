@@ -228,6 +228,13 @@ class NodeController extends Controller
         $em->persist($documentNode);
         $em->flush();
 
+        $session = $this->container->get('session');
+        foreach ($session->all() as $var => $value) {
+            if (strpos($var, 'dms.node.mask') === 0) {
+                $session->remove($var);
+            }
+        };
+
         return $this->redirect($this->generateUrl('erichard_dms_manage_node', array('node' => $node)));
     }
 
@@ -308,7 +315,8 @@ class NodeController extends Controller
         );
 
         $parentAuthorizations = $basePermissions;
-        if (null !== $documentNode->getParent()) {
+
+        if (null !== $documentNode->getParent() && !$documentNode->getResetPermission()) {
             $parentAuthorizationsMask = $this->container->get('dms.security.access.control_list')->getDocumentNodeAuthorizationMask($documentNode->getParent(), array($role));
 
             foreach ($parentAuthorizations as $permission => $value) {
