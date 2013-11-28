@@ -95,6 +95,7 @@ class NodeType extends AbstractType
 
                 $form->add(
                     $factory->createNamedBuilder('parent', 'choice', $data->getParent(), array(
+                        'required'      => false,
                         'choices'       => $choices,
                         'empty_value'   => 'documentNode.form.parent_empty_value'
                     ))->addModelTransformer(new NodeToIdTransformer($registry))

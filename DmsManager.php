@@ -78,10 +78,16 @@ class DmsManager
 
     public function getNode($nodeSlug)
     {
+        $registry = $this->registry
+            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
+        ;
+
+        list($sortByField,$sortByOrder) = explode(',', $registry->findSortField($nodeSlug));
+
         $documentNode = $nodes = $this
             ->registry
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findOneBySlugWithChildren($nodeSlug)
+            ->findOneBySlugWithChildren($nodeSlug, $sortByField, $sortByOrder)
         ;
 
         if (null !== $documentNode) {
@@ -114,7 +120,7 @@ class DmsManager
             ->findByMetadatas($node, $metatadas, $sortBy)
         ;
 
-        return array_filter($documentNodes, function(DocumentNodeInterface $documentNode) {
+        return array_filter($documentNodes, function (DocumentNodeInterface $documentNode) {
             return $this->isViewable($documentNode);
         });
     }
@@ -127,7 +133,7 @@ class DmsManager
             ->findByMetadatas($node, $metatadas, $sortBy)
         ;
 
-        return array_filter($documents, function(DocumentInterface $document) {
+        return array_filter($documents, function (DocumentInterface $document) {
             return $this->isViewable($document);
         });
     }

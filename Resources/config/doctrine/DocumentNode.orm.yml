@@ -57,11 +57,9 @@ Erichard\DmsBundle\Entity\DocumentNode:
         nodes:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNode
             mappedBy: parent
-            orderBy: {name: ASC}
         documents:
             targetEntity: Erichard\DmsBundle\Entity\Document
             mappedBy: node
-            orderBy: {name: ASC}
         metadatas:
             targetEntity: Erichard\DmsBundle\Entity\DocumentNodeMetadata
             mappedBy: node

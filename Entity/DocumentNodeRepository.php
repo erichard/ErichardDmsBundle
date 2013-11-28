@@ -6,7 +6,24 @@ use Gedmo\Tree\Entity\Repository\ClosureTreeRepository;
 
 class DocumentNodeRepository extends ClosureTreeRepository
 {
-    public function findOneBySlugWithChildren($slug)
+    public function findSortField($slug)
+    {
+        $ret = $this
+            ->createQueryBuilder('n')
+            ->select('partial n.{id}, partial m.{id, value}')
+            ->innerJoin('n.metadatas', 'm')
+            ->innerJoin('m.metadata', 'meta', 'WITH', 'meta.name = :meta')
+            ->where('n.slug = :node')
+            ->setParameter('node', $slug)
+            ->setParameter('meta', 'sortBy')
+            ->getQuery()
+            ->getArrayResult()
+        ;
+
+        return count($ret) > 0 ? current($ret)['metadatas'][0]['value'] : null;
+    }
+
+    public function findOneBySlugWithChildren($slug, $sortByField = 'nodes.name', $sortByOrder = 'ASC')
     {
         return $this
             ->createQueryBuilder('n')
@@ -16,6 +33,8 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->leftJoin('n.parent', 'p', 'd.id')
             ->leftJoin('n.metadatas', 'm', 'm.metadata.name')
             ->where('n.slug = :node')
+            ->orderBy('nodes.'.$sortByField, $sortByOrder)
+            ->addOrderBy('d.'.$sortByField, $sortByOrder)
             ->setParameter('node', $slug)
             ->getQuery()
             ->getOneOrNullResult()
