@@ -23,7 +23,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
         return count($ret) > 0 ? current($ret)['metadatas'][0]['value'] : null;
     }
 
-    public function findOneBySlugWithChildren($slug, $sortByField = 'nodes.name', $sortByOrder = 'ASC')
+    public function findOneBySlugWithChildren($slug, $sortByField = 'name', $sortByOrder = 'ASC')
     {
         return $this
             ->createQueryBuilder('n')
