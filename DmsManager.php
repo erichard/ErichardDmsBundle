@@ -147,14 +147,6 @@ class DmsManager
         }
 
         foreach ($documentNode->getNodes() as $node) {
-            $node->setLocale($this->getLocale());
-            $this->registry->getEntityManager()->refresh($node);
-
-            foreach ($node->getMetadatas() as $metadata) {
-                $metadata->setLocale($this->getLocale());
-                $this->registry->getEntityManager()->refresh($metadata);
-            }
-
             if (!$this->isViewable($node)) {
                 $documentNode->removeNode($node);
             }
@@ -168,13 +160,6 @@ class DmsManager
             $this->prepareDocument($document);
         }
 
-        $documentNode->setLocale($this->getLocale());
-        $this->registry->getEntityManager()->refresh($documentNode);
-        foreach ($documentNode->getMetadatas() as $metadata) {
-            $metadata->setLocale($this->getLocale());
-            $this->registry->getEntityManager()->refresh($metadata);
-        }
-
         return $documentNode;
     }
 
@@ -184,16 +169,12 @@ class DmsManager
             throw new AccessDeniedException('You are not allowed to view this document: '. $document->getName());
         }
 
-        $mimetype = $this->mimeTypeManager->getMimeType($this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename());
+        $mimetype = $this
+            ->mimeTypeManager
+            ->getMimeType($this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename())
+        ;
 
         $document->setMimeType($mimetype);
-        $document->setLocale($this->getLocale());
-        $this->registry->getEntityManager()->refresh($document);
-
-        foreach ($document->getMetadatas() as $metadata) {
-            $metadata->setLocale($this->getLocale());
-            $this->registry->getEntityManager()->refresh($metadata);
-        }
 
         return $document;
     }
@@ -222,7 +203,6 @@ class DmsManager
             } else {
                 $metadata = $node->getMetadata($m->getName());
                 $metadata->setLocale($this->getLocale());
-                $this->registry->getEntityManager()->refresh($metadata);
             }
         }
     }
@@ -243,7 +223,6 @@ class DmsManager
             } else {
                 $metadata = $document->getMetadata($m->getName());
                 $metadata->setLocale($this->getLocale());
-                $this->registry->getEntityManager()->refresh($metadata);
             }
         }
     }

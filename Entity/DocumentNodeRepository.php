@@ -2,6 +2,7 @@
 
 namespace Erichard\DmsBundle\Entity;
 
+use Doctrine\ORM\Query;
 use Gedmo\Tree\Entity\Repository\ClosureTreeRepository;
 
 class DocumentNodeRepository extends ClosureTreeRepository
@@ -37,6 +38,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->addOrderBy('d.'.$sortByField, $sortByOrder)
             ->setParameter('node', $slug)
             ->getQuery()
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker')
             ->getOneOrNullResult()
         ;
     }
@@ -53,6 +55,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->where('n.id = :node')
             ->setParameter('node', $id)
             ->getQuery()
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker')
             ->getOneOrNullResult()
         ;
     }
@@ -64,6 +67,7 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->where('n.parent IS NULL')
             ->orderBy('n.name')
             ->getQuery()
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker')
             ->getResult()
         ;
     }
@@ -108,7 +112,11 @@ class DocumentNodeRepository extends ClosureTreeRepository
 
         $qb->setMaxResults($limit);
 
-        return $qb->getQuery()->getResult();
+        return $qb
+            ->getQuery()
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker')
+            ->getResult()
+        ;
     }
 
     public function getNodeAuthorizationsByRoles($id, array $roles)
