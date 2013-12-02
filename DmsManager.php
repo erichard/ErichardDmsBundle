@@ -82,13 +82,15 @@ class DmsManager
             ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
         ;
 
-        list($sortByField,$sortByOrder) = explode(',', $registry->findSortField($nodeSlug));
+        $sortField = $registry->findSortField($nodeSlug);
 
-        $documentNode = $nodes = $this
-            ->registry
-            ->getRepository('Erichard\DmsBundle\Entity\DocumentNode')
-            ->findOneBySlugWithChildren($nodeSlug, $sortByField, $sortByOrder)
-        ;
+        if (null !== $sortField) {
+            list($sortByField, $sortByOrder) = explode(',', $sortField);
+
+            $documentNode = $registry->findOneBySlugWithChildren($nodeSlug, $sortByField, $sortByOrder);
+        } else {
+            $documentNode = $registry->findOneBySlugWithChildren($nodeSlug);
+        }
 
         if (null !== $documentNode) {
             $this->prepareNode($documentNode);
