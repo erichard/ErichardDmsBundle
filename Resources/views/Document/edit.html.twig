@@ -54,7 +54,7 @@
         {% for metadata in form.metadatas %}
             {{ form_row(metadata, {
                 'form_type': 'horizontal',
-                'value' : document.hasMetadata(metadata.vars.name)? document.getMetadata(metadata.vars.name).value : null
+                'value' : document.getMetadata(metadata.vars.name).value|default(document.getMetadata(metadata.vars.name).metadata.defaultValue)
             }) }}
         {% endfor %}
 

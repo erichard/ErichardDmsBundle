@@ -86,4 +86,9 @@ class Metadata
     {
         return (null === $this->attributes)? array() : $this->attributes;
     }
+
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
 }
