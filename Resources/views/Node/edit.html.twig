@@ -33,7 +33,7 @@
         {% for metadata in form.metadatas %}
             {{ form_row(metadata, {
                 'form_type': 'horizontal',
-                'value' : node.hasMetadata(metadata.vars.name)? node.getMetadata(metadata.vars.name).value : null
+                'value' : node.getMetadata(metadata.vars.name).value|default(node.getMetadata(metadata.vars.name).metadata.defaultValue)
             }) }}
         {% endfor %}
 
