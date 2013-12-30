@@ -205,10 +205,39 @@ class NodeController extends Controller
         $documentNode = $this->findNodeOrThrowError($node);
 
         $roles = $this->container->get('dms.security.role_provider')->getRoles();
+        $acl = $this->container->get('dms.security.access.control_list');
+
+        $reflClass = new \ReflectionClass('Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder');
+
+        $authorizations = array();
+        foreach ($roles as $role) {
+            $authorizationsMask = $acl
+                ->getDocumentNodeAuthorizationMask($documentNode, array($role))
+            ;
+
+            $authorizations[$role] = array(
+                'VIEW'                 => 0,
+                'DOCUMENT_ADD'         => 0,
+                'DOCUMENT_EDIT'        => 0,
+                'DOCUMENT_DELETE'      => 0,
+                'DOCUMENT_DOWNLOAD'    => 0,
+                'NODE_ADD'             => 0,
+                'NODE_EDIT'            => 0,
+                'NODE_DELETE'          => 0,
+                'NODE_DOWNLOAD'        => 0,
+                'MANAGE'               => 0,
+            );
+
+            foreach ($authorizations[$role] as $permission => $value) {
+                $permissionBit = $reflClass->getConstant('MASK_'.$permission);
+                $authorizations[$role][$permission] = $permissionBit === ($authorizationsMask & $permissionBit);
+            }
+        }
 
         return $this->render('ErichardDmsBundle:Node:manage.html.twig', array(
             'node' => $documentNode,
-            'roles' => $roles
+            'roles' => $roles,
+            'authorizations' => $authorizations
         ));
     }
 
