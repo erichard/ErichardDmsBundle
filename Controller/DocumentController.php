@@ -71,13 +71,15 @@ class DocumentController extends Controller
             $absFilename = $storagePath . '/' . $document->getComputedFilename();
 
             // Delete existing thumbnails
-            $finder = new Finder();
-            $finder->files()
-                ->in($this->container->getParameter('dms.cache.path'))
-                ->name("{$document->getSlug()}.png")
-            ;
-            foreach ($finder as $file) {
-                $filesystem->remove($file);
+            if (is_dir($this->container->getParameter('dms.cache.path'))) {
+                $finder = new Finder();
+                $finder->files()
+                    ->in($this->container->getParameter('dms.cache.path'))
+                    ->name("{$document->getSlug()}.png")
+                ;
+                foreach ($finder as $file) {
+                    $filesystem->remove($file);
+                }
             }
 
             // overwrite file
