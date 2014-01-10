@@ -100,7 +100,6 @@ class NodeController extends Controller
                     $metadata = new DocumentNodeMetadata(
                         $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
                     );
-                    $metadata->setValue($metaName);
                     $newNode->addMetadata($metadata);
                     $em->persist($metadata);
                 }
@@ -151,7 +150,6 @@ class NodeController extends Controller
                     $metadata = new DocumentNodeMetadata(
                         $em->getRepository('Erichard\DmsBundle\Entity\Metadata')->findOneByName($metaName)
                     );
-                    $metadata->setValue($metaName);
                     $documentNode->addMetadata($metadata);
                 }
 
