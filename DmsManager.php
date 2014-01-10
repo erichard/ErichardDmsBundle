@@ -155,6 +155,7 @@ class DmsManager
         foreach ($documentNode->getDocuments() as $document) {
             if (!$this->isViewable($document)) {
                 $documentNode->removeDocument($document);
+                continue;
             }
 
             $this->prepareDocument($document);
