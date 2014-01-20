@@ -257,13 +257,6 @@ class NodeController extends Controller
         $em->persist($documentNode);
         $em->flush();
 
-        $session = $this->container->get('session');
-        foreach ($session->all() as $var => $value) {
-            if (strpos($var, 'dms.node.mask') === 0) {
-                $session->remove($var);
-            }
-        };
-
         return $this->redirect($this->generateUrl('erichard_dms_manage_node', array('node' => $node)));
     }
 
@@ -322,13 +315,6 @@ class NodeController extends Controller
             $em->flush();
 
         }
-
-        $session = $this->container->get('session');
-        foreach ($session->all() as $var => $value) {
-            if (strpos($var, 'dms.node.mask') === 0) {
-                $session->remove($var);
-            }
-        };
 
         $basePermissions = array(
             'VIEW'                 => 0,

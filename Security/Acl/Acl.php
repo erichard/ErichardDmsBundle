@@ -36,14 +36,25 @@ class Acl
             return true;
         }
 
-        if ($object instanceof DocumentNodeInterface) {
-            $objectMask = $this->getDocumentNodeAuthorizationMask($object, $roles);
-        } elseif ($object instanceof DocumentInterface) {
-            $objectMask = $this->getDocumentAuthorizationMask($object, $roles);
+        $cacheKey = $object instanceof DocumentNodeInterface ?
+            'dms.node.mask.' . $object->getId():
+            'dms.document.mask.' . $object->getId()
+        ;
+
+        if (!$this->session->has($cacheKey)) {
+
+            if ($object instanceof DocumentNodeInterface) {
+                $objectMask = $this->getDocumentNodeAuthorizationMask($object, $roles);
+            } elseif ($object instanceof DocumentInterface) {
+                $objectMask = $this->getDocumentAuthorizationMask($object, $roles);
+            } else {
+                throw new \InvalidArgumentException(
+                    sprintf('The DmsAcl class cannot handle %s object.', get_class($object))
+                );
+            }
+            $this->session->set($cacheKey, $objectMask);
         } else {
-            throw new \InvalidArgumentException(
-                sprintf('The DmsAcl class cannot handle %s object.', get_class($object))
-            );
+            $objectMask = $this->session->get($cacheKey);
         }
 
         return $mask === ($mask & $objectMask);
@@ -51,44 +62,30 @@ class Acl
 
     public function getDocumentNodeAuthorizationMask(DocumentNodeInterface $node, array $roles)
     {
-        $cacheKey = 'dms.node.mask.' . $node->getId();
+        $authorizations = $this
+            ->manager
+            ->getRepository(get_class($node))
+            ->getNodeAuthorizationsByRoles($node->getId(), $roles)
+        ;
 
-        if (!$this->session->has($cacheKey)) {
-            $authorizations = $this
-                ->manager
-                ->getRepository(get_class($node))
-                ->getNodeAuthorizationsByRoles($node->getId(), $roles)
-            ;
-
-            $mask = $this->mergeMask($authorizations);
-            $this->session->set($cacheKey, $mask);
-        } else {
-            $mask = $this->session->get($cacheKey);
-        }
+        $mask = $this->mergeMask($authorizations);
 
         return $mask;
     }
 
     public function getDocumentAuthorizationMask(DocumentInterface $document, array $roles)
     {
-        $cacheKey = 'dms.document.mask.' . $document->getId();
+        $nodeMask = $this
+            ->getDocumentNodeAuthorizationMask($document->getNode(), $roles)
+        ;
 
-        if (!$this->session->has($cacheKey)) {
-            $nodeMask = $this
-                ->getDocumentNodeAuthorizationMask($document->getNode(), $roles)
-            ;
+        $authorizations = $this
+            ->manager
+            ->getRepository(get_class($document))
+            ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
+        ;
 
-            $authorizations = $this
-                ->manager
-                ->getRepository(get_class($document))
-                ->getDocumentAuthorizationsByRoles($document->getId(), $roles)
-            ;
-
-            $mask = $this->mergeMask($authorizations, $nodeMask);
-            $this->session->set($cacheKey, $mask);
-        } else {
-            $mask = $this->session->get($cacheKey);
-        }
+        $mask = $this->mergeMask($authorizations, $nodeMask);
 
         return $mask;
     }

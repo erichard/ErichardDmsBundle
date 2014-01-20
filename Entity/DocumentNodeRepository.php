@@ -142,9 +142,9 @@ class DocumentNodeRepository extends ClosureTreeRepository
             ->getTableName()
         ;
 
-        $query = "SELECT a.role, a.allow, a.deny, c.depth, n.reset_permission ".
-            "FROM $table c INNER JOIN $nodeTable n ON (c.ancestor = n.id) LEFT JOIN $authorizationTableName a ON (a.node_id = c.ancestor)".
-            "WHERE c.descendant = :node AND (a.role IN ($queryRoles) OR n.reset_permission = 1) ORDER BY depth DESC"
+        $query = "SELECT a.role, a.allow, a.deny, c.depth, n.reset_permission, n.id  ".
+            "FROM $table c INNER JOIN $nodeTable n ON (c.ancestor = n.id) LEFT JOIN $authorizationTableName a ON (a.node_id = c.ancestor AND a.role IN ($queryRoles)) ".
+            "WHERE c.descendant = :node  ORDER BY depth DESC"
         ;
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
