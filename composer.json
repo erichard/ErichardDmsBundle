@@ -8,8 +8,7 @@
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "*",
         "gedmo/doctrine-extensions": "2.3.*",
-        "doctrine/doctrine-fixtures-bundle": "dev-master",
-        "doctrine/data-fixtures": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "*",
         "phansys/getid3": "2.1.*@dev"
     },
     "require-dev": {
