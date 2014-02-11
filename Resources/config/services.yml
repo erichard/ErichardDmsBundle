@@ -1,6 +1,6 @@
 parameters:
     dms.storage.path: %kernel.root_dir%/../web/medias
-    dms.cache.path:   %kernel.root_dir%/cache/dms
+    dms.cache.path:   %kernel.cache_dir%/dms
 
 services:
     dms.twig.container_extension:

@@ -246,32 +246,32 @@ class DmsManager
 
             $mimetype = $this->mimeTypeManager->getMimeType($absPath);
             if ($document->getThumbnail() === null && (filesize($absPath) >= 100000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false)) {
-                $absPath = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
-            }
+                $cacheFile = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
+            } else {
+                try {
+                    if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
+                        $absPath .= '[0]';
+                    }
+                    $imagick = new Imagick($absPath);
 
-            try {
-                if (pathinfo($absPath, PATHINFO_EXTENSION) === 'pdf') {
-                    $absPath .= '[0]';
+                    $imagick->setCompression(Imagick::COMPRESSION_LZW);
+                    $imagick->setResolution(72, 72);
+                    $imagick->setCompressionQuality(90);
+                    $image = new Image($imagick);
+
+                    if (!is_dir(dirname($cacheFile))) {
+                        mkdir(dirname($cacheFile), 0777, true);
+                    }
+                    $image
+                        ->thumbnail($size, $mode)
+                        ->save($cacheFile, array('quality' => 90))
+                    ;
+                } catch (\Exception $e) {
+                    $cacheFile = $this->mimeTypeManager->getMimetypeImage(
+                        $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename(),
+                        max([$width, $height])
+                    );
                 }
-                $imagick = new Imagick($absPath);
-
-                $imagick->setCompression(Imagick::COMPRESSION_LZW);
-                $imagick->setResolution(72, 72);
-                $imagick->setCompressionQuality(90);
-                $image = new Image($imagick);
-
-                if (!is_dir(dirname($cacheFile))) {
-                    mkdir(dirname($cacheFile), 0777, true);
-                }
-                $image
-                    ->thumbnail($size, $mode)
-                    ->save($cacheFile, array('quality' => 90))
-                ;
-            } catch (\Exception $e) {
-                $cacheFile = $this->mimeTypeManager->getMimetypeImage(
-                    $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename(),
-                    max([$width, $height])
-                );
             }
         }
 
