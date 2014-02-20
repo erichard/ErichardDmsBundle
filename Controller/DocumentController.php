@@ -403,8 +403,9 @@ class DocumentController extends Controller
             $filesystem = $this->get('filesystem');
             $finder = new Finder();
             $finder->files()
-                ->in($this->get('request')->server->get('DOCUMENT_ROOT'))
-                ->name("{$document->getSlug()}.png");
+                ->in($this->container->getParameter('dms.cache.path'))
+                ->name("{$document->getSlug()}.png")
+            ;
 
             foreach ($finder as $file) {
                 $filesystem->remove($file);
