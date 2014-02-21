@@ -146,7 +146,9 @@ class DmsManager
             throw new AccessDeniedException('You are not allowed to view this node : '. $documentNode->getName());
         }
 
+        $documentNode->setLocale($this->getLocale());
         foreach ($documentNode->getNodes() as $node) {
+            $node->setLocale($this->getLocale());
             if (!$this->isViewable($node)) {
                 $documentNode->removeNode($node);
             }
@@ -176,6 +178,7 @@ class DmsManager
         ;
 
         $document->setMimeType($mimetype);
+        $document->setLocale($this->getLocale());
 
         return $document;
     }
