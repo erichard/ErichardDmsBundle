@@ -1,3 +1,28 @@
 Erichard\DmsBundle\Entity\DocumentNodeClosure:
     type: entity
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
 
+    fields:
+        depth:
+            type: integer
+
+    manyToOne:
+        descendant:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            joinColumn:
+                name: descendant
+                referencedColumnName: id
+                unique: false
+                nullable: false
+                onDelete: CASCADE
+        ancestor:
+            targetEntity: Erichard\DmsBundle\Entity\DocumentNode
+            joinColumn:
+                name: ancestor
+                referencedColumnName: id
+                unique: false
+                nullable: false
+                onDelete: CASCADE
