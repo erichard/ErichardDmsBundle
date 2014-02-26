@@ -14,6 +14,7 @@ class TestKernel extends Kernel
             new \Symfony\Bundle\MonologBundle\MonologBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
 
             // Current Bundle to test
