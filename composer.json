@@ -8,6 +8,7 @@
         "imagine/imagine": "*",
         "braincrafted/bootstrap-bundle": "*",
         "stof/doctrine-extensions-bundle": "1.1.*",
+        "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "phansys/getid3": "2.1.*@dev"
     },
     "require-dev": {
@@ -17,7 +18,6 @@
         "nelmio/alice": "*",
         "doctrine/common": ">=2.3, <3.0",
         "doctrine/orm": ">=2.3, <3.0",
-        "doctrine/doctrine-fixtures-bundle": "*",
         "symfony/monolog-bundle": "~2.1"
     },
     "autoload": {
