@@ -54,8 +54,9 @@ class DocumentType extends AbstractType
                 }
 
                 $form->add($factory->createNamed('_locale', 'hidden', $document->getLocale(), array(
-                    'property_path' => false,
-                    'data'          => $document->getLocale(),
+                    'mapped'            => false,
+                    'data'              => $document->getLocale(),
+                    'auto_initialize'   => false,
                 )));
             })
             ->addEventListener(FormEvents::POST_BIND, function(FormEvent $event) use ($factory) {

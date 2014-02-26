@@ -97,14 +97,16 @@ class NodeType extends AbstractType
                     $factory->createNamedBuilder('parent', 'choice', $data->getParent(), array(
                         'required'      => false,
                         'choices'       => $choices,
-                        'empty_value'   => 'documentNode.form.parent_empty_value'
+                        'empty_value'   => 'documentNode.form.parent_empty_value',
+                        'auto_initialize' => false,
                     ))->addModelTransformer(new NodeToIdTransformer($registry))
                     ->getForm()
                 );
 
                 $form->add($factory->createNamed('_locale', 'hidden', $data->getLocale(), array(
-                    'property_path' => false,
+                    'mapped' => false,
                     'data'          => $data->getLocale(),
+                    'auto_initialize' => false,
                 )));
             })
             ->addEventListener(FormEvents::POST_BIND, function(FormEvent $event) use ($factory) {
