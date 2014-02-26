@@ -400,15 +400,17 @@ class DocumentController extends Controller
             }
 
             // Remove document's thumbnails
-            $filesystem = $this->get('filesystem');
-            $finder = new Finder();
-            $finder->files()
-                ->in($this->container->getParameter('dms.cache.path'))
-                ->name("{$document->getSlug()}.png")
-            ;
+            if (is_dir($this->container->getParameter('dms.cache.path'))) {
+                $filesystem = $this->get('filesystem');
+                $finder = new Finder();
+                $finder->files()
+                    ->in($this->container->getParameter('dms.cache.path'))
+                    ->name("{$document->getSlug()}.png")
+                ;
 
-            foreach ($finder as $file) {
-                $filesystem->remove($file);
+                foreach ($finder as $file) {
+                    $filesystem->remove($file);
+                }
             }
 
             $em->persist($document);
