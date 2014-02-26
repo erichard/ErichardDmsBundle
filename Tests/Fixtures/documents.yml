@@ -16,7 +16,7 @@ Erichard\DmsBundle\Entity\Document:
     doc{1..10}:
         __construct: [@node_photo]
         name: <sentence(2)>
-        filename: <image("fake", 1024, 768)>
+        filename: <image("Tests/Resources/fake", 1024, 768)>
         type: file
 
 Erichard\DmsBundle\Entity\DocumentNodeAuthorization:
