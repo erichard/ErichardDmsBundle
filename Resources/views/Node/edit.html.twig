@@ -24,6 +24,7 @@
     <form class="form-horizontal" action="{{ path('erichard_dms_update_node', {'node' : node.slug}) }}" method="POST">
 
         {{ form_widget(form._token) }}
+        {{ form_widget(form._locale) }}
         {{ form_errors(form) }}
 
         {{ form_row(form.name, {'form_type': 'horizontal'}) }}

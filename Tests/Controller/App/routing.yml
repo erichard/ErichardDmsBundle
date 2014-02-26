@@ -1,3 +1,4 @@
 bundle_routes:
     resource: "@ErichardDmsBundle/Resources/config/routing.yml"
-    prefix:   /
+    prefix:   /{_locale}
+

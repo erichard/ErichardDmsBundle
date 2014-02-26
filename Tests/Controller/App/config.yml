@@ -2,6 +2,8 @@
 imports:
     - { resource: "@ErichardDmsBundle/Resources/config/services.yml" }
 
+parameters:
+    locale: en
 framework:
     test: ~
     secret:          secret
@@ -18,7 +20,7 @@ framework:
     templating:
         engines: ['twig']
 
-    default_locale: en
+    default_locale: %locale%
 
     session:
         storage_id: session.storage.mock_file
@@ -42,17 +44,17 @@ doctrine:
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 auto_mapping: true
                 mappings:
-                    tree:
+                    gedmo_tree:
                         type: annotation
-                        alias: Gedmo
                         prefix: Gedmo\Tree\Entity
                         dir: "%kernel.root_dir%/../../../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity"
+                        alias: GedmoTree
                         is_bundle: false
                     gedmo_translatable:
                         type: annotation
                         prefix: Gedmo\Translatable\Entity
                         dir: "%kernel.root_dir%/../../../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity"
-                        alias: GedmoTranslatable # this one is optional and will default to the name set for the mapping
+                        alias: GedmoTranslator # this one is optional and will default to the name set for the mapping
                         is_bundle: false
 
 security:
@@ -86,33 +88,13 @@ erichard_dms:
     workspace:
         show_nodes: true
 
-services:
-    gedmo.listener.tree:
-        class: Gedmo\Tree\TreeListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
+stof_doctrine_extensions:
+    default_locale: %locale%
+    translation_fallback: true
+    orm:
+        default:
+            sluggable: true
+            tree: true
+            translatable: true
+            timestampable: true
 
-    gedmo.listener.sluggable:
-        class: Gedmo\Sluggable\SluggableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
-
-    gedmo.listener.translatable:
-        class: Gedmo\Translatable\TranslatableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader,   [ @annotation_reader ] ]
-            - [ setDefaultLocale,      [ 'en' ] ]
-            - [ setTranslatableLocale, [ 'en' ] ]
-
-    gedmo.listener.timestampable:
-        class: Gedmo\Timestampable\TimestampableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
