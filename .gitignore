@@ -9,5 +9,12 @@ web/uploads/*
 web/bundles/*
 
 # Configuration files
+composer.lock
 app/config/parameters.ini
 app/config/parameters.yml
+
+# Tests generated files
+Tests/Controller/App/cache
+Tests/Controller/App/logs
+Tests/Controller/App/*.sqlite
+Tests/Resources/fake
