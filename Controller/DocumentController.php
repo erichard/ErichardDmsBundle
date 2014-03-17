@@ -4,6 +4,7 @@ namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
+use Erichard\DmsBundle\Event\DocumentEvent;
 use Erichard\DmsBundle\Form\DocumentType;
 use Erichard\DmsBundle\Response\FileResponse;
 use Imagine\Gd\Imagine;
@@ -14,8 +15,8 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocumentController extends Controller
 {
@@ -94,6 +95,8 @@ class DocumentController extends Controller
 
             $em->persist($document);
             $em->flush();
+
+            $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::CREATE, $document));
 
             return $this->redirect(
                 $this->get('router')->generate(
@@ -416,6 +419,8 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
+            $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::UPDATE, $document));
+
             $this->get('session')->getFlashBag()->add('success', 'document.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
@@ -488,6 +493,8 @@ class DocumentController extends Controller
         $em = $this->get('doctrine')->getManager();
         $em->remove($document);
         $em->flush();
+
+        $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::DELETE, $document));
 
         $this->get('session')->getFlashBag()->add('success', 'document.remove.successfully_removed');
 

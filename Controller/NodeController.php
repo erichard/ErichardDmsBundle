@@ -5,6 +5,7 @@ namespace Erichard\DmsBundle\Controller;
 use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Entity\DocumentNodeAuthorization;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
+use Erichard\DmsBundle\Event\NodeEvent;
 use Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -106,6 +107,8 @@ class NodeController extends Controller
             $em->persist($newNode);
             $em->flush();
 
+            $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::CREATE, $newNode));
+
             $this->get('session')->getFlashBag()->add('success', 'documentNode.add.successfully_created');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $node)));
@@ -163,6 +166,8 @@ class NodeController extends Controller
             $em->persist($documentNode);
             $em->flush();
 
+            $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::UPDATE, $documentNode));
+
             $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getSlug())));
@@ -181,6 +186,8 @@ class NodeController extends Controller
         $em->refresh($documentNode);
         $em->remove($documentNode);
         $em->flush();
+
+        $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::DELETE, $documentNode));
 
         $this->get('session')->getFlashBag()->add('success', 'documentNode.remove.successfully_removed');
 
