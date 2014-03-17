@@ -5,6 +5,7 @@ namespace Erichard\DmsBundle\Controller;
 use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Entity\DocumentNodeAuthorization;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
+use Erichard\DmsBundle\Event\DmsEvents;
 use Erichard\DmsBundle\Event\NodeEvent;
 use Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -107,7 +108,7 @@ class NodeController extends Controller
             $em->persist($newNode);
             $em->flush();
 
-            $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::CREATE, $newNode));
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_CREATE, new NodeEvent($newNode));
 
             $this->get('session')->getFlashBag()->add('success', 'documentNode.add.successfully_created');
 
@@ -166,7 +167,7 @@ class NodeController extends Controller
             $em->persist($documentNode);
             $em->flush();
 
-            $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::UPDATE, $documentNode));
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_UPDATE, new NodeEvent($documentNode));
 
             $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
 
@@ -187,7 +188,7 @@ class NodeController extends Controller
         $em->remove($documentNode);
         $em->flush();
 
-        $this->get('event_dispatcher')->dispatch(new NodeEvent(NodeEvent::DELETE, $documentNode));
+        $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_DELETE, new NodeEvent($documentNode));
 
         $this->get('session')->getFlashBag()->add('success', 'documentNode.remove.successfully_removed');
 

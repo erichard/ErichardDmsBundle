@@ -4,6 +4,7 @@ namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
+use Erichard\DmsBundle\Event\DmsEvents;
 use Erichard\DmsBundle\Event\DocumentEvent;
 use Erichard\DmsBundle\Form\DocumentType;
 use Erichard\DmsBundle\Response\FileResponse;
@@ -96,7 +97,7 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
-            $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::CREATE, $document));
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_CREATE, new DocumentEvent($document));
 
             return $this->redirect(
                 $this->get('router')->generate(
@@ -419,7 +420,7 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
-            $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::UPDATE, $document));
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_UPDATE, new DocumentEvent($document));
 
             $this->get('session')->getFlashBag()->add('success', 'document.edit.successfully_updated');
 
@@ -494,7 +495,7 @@ class DocumentController extends Controller
         $em->remove($document);
         $em->flush();
 
-        $this->get('event_dispatcher')->dispatch(new DocumentEvent(DocumentEvent::DELETE, $document));
+        $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_DELETE, new DocumentEvent($document));
 
         $this->get('session')->getFlashBag()->add('success', 'document.remove.successfully_removed');
 

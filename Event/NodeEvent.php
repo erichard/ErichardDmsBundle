@@ -2,31 +2,15 @@
 
 namespace Erichard\DmsBundle\Event;
 
-class NodeEvent
+use Symfony\Component\EventDispatcher\Event;
+
+class NodeEvent extends Event
 {
-    const CREATE = 'dms.node.create';
-    const UPDATE = 'dms.node.update';
-    const DELETE = 'dms.node.delete';
-
     protected $node;
-    protected $name;
 
-    public function __construct($name, \Erichard\DmsBundle\Entity\DocumentNode $node)
+    public function __construct(\Erichard\DmsBundle\Entity\DocumentNode $node)
     {
-        $this->setName($name);
         $this->setNode($node);
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     public function getNode()
