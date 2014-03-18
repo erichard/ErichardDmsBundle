@@ -41,7 +41,7 @@ class Acl
             'dms.document.mask.' . $object->getId()
         ;
 
-        if (!$this->session->has($cacheKey)) {
+        if (null === $this->session || !$this->session->has($cacheKey)) {
 
             if ($object instanceof DocumentNodeInterface) {
                 $objectMask = $this->getDocumentNodeAuthorizationMask($object, $roles);
@@ -52,7 +52,9 @@ class Acl
                     sprintf('The DmsAcl class cannot handle %s object.', get_class($object))
                 );
             }
-            $this->session->set($cacheKey, $objectMask);
+            if (null !== $this->session) {
+                $this->session->set($cacheKey, $objectMask);
+            }
         } else {
             $objectMask = $this->session->get($cacheKey);
         }
