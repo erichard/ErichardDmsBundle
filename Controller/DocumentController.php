@@ -4,6 +4,8 @@ namespace Erichard\DmsBundle\Controller;
 
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
+use Erichard\DmsBundle\Event\DmsDocumentEvent;
+use Erichard\DmsBundle\Event\DmsEvents;
 use Erichard\DmsBundle\Form\DocumentType;
 use Erichard\DmsBundle\Response\FileResponse;
 use Imagine\Gd\Imagine;
@@ -14,8 +16,8 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocumentController extends Controller
 {
@@ -94,6 +96,11 @@ class DocumentController extends Controller
 
             $em->persist($document);
             $em->flush();
+
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_ADD)) {
+                $event = new DmsDocumentEvent($document);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_ADD, $event);
+            }
 
             return $this->redirect(
                 $this->get('router')->generate(
@@ -333,6 +340,11 @@ class DocumentController extends Controller
         $this->get('dms.manager')->getDocumentMetadatas($document);
         $form = $this->createForm(new DocumentType(), $document);
 
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_EDIT)) {
+            $event = new DmsDocumentEvent($document);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_EDIT, $event);
+        }
+
         return $this->render('ErichardDmsBundle:Document:edit.html.twig', array(
             'node'         => $document->getNode(),
             'document'     => $document,
@@ -416,6 +428,11 @@ class DocumentController extends Controller
             $em->persist($document);
             $em->flush();
 
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_UPDATE)) {
+                $event = new DmsDocumentEvent($document);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_UPDATE, $event);
+            }
+
             $this->get('session')->getFlashBag()->add('success', 'document.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $document->getNode()->getSlug())));
@@ -472,6 +489,11 @@ class DocumentController extends Controller
         $contentDisposition = "filename*=UTF-8''".rawurlencode($document->getSlug().'.'.$document->getExtension());
         $response->headers->set('Content-Disposition', 'attachment; '.$contentDisposition);
 
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_DOWNLOAD)) {
+            $event = new DmsDocumentEvent($document);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_DOWNLOAD, $event);
+        }
+
         return $response;
     }
 
@@ -488,6 +510,11 @@ class DocumentController extends Controller
         $em = $this->get('doctrine')->getManager();
         $em->remove($document);
         $em->flush();
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_DELETE)) {
+            $event = new DmsDocumentEvent($document);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_DELETE, $event);
+        }
 
         $this->get('session')->getFlashBag()->add('success', 'document.remove.successfully_removed');
 
@@ -516,6 +543,7 @@ class DocumentController extends Controller
         if ($request->isMethod('POST')) {
             $nodeId = $request->request->getInt('linkTo');
             $targetNode = $dmsManager->getNodeById($nodeId);
+
             if (!$this->get('security.context')->isGranted('DOCUMENT_ADD', $targetNode)) {
                 throw new AccessDeniedHttpException("You are not allowed to access this document");
             }
@@ -534,6 +562,11 @@ class DocumentController extends Controller
 
             $em->persist($link);
             $em->flush();
+
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_LINK)) {
+                $event = new DmsDocumentEvent($link);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_LINK, $link);
+            }
 
             return $this->redirect($this->generateUrl('erichard_dms_link_document', array(
                 'node' => $nodeSlug,
@@ -618,6 +651,11 @@ class DocumentController extends Controller
 
         foreach ($finder as $file) {
             $filesystem->remove($file);
+        }
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::DOCUMENT_REMOVE_THUMBNAIL)) {
+            $event = new DmsDocumentEvent($link);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::DOCUMENT_REMOVE_THUMBNAIL, $link);
         }
 
         return $this->redirect($this->generateUrl('erichard_dms_edit_document', array(

@@ -5,6 +5,8 @@ namespace Erichard\DmsBundle\Controller;
 use Erichard\DmsBundle\Entity\DocumentNode;
 use Erichard\DmsBundle\Entity\DocumentNodeAuthorization;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
+use Erichard\DmsBundle\Event\DmsEvents;
+use Erichard\DmsBundle\Event\DmsNodeEvent;
 use Erichard\DmsBundle\Security\Acl\Permission\DmsMaskBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -24,6 +26,11 @@ class NodeController extends Controller
             if (is_file($filename) && is_readable($filename)) {
                 $document->setFilesize(filesize($filename));
             }
+        }
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_ACCESS)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_ACCESS, $event);
         }
 
         return $this->render('ErichardDmsBundle:Node:list.html.twig', array(
@@ -50,6 +57,11 @@ class NodeController extends Controller
 
         $form = $this->createForm('dms_node');
 
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_ADD)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_ADD, $event);
+        }
+
         return $this->render('ErichardDmsBundle:Node:add.html.twig', array(
             'node' => $documentNode,
             'form' => $form->createView()
@@ -66,6 +78,11 @@ class NodeController extends Controller
         $this->get('dms.manager')->getNodeMetadatas($documentNode);
 
         $form = $this->createForm('dms_node', $documentNode);
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_EDIT)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_EDIT, $event);
+        }
 
         return $this->render('ErichardDmsBundle:Node:edit.html.twig', array(
             'node' => $documentNode,
@@ -105,6 +122,11 @@ class NodeController extends Controller
 
             $em->persist($newNode);
             $em->flush();
+
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_CREATE)) {
+                $event = new DmsNodeEvent($documentNode);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_CREATE, $event);
+            }
 
             $this->get('session')->getFlashBag()->add('success', 'documentNode.add.successfully_created');
 
@@ -163,6 +185,11 @@ class NodeController extends Controller
             $em->persist($documentNode);
             $em->flush();
 
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_UPDATE)) {
+                $event = new DmsNodeEvent($documentNode);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_UPDATE, $event);
+            }
+
             $this->get('session')->getFlashBag()->add('success', 'documentNode.edit.successfully_updated');
 
             $response = $this->redirect($this->generateUrl('erichard_dms_node_list', array('node' => $documentNode->getSlug())));
@@ -181,6 +208,11 @@ class NodeController extends Controller
         $em->refresh($documentNode);
         $em->remove($documentNode);
         $em->flush();
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_DELETE)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_DELETE, $event);
+        }
 
         $this->get('session')->getFlashBag()->add('success', 'documentNode.remove.successfully_removed');
 
@@ -230,6 +262,11 @@ class NodeController extends Controller
             }
         }
 
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_MANAGE)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_MANAGE, $event);
+        }
+
         return $this->render('ErichardDmsBundle:Node:manage.html.twig', array(
             'node' => $documentNode,
             'roles' => $roles,
@@ -252,6 +289,11 @@ class NodeController extends Controller
         $em = $this->container->get('doctrine')->getManager();
         $em->persist($documentNode);
         $em->flush();
+
+        if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_RESET_PERMISSION)) {
+            $event = new DmsNodeEvent($documentNode);
+            $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_RESET_PERMISSION, $event);
+        }
 
         return $this->redirect($this->generateUrl('erichard_dms_manage_node', array('node' => $node)));
     }
@@ -310,6 +352,10 @@ class NodeController extends Controller
             $em->persist($authorization);
             $em->flush();
 
+            if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_CHANGE_PERMISSION)) {
+                $event = new DmsNodeEvent($documentNode);
+                $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_CHANGE_PERMISSION, $event);
+            }
         }
 
         $basePermissions = array(
