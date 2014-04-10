@@ -2,7 +2,6 @@
 
 namespace Erichard\DmsBundle;
 
-use GetId3\GetId3Core as GetId3;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class MimeTypeManager
@@ -16,14 +15,7 @@ class MimeTypeManager
 
     public function getMimeType($filename)
     {
-        if (!is_readable($filename)) {
-            return pathinfo($filename, PATHINFO_EXTENSION);
-        }
-
-        $getID3 = new GetId3;
-        $info = $getID3->analyze($filename);
-
-        return isset($info['mime_type'])? $info['mime_type'] : null;
+        return pathinfo($filename, PATHINFO_EXTENSION);
     }
 
     public function getMimetypeImage($filename, $size)

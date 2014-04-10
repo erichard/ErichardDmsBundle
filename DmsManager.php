@@ -3,19 +3,16 @@
 namespace Erichard\DmsBundle;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Erichard\DmsBundle\DocumentInterface;
 use Erichard\DmsBundle\Entity\Document;
 use Erichard\DmsBundle\Entity\DocumentMetadata;
 use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
-use Erichard\DmsBundle\MimeTypeManager;
-use GetId3\GetId3Core as GetId3;
+use Imagick;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Imagick\Image;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use Imagick;
 
 class DmsManager
 {
@@ -181,15 +178,6 @@ class DmsManager
         $document->setLocale($this->getLocale());
 
         return $document;
-    }
-
-    public function getDocumentMimetype(DocumentInterface $document)
-    {
-        $absPath  = $this->options['storage_path'] . DIRECTORY_SEPARATOR . $document->getFilename();
-        $getID3 = new GetId3;
-        $info = $getID3->analyze($absPath);
-
-        return isset($info['mime_type'])? $info['mime_type'] : 'unknown';
     }
 
     public function getNodeMetadatas(DocumentNodeInterface $node)
