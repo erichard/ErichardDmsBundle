@@ -8,8 +8,7 @@
         "imagine/imagine": "0.*",
         "braincrafted/bootstrap-bundle": "*",
         "stof/doctrine-extensions-bundle": "1.1.*",
-        "doctrine/doctrine-fixtures-bundle": "2.2.*",
-        "phansys/getid3": "2.1.*@dev"
+        "doctrine/doctrine-fixtures-bundle": "2.2.*"
     },
     "require-dev": {
         "nelmio/alice": "dev-master",
