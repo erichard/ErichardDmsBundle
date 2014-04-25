@@ -124,7 +124,7 @@ class NodeController extends Controller
             $em->flush();
 
             if ($this->get('event_dispatcher')->hasListeners(DmsEvents::NODE_CREATE)) {
-                $event = new DmsNodeEvent($documentNode);
+                $event = new DmsNodeEvent($newNode);
                 $this->get('event_dispatcher')->dispatch(DmsEvents::NODE_CREATE, $event);
             }
 
