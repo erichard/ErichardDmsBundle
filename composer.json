@@ -3,7 +3,7 @@
     "description": "A Document Management System for Symfony 2",
     "type": "symfony-bundle",
     "require": {
-        "symfony/symfony": "~2.3",
+        "symfony/framework-bundle": "~2.3",
         "leafo/lessphp": "0.3.*",
         "imagine/imagine": "0.*",
         "braincrafted/bootstrap-bundle": "*",
