@@ -9,6 +9,8 @@ use Erichard\DmsBundle\Entity\DocumentNodeMetadata;
 use Imagick;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\Metadata\MetadataBag;
+use Imagine\Image\Palette\RGB;
 use Imagine\Imagick\Image;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -236,7 +238,8 @@ class DmsManager
             $absPath = $this->options['storage_path'] . DIRECTORY_SEPARATOR . (null !== $document->getThumbnail() ? $document->getThumbnail() : $document->getFilename());
 
             $mimetype = $this->mimeTypeManager->getMimeType($absPath);
-            if ($document->getThumbnail() === null && is_file($absPath) && (filesize($absPath) >= 100000000 || strpos($mimetype, 'image') === false && strpos($mimetype, 'pdf') === false)) {
+
+            if (!is_file($absPath) || filesize($absPath) >= 100000000) {
                 $cacheFile = $this->mimeTypeManager->getMimetypeImage($absPath, max([$width, $height]));
             } else {
                 try {
@@ -248,7 +251,7 @@ class DmsManager
                     $imagick->setCompression(Imagick::COMPRESSION_LZW);
                     $imagick->setResolution(72, 72);
                     $imagick->setCompressionQuality(90);
-                    $image = new Image($imagick);
+                    $image = new Image($imagick, new RGB(), new MetadataBag());
 
                     if (!is_dir(dirname($cacheFile))) {
                         mkdir(dirname($cacheFile), 0777, true);
