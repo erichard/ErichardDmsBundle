@@ -85,8 +85,8 @@ class DocumentController extends Controller
             }
 
             // overwrite file
-            if ($filesystem->exists($absFilename)) {
-                $filesystem->remove($absFilename);
+            if (is_file($absFilename)) {
+                unlink($absFilename);
             } elseif (!$filesystem->exists(dirname($absFilename))) {
                 $filesystem->mkdir(dirname($absFilename));
             }
