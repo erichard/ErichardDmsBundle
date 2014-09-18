@@ -1,5 +1,5 @@
 parameters:
-    dms.storage.path: %kernel.root_dir%/../web/medias
+    dms.storage.path: %kernel.root_dir%/data/dms
     dms.cache.path:   %kernel.cache_dir%/dms
 
 services:
