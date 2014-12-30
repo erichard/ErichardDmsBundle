@@ -54,6 +54,8 @@ class MimeTypeManager
             'docx' => 'application-msword',
             'txt'  => 'txt',
             'avi'  => 'video',
+            'm4v'  => 'video',
+            'mov'  => 'video',
             'mp4'  => 'video',
             'mp3'  => 'video',
             'html' => 'html',
